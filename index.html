@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Game</title>
+        <link rel="stylesheet" href="style.css">
+
+        <style>
+
+        #canvasBg{
+            position: absolute;
+            left: 0;
+            top:0;
+            background-color: red;
+        }
+            canvas {
+                position: relative;
+                z-index: 1;
+            }
+
+            #canvasBullets {
+                z-index: 11;
+            }
+
+            #weaponHighlight {
+                position: absolute;
+                top:100px;
+                left: 780px;
+                background-image: url(images/weaponHighlight.png);
+                width:35px;
+                height: 35px;
+                display: block;
+                z-index: 9;
+            }
+
+            #bullets0 {
+                position: absolute;
+                display: block;
+                color: red;
+                font-size: 20;
+                top:100px;
+                left: 820px;
+                z-index: 10;
+            }
+
+            #bullets1 {
+                position: absolute;
+                display: block;
+                color: red;
+                font-size: 20;
+                top:130px;
+                left: 820px;
+                z-index: 10;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <div id="weaponHighlight"></div>
+
+        <p id=bullets0></p>
+        <p id=bullets1></p>
+
+        
+        <canvas id="canvasBullets" width="825" height="600"></canvas>
+        <canvas id="canvasPlayer" width="825" height="600"></canvas>
+        <canvas id="canvasEnemies" width="825" height="600"></canvas>
+
+        <canvas id="canvasBg" width="800" height="600"></canvas>
+
+
+
+
+    </body>
+</html>        <script src="game.js"></script>

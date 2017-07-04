@@ -23,6 +23,10 @@ var canvasBg = document.getElementById("canvasBg"),
 ///// esto aca arriba HA de ser reducido
 
 
+var mapObsL1;
+
+var mapObsL2;
+
 var canvasWidth = 0;
 var canvasHeight = 0;
 
@@ -70,13 +74,15 @@ var animScroll=35;
 var animCount = 0;
 
 
-
+///  PLAYER COORDINATES
 var currentRoom;
 var currentArea;
 var currentLevel;
 
 var nextRoom;
 
+
+// DOORS
 var doorID;   
 
 var blockedDoorIndex =[];
@@ -190,7 +196,7 @@ function initGame() {
         checkKey(e, true); 
 
          if(checkKey(e, true, true)==37||checkKey(e, true, true)==38||checkKey(e, true, true)==39||checkKey(e, true, true)==40){
-            player1.speed=8;  /////////    8 =>   currentSpeed <<<   should vary throughout the game
+            player1.speed=2;  /////////    8 =>   currentSpeed <<<   should vary throughout the game
         }
 
     }, false);
@@ -247,6 +253,7 @@ function checkKey(e, value, checkArrows) {
         player1.facing = "up";
 
         if(paused){
+            
             menuCursor = "up";
 
             requestAnimFrame(pause);
@@ -260,15 +267,15 @@ function checkKey(e, value, checkArrows) {
 
 
         if(paused){
-
+           
             menuCursor = "down";
 
 
 
-
+       
     
     if(menuTrack==0){
-        
+            
             if(typeof player1.items[1]!="undefined"&&itemRow!=player1.items.length-2){
 
                 itemRow+=1;
@@ -285,7 +292,7 @@ function checkKey(e, value, checkArrows) {
                 menuItemAlreadyPainted=false;
                 
             }
-
+             selecto();
     }else if(menuTrack==1){
             
             if(typeof player1.guns[1]!="undefined"&&gunRow!=player1.guns.length-2){
@@ -302,6 +309,7 @@ function checkKey(e, value, checkArrows) {
                 menuGunAlreadyPainted=false;
                 
             }
+             selecto();
     }
 
     menuH_items.draw();
@@ -331,9 +339,11 @@ function checkKey(e, value, checkArrows) {
 
             if(menuTrack==0){
                 menuTrack=1;
+                 selecto();
                 menuH_guns.draw();
             }else if(menuTrack==1){
                 menuTrack=0;
+                 selecto();
                 menuH_items.draw();
             }
         }
@@ -347,9 +357,11 @@ function checkKey(e, value, checkArrows) {
 
             if(menuTrack==0){
                 menuTrack=1;
+                 selecto();
                 menuH_guns.draw();
             }else if(menuTrack==1){
                 menuTrack=0;
+                 selecto();
                 menuH_items.draw();
             }
         }       
@@ -381,6 +393,7 @@ function checkKey(e, value, checkArrows) {
         player1.direction="nada";
         if(!paused){
             paused=true;
+            selecto();
             pause();
 
             ////also : pause IS BEING SENT TO OUTSIDE FUNCTION SO AS TO RECOURSE IT WHILE notPlaying & WHILE STILL LISTENING TO KEYS 
@@ -417,72 +430,7 @@ function checkKey(e, value, checkArrows) {
          player1.shooting=true;
     }
 
-    if(keysPressed[17]){
 
-        ////////
-        ///             NOW   :      PRESS SELECT >>  IF TRACKmENU = 0 player1.items[1].selec=true !!!!
-        player1.direction="cero";
-
-
-///////////                 FIJARSE PRIMERO QUE LOS ARRAYS EXISTAN!!!
-
-
-        if(menuTrack==0){
-
-            //if not true already..
-            if(!menuH_items.isSelected){
-                menuH_items.isSelected=true;
-
-
-                ///loop row =>> loop player1.items...
-                for(var i=0; i<player1.items.length-1; i++){
-                    if(itemRow==i){
-                        player1.itemSelected=i+1;
-                        menuH_items.rowSelec=i;
-                       
-                    }
-                }
-
-            }else{
-                menuH_items.isSelected=false;
-                player1.itemSelected=0;
-                //clearCtx(ctxMenuOverOver);
-                menuH_items.draw();
-            }
-
-            /// ELSE if menuTrack ==1 .... gunSelectPressed
-            menuH_items.draw();
-
-        }else if(menuTrack==1){
-
-            /// IF menuTrack==0
-
-            //if not true already..
-            if(!menuH_guns.isSelected){
-                menuH_guns.isSelected=true;
-
-                for(var i=0; i<player1.guns.length-1; i++){
-                    if(gunRow==i){
-                        player1.gunSelected=i+1;
-                        menuH_guns.rowSelec=i;
-                    }
-                }
-
-
-            }else{
-                menuH_guns.isSelected=false;
-                player1.gunSelected=0;
-                //clearCtx(ctxMenuOverOver);
-                menuH_guns.draw();
-            }
-            //alert("yapo");
-            /// ELSE if menuTrack ==1 .... gunSelectPressed
-            menuH_guns.draw();
-        }else if(menuTrack==2){
-
-        }
-       //alert(menuH_items.rowSelec);
-    }
 
 
 
@@ -500,7 +448,59 @@ function checkKey(e, value, checkArrows) {
 }//END check spacebar
 
 
+ function selecto(){
 
+
+    ////  MAKE SO WHEN A GUNTYPE FIRSTPICK >> GOES AND SELECT IT AND DRAWS IT IN MENU AS CURRENT
+
+
+    //console.log("????"+menuTrack);
+
+
+        if(menuTrack==0){
+
+            //if not true already..
+            
+                menuH_items.isSelected=true;
+
+
+                ///loop row =>> loop player1.items...
+                for(var i=0; i<player1.items.length-1; i++){
+                    if(itemRow==i){
+                        player1.itemSelected=i+1;
+                        menuH_items.rowSelec=i;
+                       
+                    }
+                }
+
+            menuH_items.draw();
+
+        /// ELSE if menuTrack ==1 .... gunSelectPressed
+        }else if(menuTrack==1){
+
+            /// IF menuTrack==0
+
+            //if not true already..
+            
+                menuH_guns.isSelected=true;
+
+                for(var i=0; i<player1.guns.length-1; i++){
+                    if(gunRow==i){
+                        player1.gunSelected=player1.guns[i+1].gunType;
+                        menuH_guns.rowSelec=i;
+                    }
+                }
+
+
+           
+            //alert("yapo");
+            /// ELSE if menuTrack ==1 .... gunSelectPressed
+            menuH_guns.draw();
+        }else if(menuTrack==2){
+
+        }
+       //alert(menuH_items.rowSelec);
+    }
 function clearCtx(ctx) {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 }
@@ -562,17 +562,17 @@ function begin() {
 
 
     //should be in room  object?
-    c = 5;
+    c=5;
     d=4;
     e=3;
 
 
-    ///(x,y, xx, yy, w,h,item, gun, ammo, life, selec,caught, branch)
+    ///(srcX, y, drawX, yy, w, h, item, gun, ammo, life, selec,caught, branch)
 
 
     items.push( new Item(570,605,  150,tileDiameter*3, tileDiameter, tileDiameter,0, null, null, false, false, null, "room-1"), new Item(580,605, 200,200, tileDiameter, tileDiameter,2,null, null, false, false, null, "room-1"), new Item(600,605, 250,200, tileDiameter, tileDiameter,1,null, null, false, false, null, "room-2"), new Item(600,605, 330,360, tileDiameter, tileDiameter,1,null, null, false, false, null, "room-1"), new Item(600,605, 350,200, tileDiameter, tileDiameter,1,null, null, false, false, null, "room-1") );
 
-    items.push( new Item(570,605,  150,250, tileDiameter, tileDiameter,null, 0, null, false, false, null, "room-1"), new Item(570,605, 200,250, tileDiameter, tileDiameter,null, 0, null, false, false, null, "room-2"), new Item(600,605, 250,250, tileDiameter, tileDiameter, null, 1, null, false, false, null, "room-1"));
+    items.push( new Item(570,605,  150,250, tileDiameter, tileDiameter,null, 0, null, false, false, null, "room-1"), new Item(570,605, 200,250, tileDiameter, tileDiameter,null, 0, null, false, false, null, "room-1"), new Item(600,605, 250,250, tileDiameter, tileDiameter, null, 1, null, false, false, null, "room-1"));
 
 
     items.push( new Item(660,605,  150,150, tileDiameter, tileDiameter,null, null, 1, false, false, null, "room-2"), new Item(660,605,  180,150, tileDiameter, tileDiameter,null, null, 1, false, false, null, "room-2"));
@@ -1059,18 +1059,30 @@ function room1(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, til
     //the starter X tile to change in all rows   >> do same for Y 
     var newTileIndexX = tileIndexX;
 
+//////
+/////
+/////               DIIFERNT  MAPS >>>>>>  mapObsL1   Non-Obstacle(0) - Obstacle(1)  - Transition to second level(3)
+/////
+////                                       mapObsL2   same as above, when in second level
+//                              ______________
+//                               basic elements DRAWN >> (like S.metroid x-rays view)
+//
+//                                 tileMap   DRAWN on top of everything. Other areas roof when outside.
+//                                              >>> fake walls>passages, invisible walls, camouflaged areas, doors...
+
+
 
     /////////  SO HERE: areas+doorToRoom inArea,outofArea  &&  obstacles+doorInRoom inArea,outofArea
 
     //// 1, 2, 3, 4, 5 >> , 6, 7, 8, 9 => default + 3 Areas posibles, antes de weviar con 2 digitos, pero los necesito igual, pa tener mas cosas en el otro mapa
 
 
-var tileMap =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
+var mapObsL1 =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
-                 0,0,1,1,0,0,0,0,0,0,0,0,0,1,3,3,3,3,3,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
+                 0,0,1,1,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  0,0,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  0,0,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1094,12 +1106,12 @@ var tileMap =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0
                  0,0,1,1,0,0,0,0,0,0,0,0,0,1,1,0,1,1,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0];
 
 
-var tileMup =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
+var mapObsL2 =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  1,0,0,0,1,0,0,0,0,0,0,0,1,3,3,3,3,3,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
-                 1,1,1,1,0,0,0,0,0,0,0,0,1,3,3,3,3,3,3,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
-                 0,0,1,1,0,0,0,0,0,0,0,0,1,3,3,3,3,3,3,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
+                 1,1,1,1,0,0,0,0,0,0,0,0,3,3,3,3,3,3,3,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
+                 0,0,1,1,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  0,0,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  0,0,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1124,8 +1136,11 @@ var tileMup =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0
 
                  ///Same as before, but difference in obstacles when in level 2
 
+                 //   THERE NEEDS TO BE AN IN BETWEEN..>> under player >> for blocks under animation tiles
+                                            ////   with transparency to show this tiles behind (on rounded edges)
+                                                  /// otherwise the animation effect would be static on this edges
 
-var tileMop =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
+var mapOverDraw =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
                  1,0,0,0,1,0,0,0,0,0,0,0,0,7,7,7,7,7,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,
@@ -1238,9 +1253,13 @@ if(firstDraw=="first"){
    obstacles =[];
    areas = [];
 
+   var whatMap = {};
+
    if(currentLevel==1){
 
-    tilesDraw(shiftX, shiftY, img, area, {tileMap}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX);
+
+
+    tilesDraw(shiftX, shiftY, img, area, {mapObsL1}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX);
 
     //////////// ELSE LEVEL 2
     /////////             obstacles = [];
@@ -1249,7 +1268,7 @@ if(firstDraw=="first"){
         //////                                                            then transition-area again >> goes back (var in, out to keep track)
 
     }else{
-        tilesDraws(shiftX, shiftY, img, area, {tileMup}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX);
+        tilesDrawLevel2(shiftX, shiftY, img, area, {mapObsL2}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX);
     }
 
 //////////////
@@ -1263,7 +1282,7 @@ if(firstDraw=="first"){
 }else{
 
 
-    tilesOverlayDraw(shiftX, shiftY, img, area, {tileMop}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX, {x:132, y:0}, {x:165, y:0}, {x:165, y:35}, {x:126, y:0}, {x:10, y:0}, {x:155, y:0}, {x:99, y:0}, {x:35, y:70}, {x:132, y:0}, {x:33, y:35}); 
+    tilesOverlayDraw(shiftX, shiftY, img, area, {mapOverDraw}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX, {x:132, y:0}, {x:165, y:0}, {x:165, y:35}, {x:126, y:0}, {x:10, y:0}, {x:155, y:0}, {x:99, y:0}, {x:35, y:70}, {x:132, y:0}, {x:33, y:35}); 
      /////  {x:165, y:35} 3 > 4 doorHAS TO LOOK THE SAME, BUT NOT BE THE SAME (invisible door), so it looks like a door when in area
                                                         /// (or still not if invisible..then just leave as the area block in the drawing Map[]
                                                                            /// SAME WITH in-AREA OBSTACLES
@@ -1276,7 +1295,6 @@ if(firstDraw=="first"){
 }
 
 
-
 function room2(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, firstDraw){
 
     var img;
@@ -1285,7 +1303,7 @@ function room2(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, til
     var newTileIndexX = tileIndexX;
 
 
-var tileMap =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
+var mapObsL1 =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
                  1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
                  1,0,0,0,0,0,0,0,0,8,2,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
                  1,0,0,0,1,0,0,0,0,2,2,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
@@ -1316,7 +1334,7 @@ var tileMap =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0
 ///////////////////  what out, 3s don't work in here (cachar bien pa donde va todo que hace que aca se trunque cuando pisas un 3)
 /////////                                                   puede que la funcion pa dibujar el segundo piso no tenga argumento para "level"
 
-var tileMop =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
+var mapOverDraw =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
                  1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
                  1,0,0,0,0,0,0,0,0,8,2,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
                  1,0,0,0,1,0,0,0,0,2,2,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,
@@ -1419,9 +1437,13 @@ var tileMop =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0
 
 
     if(firstDraw=="first"){
-        tilesDraw(shiftX, shiftY, img, area, {tileMap}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX);
+        tilesDraw(shiftX, shiftY, img, area, {mapObsL1}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX);
+        c=5;
+        d=4;
+        e=3;
+
     }else{
-        tilesOverlayDraw(shiftX, shiftY, img, area, {tileMop}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX, {x:132, y:0}, {x:165, y:0}, {x:165, y:35}, {x:126, y:0}, {x:10, y:0}, {x:155, y:0}, {x:99, y:0}, {x:35, y:70}, {x:132, y:0}, {x:33, y:35});   /////  {x:165, y:0} HAS TO LOOK THE SAME, BUT NOT BE THE SAME (invisible door), so when different area then will look like a door
+        tilesOverlayDraw(shiftX, shiftY, img, area, {mapOverDraw}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX, {x:132, y:0}, {x:165, y:0}, {x:165, y:35}, {x:126, y:0}, {x:10, y:0}, {x:155, y:0}, {x:99, y:0}, {x:35, y:70}, {x:132, y:0}, {x:33, y:35});   /////  {x:165, y:0} HAS TO LOOK THE SAME, BUT NOT BE THE SAME (invisible door), so when different area then will look like a door
                                                                                 /// (or still not)
     }
 
@@ -1442,30 +1464,9 @@ var tileMop =   [1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0
 
 
 
-function tilesDraw(newShiftX, newShiftY, img, area, {tileMap}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX){
+function tilesDraw(newShiftX, newShiftY, img, area, {mapObsL1}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX){
 
 
-
-    /////////////   tileDECLARE  >>>>   FIRST draw of the room >>>> DECLARE AREAS, THEN OBSTACLES......   THEN DRAW regardless of what they are
-                                    ///////  move all with player
-
-
-
-
-    ////////////////  finally looping here according to that imgSpriteTileARRAY >> defaultTiles[]
-    /////////////////////////////  giving imgSpriteTile0>> the value of the current value in arguments[i] 
-    ////////////////////////////////////////////////////// arguments from TILeDRAW() after tileIndexY >>> from [7] onwards (desde la mitad)
-
-    ////////////////////////  & tileMap[tileMapIndex]==THIS <<<<<   values from original array (hasta la mitad)
-
-
-        /////////////////////////////////  this 2   if/else could also be passed as arguments!!
-        ////////////////////////////////      hacer el if/else en room1, 2 >> y mandar img como argument
-        ///////////////////                                  but {tileMup} doesnt want to be turned into an argument...
-
-
-
-    //var variance = 0;  ////for #d FX
             
         for(var i =0; i<roomNumberTilesY; i++){
             for(var e=0; e<roomNumberTilesX; e++){
@@ -1473,25 +1474,25 @@ function tilesDraw(newShiftX, newShiftY, img, area, {tileMap}, roomNumberTilesY,
 
 
 
-                    if(tileMap[tileMapIndex]==0){ ///////// area (default)
+                    if(mapObsL1[tileMapIndex]==0){ ///////// area (default)
 
                         
                         areas.push(
                             new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default")
                         );
-                    }else if(tileMap[tileMapIndex]==1){ ///////// obstacle out
+                    }else if(mapObsL1[tileMapIndex]==1){ ///////// obstacle out
 
                         
                         obstacles.push(
                             new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", 0)
                         );
-                    }else if(tileMap[tileMapIndex]==2){ ///////// area 1
+                    }else if(mapObsL1[tileMapIndex]==2){ ///////// area 1
 
                      
                         areas.push(
                             new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno")
                         );
-                    }else if(tileMap[tileMapIndex]==4){ ///////// door in area
+                    }else if(mapObsL1[tileMapIndex]==4){ ///////// door in area
                         areas.push(
                             new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno")
                         );
@@ -1501,32 +1502,32 @@ function tilesDraw(newShiftX, newShiftY, img, area, {tileMap}, roomNumberTilesY,
 
                  
                         );
-                    }else if(tileMap[tileMapIndex]==5){ ///////// door out
+                    }else if(mapObsL1[tileMapIndex]==5){ ///////// door out
 
                      
                         obstacles.push(
                             new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", 5)
                         );
-                    }else if(tileMap[tileMapIndex]==6){ ///////// obstacle in area
+                    }else if(mapObsL1[tileMapIndex]==6){ ///////// obstacle in area
 
                      
                         obstacles.push(
                             new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", 0)
                         );
-                    }else if(tileMap[tileMapIndex]==8){ ///////// doorTO in area
+                    }else if(mapObsL1[tileMapIndex]==8){ ///////// doorTO in area
 
                      
                         areas.push(
                             new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno", "door", 8, 9)
                         );
-                    }else if(tileMap[tileMapIndex]==9){ /////////  doorTOout
+                    }else if(mapObsL1[tileMapIndex]==9){ /////////  doorTOout
 
                      
                         areas.push(
                             new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 9, 8)
                             /////////////////////////////           PLUS:  TO WHAT DOOR IN WHAT ROOM
                         );
-                    }else if(tileMap[tileMapIndex]==3){ /////////  doorTOout
+                    }else if(mapObsL1[tileMapIndex]==3){ /////////  doorTOout
 
                      
                         areas.push(
@@ -1559,40 +1560,38 @@ function tilesDraw(newShiftX, newShiftY, img, area, {tileMap}, roomNumberTilesY,
 
 } /////   tilesDraw  
 
+/////////   I JUST DON'T KNOW HOW TO TURN {mapObsL1}{mapObsL2} into a variable, to have tilesDraw in only one function
+////  whatever I've tried doesn't work
+
+function tilesDrawLevel2(newShiftX, newShiftY, img, area, {mapObsL2}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX){
 
 
-
-
-
-
-function tilesDraws(newShiftX, newShiftY, img, area, {tileMup}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX){
-
-
+            
         for(var i =0; i<roomNumberTilesY; i++){
             for(var e=0; e<roomNumberTilesX; e++){
 
 
 
 
-                    if(tileMup[tileMapIndex]==0){ ///////// area (default)
+                    if(mapObsL2[tileMapIndex]==0){ ///////// area (default)
 
                         
                         areas.push(
                             new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default")
                         );
-                    }else if(tileMup[tileMapIndex]==1){ ///////// obstacle out
+                    }else if(mapObsL2[tileMapIndex]==1){ ///////// obstacle out
 
                         
                         obstacles.push(
                             new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", 0)
                         );
-                    }else if(tileMup[tileMapIndex]==2){ ///////// area 1
+                    }else if(mapObsL2[tileMapIndex]==2){ ///////// area 1
 
                      
                         areas.push(
                             new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno")
                         );
-                    }else if(tileMup[tileMapIndex]==4){ ///////// door in area
+                    }else if(mapObsL2[tileMapIndex]==4){ ///////// door in area
                         areas.push(
                             new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno")
                         );
@@ -1602,32 +1601,32 @@ function tilesDraws(newShiftX, newShiftY, img, area, {tileMup}, roomNumberTilesY
 
                  
                         );
-                    }else if(tileMup[tileMapIndex]==5){ ///////// door out
+                    }else if(mapObsL2[tileMapIndex]==5){ ///////// door out
 
                      
                         obstacles.push(
                             new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", 5)
                         );
-                    }else if(tileMup[tileMapIndex]==6){ ///////// obstacle in area
+                    }else if(mapObsL2[tileMapIndex]==6){ ///////// obstacle in area
 
                      
                         obstacles.push(
                             new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", 0)
                         );
-                    }else if(tileMup[tileMapIndex]==8){ ///////// doorTO in area
+                    }else if(mapObsL2[tileMapIndex]==8){ ///////// doorTO in area
 
                      
                         areas.push(
                             new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno", "door", 8, 9)
                         );
-                    }else if(tileMup[tileMapIndex]==9){ /////////  doorTOout
+                    }else if(mapObsL2[tileMapIndex]==9){ /////////  doorTOout
 
                      
                         areas.push(
                             new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 9, 8)
                             /////////////////////////////           PLUS:  TO WHAT DOOR IN WHAT ROOM
                         );
-                    }else if(tileMup[tileMapIndex]==3){ /////////  doorTOout
+                    }else if(mapObsL2[tileMapIndex]==3){ /////////  doorTOout
 
                      
                         areas.push(
@@ -1635,6 +1634,11 @@ function tilesDraws(newShiftX, newShiftY, img, area, {tileMup}, roomNumberTilesY
                             /////////////////////////////           PLUS:  TO WHAT DOOR IN WHAT ROOM
                         );
                     }
+
+
+                 ///// IF OTHER NUMBER >>>>  AREA type DOOR-to-other room (inArea)  >> sprite: area/roof vs door
+
+                ///// IF OTHER NUMBER >>>>  AREA type DOOR-to-other room (outArea)  >>  door vs blackened (or whatever outside of area looks like)
 
 
             tileIndexX+= tileWidthHeight;
@@ -1645,16 +1649,23 @@ function tilesDraws(newShiftX, newShiftY, img, area, {tileMup}, roomNumberTilesY
         tileIndexY+=tileWidthHeight;
         tileIndexX=newTileIndexX;
 
+
+        ///////// 3d FX
+        // variance++;
+        // tileWidthHeight+=1;
+        /// not worth the efforst in map translation + calculating diagonals for smoth against the wall moving
+
         }
 
-} /////   tilesDraw  
+} /////   tilesDraw  L 2
 
 
 
 
 
 
-function tilesOverlayDraw(newShiftX, newShiftY, img, area, {tileMop}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX){
+
+function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX){
 
 
     var defaultTiles = [];
@@ -1679,7 +1690,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {tileMop}, roomNumber
                 for(var j=0; j < defaultTiles.length; j++){
                     
 
-                    if(tileMop[tileMapIndex]==j){   /// y menos de la mitad
+                    if(mapOverDraw[tileMapIndex]==j){   /// y menos de la mitad
 
 
 
@@ -1689,13 +1700,13 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {tileMop}, roomNumber
                             
                     } /////////////////    o mas de la mitad >>>  defaultTiles[j].y  +  animRate1  .. 2 .. 3
 
-                    if(tileMop[tileMapIndex]==2){   /// y menos de la mitad
+                    if(mapOverDraw[tileMapIndex]==2){   /// y menos de la mitad
                         if(!inArea.inIt){
                         /// 33 is the width of the portion to be drawn from the sprite (actual width in the sprite)
                         ctxOverlay.drawImage(img, defaultTiles[2].x, defaultTiles[2].y, 33, 33, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
                         }                            
                     }
-                    if(tileMop[tileMapIndex]==4){   /// y menos de la mitad
+                    if(mapOverDraw[tileMapIndex]==4){   /// y menos de la mitad
 
 
                         if(!inArea.inIt){
@@ -1704,7 +1715,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {tileMop}, roomNumber
                         }
                             
                     }                    
-                    if(tileMop[tileMapIndex]==8){   /// y menos de la mitad
+                    if(mapOverDraw[tileMapIndex]==8){   /// y menos de la mitad
 
 
                         if(!inArea.inIt){
@@ -1716,7 +1727,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {tileMop}, roomNumber
                 }
 
 
-                if(tileMop[tileMapIndex]==7){ /////  Numeros reservados para Overlays
+                if(mapOverDraw[tileMapIndex]==7){ /////  Numeros reservados para Overlays
 
                     /// 33 is the width of the portion to be drawn from the sprite (actual width in the sprite)
                     if(!inArea.inIt){
@@ -1791,6 +1802,11 @@ function Player(type) {
     //where in sprite
     this.srcX = 0;
     this.srcY = 0;
+
+    this.upperSrcX= 35;
+    this.upperSrcY=0;
+
+
     //where in tileMap
     this.drawX = 420;
     this.drawY = 200;
@@ -1804,13 +1820,12 @@ function Player(type) {
     this.speed = 0;
     this.moving = true; //can it move?
 
-    this.direction = "nowhere";
-
-    this.facing="nowhere";  /// diff from direction, for shooting Anim- purposes
+    this.direction = "nowhere";  // for moving mechanics purposes
+    this.facing="nowhere";  /// diff from direction, for shooting Animation/sprite- purposes
 
     //animation
     this.isDead = false;
-    this.animRate = 1;
+    this.animRate = 1;  //  ??
 
     //special player characteristics  if/elses
     this.playerType = type;
@@ -1860,10 +1875,30 @@ Player.prototype.draw = function () {
 
 
 ////////////////////////////////////////                  35, 50  ==>> this.width, this.height  ACTUAL W/H IN SPRITE
+
+                                    ///// srcX, Y >> lower body
     ctxPlayer.drawImage(imgPlayer, this.srcX, this.srcY, 35, 50, this.drawX, this.drawY, this.width, this.height);
 
+    console.log("GUN SEL"+this.gunSelected); /////   ACCORDING TO THIS WE GO DOWN Y AXIS  this.srcY+50, 50, 50, 50
+            //////////////////////       then in the future another dimension for the suits/armor you find
 
+    if(this.gunSelected==1){
+        this.srcY=0;
+    }else if(this.gunSelected==0){
+        this.srcY=50;
+    }
 
+/////////////////////////////            OK NOW DRAW SPRITE PROPERLY AND THE ANIMATION RIGHT WHEN SHOOTING
+////////////
+//////////                      moving changes srcX, Y... so should shooting (change upperSrcX, Y)
+                                                          /// upperXrcX + + + as in the if(this.shooting) below
+
+    if(this.shooting){            ///// changing upperSrc Anim according to shooting
+        ctxPlayer.drawImage(imgPlayer, this.upperSrcX, this.upperSrcY, 35, 50, this.drawX, this.drawY, this.width, this.height);
+    }else{                     //// shifted sprite (srcX, Y) for upperBody parts
+        ctxPlayer.drawImage(imgPlayer, this.srcX+3, this.srcY, 35, 50, this.drawX, this.drawY, this.width, this.height);                 //// take off +3, that just to show its been drawn on top
+                            ////            +3 actually + length of sprite (legs/upperbody)
+    }
     ////  HEALTH BAR !!
     var shifto=0;
     for (var i = 0; i<player1.life; i++) {
@@ -1946,6 +1981,13 @@ Player.prototype.checkMoving = function (direction, moving) {
         newDrawY = this.drawY;
 
         
+//////////////      ///      
+//////////////      ///  //  
+//////////////      ///     /
+//////////////      ///  ////    
+///////////////    ////  ////
+///////////////////////  ////
+/////////////////////////////
 
 
         if(this.direction=="up"){
@@ -1964,12 +2006,25 @@ Player.prototype.checkMoving = function (direction, moving) {
                     areas[j].topY += this.speed;
                     areas[j].bottomY += this.speed;
                 }
-                ///////////////////////  MOVE AREAS TOO!!!
-                 //console.log(areas[0].topY); 
+                
+                //////  Items have center instead of bottom because thaat's  the point from which they get picked up
+                for(var k =0; k<items.length; k++){
+                    items[k].drawY += this.speed;
+                    items[k].centerY += this.speed;    
+
+                } 
 
             }else{
-            this.drawY = this.drawY-this.speed;
+                this.drawY = this.drawY-this.speed;
             }
+
+//////////    ///////
+//////////     /////  
+//////////      ///
+//////////     ////
+//////////    /////
+/////////////////////
+
         }else if(this.direction=="down"){
             //console.log(canvasHeight+shiftY);
             if(newCenterY>boxLimit_YB&&canvasHeight-canvasBg.height>=Math.abs(shiftY)+this.speed){
@@ -1984,7 +2039,13 @@ Player.prototype.checkMoving = function (direction, moving) {
                     areas[j].topY -= this.speed;
                     areas[j].bottomY -= this.speed;
 
-                }   
+                }  
+
+                for(var k =0; k<items.length; k++){
+                    items[k].drawY -= this.speed;
+                    items[k].centerY -= this.speed;    
+
+                }  
                 //console.log(areas[0].topY);         
 
             }else{
@@ -2032,6 +2093,7 @@ Player.prototype.checkMoving = function (direction, moving) {
             }else{
                 this.drawX = this.drawX-this.speed;
             }
+
         }else if(this.direction=="right-down"){
             if(newCenterX>boxLimit_XR&&canvasWidth>((shiftX*-1)+canvasBg.width+this.speed)){
                 shiftX-=this.speed;
@@ -2199,45 +2261,92 @@ Player.prototype.checkCrash = function () {          ////////// GET PARAMETER >>
                 }
             }
         }   
-
-
         if(this.direction=="right-down"){ //////////   CONTINUE WITH ALL SIDES NOW THAT IT WORKS
 
-            if(newCenterY>=obstacles[i].topY&&newCenterY<obstacles[i].bottomY&&newCenterX<=obstacles[i].leftX&&newCenterX>obstacles[i].leftX-tileDiameter||newCenterX>obstacles[i].leftX&&newCenterX<=obstacles[i].rightX&&newCenterY<=obstacles[i].topY&&newCenterY>obstacles[i].topY-tileDiameter) {
+            // if(newCenterY>=obstacles[i].topY&&newCenterY<obstacles[i].bottomY&&newCenterX<=obstacles[i].leftX&&newCenterX>obstacles[i].leftX-tileDiameter||newCenterX>obstacles[i].leftX&&newCenterX<=obstacles[i].rightX&&newCenterY<=obstacles[i].topY&&newCenterY>obstacles[i].topY-tileDiameter) {
 
+
+            //     //but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+            //     if(newCenterX+this.speed>=obstacles[i].leftX-(this.speed+1)||newCenterY+this.speed>=obstacles[i].topY-(this.speed+1)){
+
+            //         crash = true; 
+
+            //         //if it's a door, you may open it   
+            //         doorCrash(i);
+
+            //     }
+
+            // }
+
+            // /////////////// right on the CORNERS NOW WORKS!!  YAY!
+            // else if(newCenterY<=obstacles[i].topY&&newCenterX<=obstacles[i].leftX&&newCenterY>obstacles[i].topY-tileDiameter&&newCenterX>obstacles[i].leftX-tileDiameter) {
+
+
+            //     //but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+            //     if(newCenterX+this.speed>=obstacles[i].leftX-(this.speed+1)&&newCenterY+this.speed>=obstacles[i].topY-(this.speed+1)){
+
+            //         crash = true; 
+
+            //         //if it's a door, you may open it   
+            //         doorCrash(i);
+
+            //     }
+
+            // }
+            if(newCenterY>=obstacles[i].topY&&newCenterY<obstacles[i].bottomY&&newCenterX<=obstacles[i].leftX&&newCenterX>obstacles[i].leftX-tileDiameter) {
 
                 //but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
-                if(newCenterX+this.speed>=obstacles[i].leftX-(this.speed+1)||newCenterY+this.speed>=obstacles[i].topY-(this.speed+1)){
+                if(newCenterX+this.speed>=obstacles[i].leftX-(this.speed+1)){
 
                     crash = true; 
 
                     //if it's a door, you may open it   
                     doorCrash(i);
-
                 }
-
             }
 
-            /////////////// right on the CORNERS NOW WORKS!!  YAY!
-            else if(newCenterY<=obstacles[i].topY&&newCenterX<=obstacles[i].leftX&&newCenterY>obstacles[i].topY-tileDiameter&&newCenterX>obstacles[i].leftX-tileDiameter) {
 
+            if(newCenterX>obstacles[i].leftX&&newCenterX<=obstacles[i].rightX&&newCenterY<=obstacles[i].topY&&newCenterY>obstacles[i].topY-tileDiameter) {
 
-                //but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
-                if(newCenterX+this.speed>=obstacles[i].leftX-(this.speed+1)&&newCenterY+this.speed>=obstacles[i].topY-(this.speed+1)){
+                if(newCenterY+this.speed>=obstacles[i].topY-(this.speed+1)){
+                    crash = true;
 
-                    crash = true; 
-
-                    //if it's a door, you may open it   
-                    doorCrash(i);
-
+                        //if it's a door, you may open it   
+                        doorCrash(i);
                 }
-
             }
 
-        }   
+        } 
+
+        if(this.direction=="left-down"){ 
+
+             if(newCenterY<=obstacles[i].bottomY&&newCenterY>obstacles[i].topY&&newCenterX>=obstacles[i].rightX&&newCenterX<obstacles[i].rightX+tileDiameter) {
+                
+                if(newCenterX-this.speed<=obstacles[i].rightX+(this.speed+1)){
+                    crash = true;
+
+                        //if it's a door, you may open it   
+                        doorCrash(i);
+                }
+            }
+
+            if(newCenterX>obstacles[i].leftX&&newCenterX<=obstacles[i].rightX&&newCenterY<=obstacles[i].topY&&newCenterY>obstacles[i].topY-tileDiameter) {
+
+                if(newCenterY+this.speed>=obstacles[i].topY-(this.speed+1)){
+                    crash = true;
+
+                        //if it's a door, you may open it   
+                        doorCrash(i);
+                }
+            }
+
+        }
+
+
 
 
     }/// for loop Obstacles
+
 
 
     if (crash) {
@@ -2247,6 +2356,8 @@ Player.prototype.checkCrash = function () {          ////////// GET PARAMETER >>
     }
 
 };
+
+
 
 
 
@@ -2285,6 +2396,7 @@ Player.prototype.checkArea = function (){
             currentLevel=2;
             //alert("miercale!! CARAMBA");
             roomDraw(currentRoom, currentArea, 0, tileDiameter, 0, 0, "first", currentLevel);
+
         }
         else if(currentArea!="transition"&&currentLevel!=1){
              //console.log(currentArea);
@@ -2468,23 +2580,23 @@ Player.prototype.animationState = function (dead, direction, animRate, moving) {
 
         if(this.shooting){
            animCount += animRate;
-            this.srcY=0;
+           
             if(animCount<2){
                 if(this.facing=="up"){
-                    this.srcX = 140;
+                    this.upperSrcX = 140;
                 }else{
-                    this.srcX = 150;
+                    this.upperSrcX = 145;
                 }
             }else if(animCount>2&&animCount<4){
-                this.srcY = 54;
+                this.upperSrcX = 160;
             }else if(animCount>4){
                 animCount =0;
             }
         }else{
             if(this.facing=="up"){
-                    this.srcX = 35;
+                    this.upperSrcX = 70;
                 }else{
-                    this.srcX = 0;
+                    this.upperSrcX = 35;
                 }
         }
 
@@ -2532,8 +2644,8 @@ Player.prototype.animationState = function (dead, direction, animRate, moving) {
 
 
 
-
-
+//////////////////////////////////////  have another arguemtn for big and small, which applies when ammo != null
+///////////////
 function Item(x,y, xx, yy, w,h, item, gun, ammo, selec, caught, branch, room) {   //// ALSO CURRENTROOM!!!!!!S for drawing purposes
     //where in sprite
     this.srcX = x;
@@ -2602,7 +2714,11 @@ Item.prototype.draw = function () {
     //alert(this.inRoom);
         
             ///  draw only the ones in that area
-            if(!inArea.inIt){
+            if(!inArea.inIt||currentArea=="transition"){  
+             ///////   unles there's also areas in level2
+                //// then transition-areas, and area-areas  would have to be separated..
+
+
                 if(currentRoom==this.inRoom){
             ////////////////////////////////////////                   30, 30 ==>>  tileDiameter changes >> this is  ACTUAL W/H IN SPRITE
                     ctxEntities.drawImage(itemSprite, this.srcX, this.srcY, 30, 30, this.drawX, this.drawY, tileDiameter, tileDiameter);
@@ -2622,6 +2738,7 @@ Item.prototype.draw = function () {
                                     ctxEntities.drawImage(itemSprite, this.srcX, this.srcY, 30, 30, this.drawX, this.drawY, this.width, this.height);
                                 }
                             }
+
                             
 
 
@@ -2706,7 +2823,7 @@ Item.prototype.pickUp = function(){
     //console.log(player1.items.length);
     var newCenterX = Math.round(newDrawX + (player1.width / 2)),
         newCenterY = Math.round(newDrawY + (player1.height / 2));
-
+selecto();    
 
 var itemAdd=false;
 var noItemAdd=false;
@@ -2717,17 +2834,23 @@ var noGunAdd=false;
 
 player1.items[0]={srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, itemType:null, gunType:null, ammoType:null,lifeType:null,amount:0};
 
-player1.guns[0]={srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, itemType:null, gunType:null, ammoType:null,lifeType:null,amount:0};
+player1.guns[0]={srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, itemType:null, gunType:0, ammoType:null,lifeType:null,amount:0};
 
-    if(newCenterX>this.centerX-this.width/2&&newCenterX<this.centerX+this.width/2&&newCenterY>this.centerY-this.height/2&&newCenterY<this.centerY+this.height/2){
+/////////////////
+////  for some reason that I forgot, I need to set the first mnenu-items/weapon's  values here. 
+
+///  it doesn't mattter since the first weapon in the game will always be 0. The problem comes when that's not the case.
+
+if(newCenterX>this.centerX-this.width/2&&newCenterX<this.centerX+this.width/2&&newCenterY>this.centerY-this.height/2&&newCenterY<this.centerY+this.height/2){
        
-if(currentRoom==this.inRoom){
-    if(!this.isCaught){
+    if(currentRoom==this.inRoom){
+        if(!this.isCaught){
 
             this.isCaught=true;
 
             /// here sort whether player1.items has already got one item of this type...
                 if(this.itemType!=null){
+
                     for(var j=0; j<player1.items.length; j++){
                         if(player1.items.length==1){
                             itemAdd=true;
@@ -2743,13 +2866,32 @@ if(currentRoom==this.inRoom){
                                  memberJ=j;  
                             }
                         }
+                        
                     }
+
+                    menuTrack=0;
+                         
+                  
+                    console.log("ITEM");
+                     
+                }else if(typeof this.gunType!=null&&this.ammoType==null){
+                    menuTrack=1;
+              
+                    console.log("GUN");
+                     
+                }else if(typeof this.ammoType!=null&& this.gunType==null){
+                    menuTrack=1;
+     
+                    console.log("AMMO");
                 }
                 ////  ... if not, push into a newly sortted array to tidily show items in menu
                 /////  .. if yes, then 
 
                 if(itemAdd&&!noItemAdd){  
                     itemRow=0;
+                    if(player1.items.length<=1){
+                        player1.items[0]={srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null, itemType:this.itemType, amount:1};   
+                    }
                     player1.items.push({srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null, itemType:this.itemType, amount:1});   
   
                 }else if(noItemAdd&&memberJ!="undefined"){
@@ -2759,7 +2901,7 @@ if(currentRoom==this.inRoom){
 
                 noItemAdd=false;
                 itemAdd=false;
-
+               
 
             ///////////   GUN PICK-UP    
                 //////
@@ -2789,7 +2931,17 @@ if(currentRoom==this.inRoom){
 
                 if(gunAdd&&!noGunAdd){
                     gunRow=0;
-                    player1.guns.push({srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null,itemType:this.itemType, gunType:this.gunType, ammoType:this.ammoType, lifeType:this.lifeType, bullets:0});    
+
+                    //alert(player1.guns.length);
+
+                    if(player1.guns.length<=1){
+                        //console.log("TYPE "+player1.guns[0].gunType);
+                       player1.guns[0]={srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null,itemType:this.itemType, gunType:this.gunType, ammoType:this.ammoType, lifeType:this.lifeType, bullets:0};
+                       //console.log("TYPE "+player1.guns[0].gunType);
+                    }
+
+                    player1.guns.push({srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null,itemType:this.itemType, gunType:this.gunType, ammoType:this.ammoType, lifeType:this.lifeType, bullets:0}); 
+                     // console.log("TYPE "+player1.guns[1].gunType);
          ///if this.gunType = 1  player1.guns[player1.guns.length].bullets = "WHATEVER INICIAL LOAD FOR THAT WEAPON FIND<< thats:last one just added           
                 }
 
@@ -2804,6 +2956,10 @@ if(currentRoom==this.inRoom){
                         if(this.ammoType==player1.guns[i].gunType){
                             //console.log("ANTES "+player1.guns[i].bullets);
                             player1.guns[i].bullets+=10;
+
+                            /// ALSO HAVE DIFF TYPE OF AMMO, BIG & SMALL
+                            console.log( player1.guns[i].bullets);
+
                             //console.log("DESPUES "+player1.guns[i].bullets);
                         }
                     };
@@ -2816,7 +2972,8 @@ if(currentRoom==this.inRoom){
 
         }//// IF this caught
     
-       }    
+       }/// if this in room
+
         //console.log("DE ESTE "+player1.items[1].itemType+"HAY " +player1.items[1].amount); 
 
 

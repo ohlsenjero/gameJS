@@ -1,15 +1,4 @@
-//// all have to do now, before going on, is to make array for doors opened, to remember... once they've changed
 
-///   WHEN OBJECT SPLICE.. REMEMBER WHICH INDEX IT IS IN THE MAP >>> NEXT DRAW: THIS INDEX (from array that remembers)
-///																			    splice again straighT away
-
-
-///then complete, do sprite.. move all directions, crash... etc.. pixelArt...  put maps in diff page >> include()
-
-// then objects, Bullets/Enemies...and GAME
-
-/// SO THEN
-//   obstacles remember >> breakable blocks (force break/test)| bullets object| enemies object| special itmes =>game
 
 window.addEventListener("load", initGame, false);
 var c;

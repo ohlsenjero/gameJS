@@ -34,7 +34,7 @@ var menuBorder = new Image();
 	menuBorder.src = "images/menuhighlight.png";
 
 var weaponS = new Image();
-	weaponS.src = "images/weaponSprites.png";
+	weaponS.src = "images/weaponsprites.png";
 
 var menuHeight =100;
 

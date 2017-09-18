@@ -988,7 +988,7 @@ function initGame() {
 
 	},false);
 
-	alert(canvasBg.clientWidth);
+	alert(window.outerWidth);
 
 	begin();
 

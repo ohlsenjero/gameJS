@@ -988,7 +988,7 @@ function initGame() {
 
 	},false);
 
-	alert(window.outerHeight);
+	alert("FFFF "+window.outerHeight);
 
 	begin();
 

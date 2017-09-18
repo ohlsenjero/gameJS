@@ -103,8 +103,8 @@ var edge = new Image();
 
 var tileDiameter; 
 
-if(window.innerWidth>1000){
-	tileDiameter = 48;  // window.innerWidth/40; || 30;     >>>> cambiar segun tamanho de pantalla
+if(element.clientWidth>1000){
+	tileDiameter = 48;  // element.clientWidth/40; || 30;     >>>> cambiar segun tamanho de pantalla
 }else{
 	tileDiameter = 48; /// this has to change also the player size and EVERYTHING>>>>>>............
 }
@@ -814,7 +814,7 @@ function initGame() {
 
 
 	/////  for stupid display types (ex, when the hegth's bigger than the width) use:
-	/// window.innerWidth; >>>> window.innerHeight / 6  o lo que sea   <<<   matiene aspect ratio
+	/// element.clientWidth; >>>> element.clientHeight / 6  o lo que sea   <<<   matiene aspect ratio
 
 	//// better to keep display at hard pixels and change a few times depending ongeneral screen-size, maintaining aspect ratio and adding black
 ///////          this mainly because canvas goes fckng slow when on bigger-than screen, and the speed variation at diff sizes is insane 
@@ -849,8 +849,8 @@ function initGame() {
 	canvasMenuOverOver.height = 100;
 
 
-	if(canvasBg.width<window.innerWidth){
-		document.getElementById("container").style.margin= "0 "+(window.innerWidth-canvasBg.width)/2+"px";
+	if(canvasBg.width<element.clientWidth){
+		document.getElementById("container").style.margin= "0 "+(element.clientWidth-canvasBg.width)/2+"px";
 	}else{
 		document.getElementById("container").style.margin= "0";
 	}
@@ -1426,7 +1426,7 @@ menu.prototype.draw = function () {
 	
 	ctxMenuOverOver.clearRect(360,0, 400, 300);
 	for (var i = 0; i<player1.life; i++) {
-		/// tal vez window.innerHeight... no se ve cuando achicas
+		/// tal vez element.clientHeight... no se ve cuando achicas
 		ctxMenuOverOver.drawImage(itemSprite,650,605, 4, 20, 360+shifto,0, 4, 30); ///////////// ctx player so it gets updated
 		shifto+=7;
 	};
@@ -1513,7 +1513,7 @@ menuH.prototype.draw = function(){
 	var shifto=0;
 
 	for (var i = 0; i<player1.life; i++) {
-		/// tal vez window.innerHeight... no se ve cuando achicas
+		/// tal vez element.clientHeight... no se ve cuando achicas
 		ctxMenuOverOver.drawImage(itemSprite,650,605, 4, 20, 360+shifto,0, 4, 30); ///////////// ctx player so it gets updated
 		shifto+=7;
 	};
@@ -4548,7 +4548,7 @@ function changeRoom(whatRoom, whatDoorId, newShiftX, newShiftY, type){ /////////
 		doorID=whatDoorId;
 
 
-		//// only do this  IF player1.drawY > window.innerWidth/2){}
+		//// only do this  IF player1.drawY > element.clientWidth/2){}
 		shiftX=newShiftX;
 
 		shiftY=newShiftY;   //////////  now, this shift has to be dependent on where this  PARTICULAR tile is located!!!
@@ -4658,16 +4658,16 @@ function roomChangeLoop() {
 					ctxOverOverlay.fillStyle = "#000000";
 					ctxOverOverlay.fillRect(0, 0, canvasWidth-50, 40+pauseCount);   
 
-					// var pauseCountIncrease=Math.round(window.innerHeight)/(Math.round(window.innerHeight)/10);
-					var pauseCountIncrease=Math.round(window.innerHeight)/(Math.round(window.innerHeight)/10);
+					// var pauseCountIncrease=Math.round(element.clientHeight)/(Math.round(element.clientHeight)/10);
+					var pauseCountIncrease=Math.round(element.clientHeight)/(Math.round(element.clientHeight)/10);
 					pauseCount+=4;
 
 				}else if(pauseType=="teleport"){
 					ctxOverOverlay.fillStyle = "#ff0000";
 					ctxOverOverlay.fillRect(0, 0, canvasWidth-50, 40+pauseCount);   
 
-					// var pauseCountIncrease=Math.round(window.innerHeight)/(Math.round(window.innerHeight)/10);
-					var pauseCountIncrease=Math.round(window.innerHeight)/(Math.round(window.innerHeight)/10);
+					// var pauseCountIncrease=Math.round(element.clientHeight)/(Math.round(element.clientHeight)/10);
+					var pauseCountIncrease=Math.round(element.clientHeight)/(Math.round(element.clientHeight)/10);
 					pauseCount+=4.3;
 				}
 
@@ -4711,16 +4711,16 @@ function roomChangeLoop() {
 
 
 				// first remember the limits for PlayerMoves vs EverythingElseDoesInstead Box
-				if(canvasBg.width<window.innerWidth){
+				if(canvasBg.width<element.clientWidth){
 					var boxLimit_XL = canvasBg.width/8*3.3,   
 						boxLimit_XR = canvasBg.width/8*4.7,
 						boxLimit_YT = canvasBg.height/8*3.3,
 						boxLimit_YB = canvasBg.height/8*4.7; 
 				}else{
-					var boxLimit_XL = (window.innerWidth/16)*7,    
-						boxLimit_XR = (window.innerWidth/16)*9,
-						boxLimit_YT = (window.innerHeight/8)*3,
-						boxLimit_YB = (window.innerHeight/8)*5;
+					var boxLimit_XL = (element.clientWidth/16)*7,    
+						boxLimit_XR = (element.clientWidth/16)*9,
+						boxLimit_YT = (element.clientHeight/8)*3,
+						boxLimit_YB = (element.clientHeight/8)*5;
 				}
 //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -4745,31 +4745,31 @@ function roomChangeLoop() {
 				var mapWidth = roomNumberTilesX * tileDiameter;
 
 
-				if(doorIndexY>=window.innerHeight/2&&doorIndexY< mapHeight-(window.innerHeight/2)){
+				if(doorIndexY>=element.clientHeight/2&&doorIndexY< mapHeight-(element.clientHeight/2)){
 
-					shiftY=(doorIndexY- window.innerHeight/2)*-1-menuHeight;
+					shiftY=(doorIndexY- element.clientHeight/2)*-1-menuHeight;
 
-				}else if(doorIndexY>= mapHeight-(window.innerHeight/2)){
-					shiftY= (mapHeight- window.innerHeight)*-1-menuHeight;
-				}else if(doorIndexY<=window.innerHeight/2){
+				}else if(doorIndexY>= mapHeight-(element.clientHeight/2)){
+					shiftY= (mapHeight- element.clientHeight)*-1-menuHeight;
+				}else if(doorIndexY<=element.clientHeight/2){
 					shiftY=0;
 				}
 
 
 
-				if(doorIndexX>=window.innerWidth/2&&doorIndexX< mapWidth-(window.innerWidth/2)){
+				if(doorIndexX>=element.clientWidth/2&&doorIndexX< mapWidth-(element.clientWidth/2)){
 
-					shiftX=(doorIndexX- window.innerWidth/2)*-1;
+					shiftX=(doorIndexX- element.clientWidth/2)*-1;
 
-				}else if(doorIndexX>= mapWidth-(window.innerWidth/2)){
-					shiftX= (mapWidth- window.innerWidth)*-1;
+				}else if(doorIndexX>= mapWidth-(element.clientWidth/2)){
+					shiftX= (mapWidth- element.clientWidth)*-1;
 
-				}else if(doorIndexX<=window.innerWidth/2){
+				}else if(doorIndexX<=element.clientWidth/2){
 					shiftX=0;
 
 				}
 
-		/// console.log(mapWidth-(window.innerWidth/2));
+		/// console.log(mapWidth-(element.clientWidth/2));
 
 		  ////////////////////////////////////////////////////////////////////////////////////////
 			/////////////
@@ -4892,7 +4892,7 @@ function roomChangeLoop() {
 				bulletsFired=[];
 
 
-			}// end IF pauseCount>(window.innerHeight/2)
+			}// end IF pauseCount>(element.clientHeight/2)
 
 
 		   isPlaying = true;
@@ -5214,18 +5214,18 @@ Player.prototype.checkMoving = function (direction, moving) {
 	// this.direction="up";
 	// console.log("alo?" + this.direction);
 	////////////////IF SCREEN BIGGER THAN CANVAS
-	if(canvasBg.width<window.innerWidth){
-		var boxLimit_XL = canvasBg.width/8*3.3,    /// window.inner... or canvas.with depending on what the canvas size is
+	if(canvasBg.width<element.clientWidth){
+		var boxLimit_XL = canvasBg.width/8*3.3,    /// element.client... or canvas.with depending on what the canvas size is
 			boxLimit_XR = canvasBg.width/8*4.7,
 			boxLimit_YT = canvasBg.height/8*3.3,
 			boxLimit_YB = canvasBg.height/8*4.7; // canvasBg or any other canvas >> should all be the same
 
 	}else{
 		//// ELSE
-		var boxLimit_XL = (window.innerWidth/16)*7,    /// window.inner... or canvas.with depending on what the canvas size is
-			boxLimit_XR = (window.innerWidth/16)*9,
-			boxLimit_YT = (window.innerHeight/8)*3,
-			boxLimit_YB = (window.innerHeight/8)*5;
+		var boxLimit_XL = (element.clientWidth/16)*7,    /// element.client... or canvas.with depending on what the canvas size is
+			boxLimit_XR = (element.clientWidth/16)*9,
+			boxLimit_YT = (element.clientHeight/8)*3,
+			boxLimit_YB = (element.clientHeight/8)*5;
 	}
 
 	var    sprtLimit_XL = 100, 

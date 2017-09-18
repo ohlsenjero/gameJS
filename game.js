@@ -4745,31 +4745,31 @@ function roomChangeLoop() {
 				var mapWidth = roomNumberTilesX * tileDiameter;
 
 
-				if(doorIndexY>=canvasBg.offsetHeight/2&&doorIndexY< mapHeight-(canvasBg.offsetHeight/2)){
+				if(doorIndexY>=canvasBg.clientHeight/2&&doorIndexY< mapHeight-(canvasBg.clientHeight/2)){
 
-					shiftY=(doorIndexY- canvasBg.offsetHeight/2)*-1-menuHeight;
+					shiftY=(doorIndexY- canvasBg.clientHeight/2)*-1-menuHeight;
 
-				}else if(doorIndexY>= mapHeight-(canvasBg.offsetHeight/2)){
-					shiftY= (mapHeight- canvasBg.offsetHeight)*-1-menuHeight;
-				}else if(doorIndexY<=canvasBg.offsetHeight/2){
+				}else if(doorIndexY>= mapHeight-(canvasBg.clientHeight/2)){
+					shiftY= (mapHeight- canvasBg.clientHeight)*-1-menuHeight;
+				}else if(doorIndexY<=canvasBg.clientHeight/2){
 					shiftY=0;
 				}
 
 
 
-				if(doorIndexX>=canvasBg.offsetWidth/2&&doorIndexX< mapWidth-(canvasBg.offsetWidth/2)){
+				if(doorIndexX>=canvasBg.clientWidth/2&&doorIndexX< mapWidth-(canvasBg.clientWidth/2)){
 
-					shiftX=(doorIndexX- canvasBg.offsetWidth/2)*-1;
+					shiftX=(doorIndexX- canvasBg.clientWidth/2)*-1;
 
-				}else if(doorIndexX>= mapWidth-(canvasBg.offsetWidth/2)){
-					shiftX= (mapWidth- canvasBg.offsetWidth)*-1;
+				}else if(doorIndexX>= mapWidth-(canvasBg.clientWidth/2)){
+					shiftX= (mapWidth- canvasBg.clientWidth)*-1;
 
-				}else if(doorIndexX<=canvasBg.offsetWidth/2){
+				}else if(doorIndexX<=canvasBg.clientWidth/2){
 					shiftX=0;
 
 				}
 
-		/// console.log(mapWidth-(canvasBg.offsetWidth/2));
+		/// console.log(mapWidth-(canvasBg.clientWidth/2));
 
 		  ////////////////////////////////////////////////////////////////////////////////////////
 			/////////////

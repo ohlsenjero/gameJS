@@ -26,7 +26,7 @@ var canvasBg = document.getElementById("canvasBg"),
 	ctxOverOverlay = canvasOverOverlay.getContext("2d");
 
 
-
+alert(canvasBg.clientWidth);
 
 var blockInput = false;
 

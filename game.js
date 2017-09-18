@@ -4153,7 +4153,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 		tileIndexY+=tileWidthHeight;
 		tileIndexX=newTileIndexX;
 
-		/// menuMap edges <<<  here in outer loop so they don't overload CPU
+		/// menuMap edges <<<  here in inner loop so they don't overload CPU
 		ctxMapOverMenu.clearRect(130,0, 50,120);
 		ctxMapOverMenu.clearRect(0,0, 130,10);
 	}// For roomTiles Y
@@ -4745,31 +4745,31 @@ function roomChangeLoop() {
 				var mapWidth = roomNumberTilesX * tileDiameter;
 
 
-				if(doorIndexY>=window.outerHeight/2&&doorIndexY< mapHeight-(window.outerHeight/2)){
+				if(doorIndexY>=window.innerHeight/2&&doorIndexY< mapHeight-(window.innerHeight/2)){
 
-					shiftY=(doorIndexY- window.outerHeight/2)*-1-menuHeight;
+					shiftY=(doorIndexY- window.innerHeight/2)*-1-menuHeight;
 
-				}else if(doorIndexY>= mapHeight-(window.outerHeight/2)){
-					shiftY= (mapHeight- window.outerHeight)*-1-menuHeight;
-				}else if(doorIndexY<=window.outerHeight/2){
+				}else if(doorIndexY>= mapHeight-(window.innerHeight/2)){
+					shiftY= (mapHeight- window.innerHeight)*-1-menuHeight;
+				}else if(doorIndexY<=window.innerHeight/2){
 					shiftY=0;
 				}
 
 
 
-				if(doorIndexX>=window.outerWidth/2&&doorIndexX< mapWidth-(window.outerWidth/2)){
+				if(doorIndexX>=window.innerWidth/2&&doorIndexX< mapWidth-(window.innerWidth/2)){
 
-					shiftX=(doorIndexX- window.outerWidth/2)*-1;
+					shiftX=(doorIndexX- window.innerWidth/2)*-1;
 
-				}else if(doorIndexX>= mapWidth-(window.outerWidth/2)){
-					shiftX= (mapWidth- window.outerWidth)*-1;
+				}else if(doorIndexX>= mapWidth-(window.innerWidth/2)){
+					shiftX= (mapWidth- window.innerWidth)*-1;
 
-				}else if(doorIndexX<=window.outerWidth/2){
+				}else if(doorIndexX<=window.innerWidth/2){
 					shiftX=0;
 
 				}
 
-		/// console.log(mapWidth-(window.outerWidth/2));
+		/// console.log(mapWidth-(window.innerWidth/2));
 
 		  ////////////////////////////////////////////////////////////////////////////////////////
 			/////////////

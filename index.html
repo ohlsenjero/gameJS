@@ -5,13 +5,15 @@
         <link rel="stylesheet" href="style.css">
 
         <style>
-
+        html{
+          
+        }
         body{
             position: relative;
             left: 0;
             top:0;
 
-            background-color: #000;
+          
             overflow: hidden;
         }
         #container {
@@ -24,10 +26,12 @@
             position: absolute;
             left: 0;
             top:0;
+
         }
         #canvasBg{
             margin-left: 0 auto;
             z-index: 10;
+
         }
         #canvasBgTop{
             z-index: 20;
@@ -36,29 +40,32 @@
             z-index: 25;
         }
         #canvasPlayer{
-            z-index: 28;
+            z-index: 4000;
         }
 
         #canvasPause {
-            z-index: 4000;
-            background-color: 000;   
-
+            z-index: 4200;
+           
+            margin-top: -60px;
         }
         #canvasMenu {
-            z-index: 4000;
-            background-color: 000;   
+            z-index: 4500;
+          
             margin-top: 0;
+
+            background-image: url('images/menu-bg.png');
 
         }
         #canvasMenuOver{
-            z-index: 5000;
+            z-index: 4600;
             margin-top: 0;
+           
         }
         #canvasMenuOverOver{
             z-index: 6000;
             margin-top: 0;
 
-            background-image: url('images/menu-bg.png');
+            
         }
         #canvasMapOverMenu{
             z-index: 7000;
@@ -75,8 +82,8 @@
 
 
         #canvasOverlay{
-
-            z-index: 900;
+            
+            z-index: 4100;
 
         }
          #canvasOverOverlay{
@@ -113,8 +120,8 @@
         <div id="container">
         <canvas id="canvasMapOverMenu" ></canvas> 
         <canvas id="canvasMenuOverOver" ></canvas> 
-        <canvas id="canvasMenuOver" ></canvas> 
-        <canvas id="canvasMenu" ></canvas> 
+        <canvas id="canvasMenuOver" width="600" height="900" ></canvas> 
+        <canvas id="canvasMenu"  width="600" height="900"  ></canvas> 
         <canvas id="canvasPause" ></canvas>    
         <canvas id="canvasEntities" ></canvas>     
         <canvas id="canvasOverOverlay" ></canvas>   

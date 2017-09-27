@@ -1,12 +1,13 @@
 # gameJS
 html-canvas game  (pixel art!)
 
-
-The original game (http://www.j-ohlsen.com/www/game) was a learning experience.
-Eventually I got to understand Object Oriented programming well enough, but a few bugs, from the earlier days, kept pulling me back. 
-
-The best solution was to start over, planning things right from the start, armed with this newfound knowledge. 
-
-So far the major questions have been answered, but are yet to be fully implemented.
+Finally, the game engine is complete. Now it's time for everything to flow into an actual story and a playable game.  
 
 Try it out: https://rawgit.com/ohlsenjero/gameJS/master/index.html
+
+Arrow Keys : move around
+2          : fire
+1          : use items
+space      : pause (then use arrows to change weapon||items)
+shift      : dash
+alt        : teleport (if carrying the proper item)

@@ -24,136 +24,126 @@ var canvasBg = document.getElementById("canvasBg"),
 
 	canvasOverOverlay = document.getElementById("canvasOverOverlay"),
 	ctxOverOverlay = canvasOverOverlay.getContext("2d");
+/////////////////////////////////////////////////////////////////////////
+
+function clearCtx(ctx) {
+	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+}
+// function randomRange (min, max) {
+// 	return Math.floor(Math.random() * (max + 1 - min)) + min;
+// }
 
 
+//// FIXES game speed across different computers and processors 
+var startTime = Date.now();
+var gameSpeed=40;  ////  + == slower game 
+/////  KEEP IN MIND whatever that may SLOW GAME DOWN >>> keep game at slowest is seen performing
+// so then it doesn't suddenly speed up (when in an Area were Edges almost don't take place)
 
+var then = startTime;
+/// I don't know, it seems to make it faster than having startTime down there
+///  maybe it doesn't have to calculate Date.now() twice, but gets it from a closer set of memory
 
-var blockInput = false;
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// PLAYER
+var players=[1,2];
 
-///// esto aca arriba HA de ser reducido
-var daMenu = new menu(itemSprite, 700, 600, canvasBg.width, canvasBg.heigth, 0, 0);/// doesnt need any of this params
-var dashCount=0;
-var dash=false;
+  /// dependent on controller input
+var playerChoosing="player1";////////
 
-var menuBorder = new Image();
-	menuBorder.src = "images/menuhighlight2.png";
+///  upon choosing from the list at introScreen, VAR [#] is set, to later create new Player
+var playerTypes = ["warrior", "warlock"]
 
-var weaponS = new Image();
-	weaponS.src = "images/weaponsprites.png";
-
-var menuHeight =100;
 
 var playerFirstX=0;
 var playerFirstY=0;
 
 var playerShiftY =0;
 
-var opening = false;
+var animCount = 0;
+var animShootingCount = 0;
 
-var rReleased=false;
-
-var superLastKey=null;
-
-//  G L O B A L   V A R S 
+var tele=false;
 
 var slowDown;
 var slowDownDirection;
 
-var mapObsL1;
 
-var mapObsL2;
+var dashCount=0;
+var dash=false;
 
-var canvasWidth = 0;
-var canvasHeight = 0;
-
-
-var shiftX=0;
-var shiftY=0;
+/// prevents moving right after Pause (from pressing while paused)
+///	but brings it back so player can shoot without having to move first
+var facingBeforePause=null;
 
 
-var keysPressed = []; 
+///for diagonals
 var latestKeys = []; 
-
-var keyDown={isDown:false, whatKey:null};
-
-
-
-
-var imgBullets = new Image();
-	imgBullets.src = "images/bullets.png";    //////   HERO.PNG
-
-
-var imgPlayer = new Image();
-	imgPlayer.src = "images/hero.png";    //////   HERO.PNG
-
-
-var itemSprite = new Image();
-	itemSprite.src = "images/sprite2.png";
-	
-var imgSpriteTile0 = new Image();
-	imgSpriteTile0.src = "images/spritesBg.png";
-
-var menuSprite = new Image();
-	menuSprite.src = "images/sprite3.png";
-
-var edge = new Image();
-	edge.src = "images/edge.png";
-
-
-var tileDiameter; 
-
-if(window.innerWidth>1000){
-	tileDiameter = 48;  // window.innerWidth/40; || 30;     >>>> cambiar segun tamanho de pantalla
-}else{
-	tileDiameter = 48; /// this has to change also the player size and EVERYTHING>>>>>>............
-}
-
-var obstacles = [];
-var areas= [];
+///some dirty hack to fix something to do with direction, friction or something
+// not quite sure, but keeping it just in case
+var superLastKey=null;
 
 
 
-var animScroll=35;
-///
-// AREA SCROLL
-// PAUSE SCROLL
-var animCount = 0;
+//BULLETS
+//// each weapon in its corresponding index  (rename to weaponBullets)
+var bullets = [{current:50, max: 1000},{current:50, max: 1200},{current:0, max: 250}];  
+
+/// active bullets (flying around and being updated)
+var bulletsFired = []; 
+
+/// porbably not necessary, but in case, keeping bullets separate and identifiable
+var bulletID=0;
 
 
-///  PLAYER COORDINATES
+
+//// GAME MENU
+var daMenu = new menu(700, 600, canvasBg.width, canvasBg.heigth, 0, 0);/// doesnt need any of this params
+
+var menuHeight =100;
+
+var menuAnimCount=0;
+
+/// Position in Menu
+var menuTrack=1;  // starts with 1 gun >> no item
+var itemRow=0;
+var gunRow=0;
+////  >>>>  1 button for gun, another for item
+///  while other item spermanently do/change something in the game/player 
+
+/// All items before being picked (includes items, weapons, ammo and life)
+var items = [];
+
+
+
+///  PLAYER LOCATION
 var currentRoom;
-var currentArea;
-
-var currentSubArea;
-
 var currentLevel;
 
+var currentArea;
+var currentSubArea;
+
 var nextRoom;
+///when changing rooms, so you can't shoot while facing nowhere (frozen bullet on screen)
+var blockInput = false;
 
 
-// DOORS
-var doorID;   
-
-var doorOpening = [];
-var doorsOpened = [];
-var doorClosing = [];
-
-var inActive = [];
-
-var blockedDoorIndex =[];
-
-var inDoorCrash={crash:false, id:0};
-
-var  inArea={inIt:false, whatArea:currentArea};
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+///Playing || Paused
+var isPlaying = false;
 
-var    isPlaying = false;
+var paused = false;
+
+var pauseType="gamePause";
+var pausedRoomChangeLoop=false;
+var pauseCount= 0;
 
 
-
-var    requestAnimFrame =  window.requestAnimationFrame ||
+///LOOP ENGINE
+var requestAnimFrame =  window.requestAnimationFrame ||
 						window.webkitRequestAnimationFrame ||
 						window.mozRequestAnimationFrame ||
 						window.oRequestAnimationFrame ||
@@ -163,110 +153,100 @@ var    requestAnimFrame =  window.requestAnimationFrame ||
 							window.setTimeout(callback, 1000 / 1);
 						};
 
-// window.cancelAnimFrame = (function () {
-//     return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || function (callback) {
-//         window.clearTimeout(callback);
-//     };
-// })();
-
-var paused = false;
-
-var pauseType="gamePause";
-var pausedRoomChangeLoop=false;
-var pauseCount= 0;
+////////////////////////////////////////////////////////////////
 
 
 
-var players=[];
-var playerChosen;
+/// WORLD essential tile-types
+///doors, obstacles, areas..
+var obstacles = [];
+var areas= [];
 
+// DOORS
+var doorID;   
 
-var playerTypes = new Array();
-///// what controller triggered the playerCreation
-	playerTypes[0] = "warrior"; 
-///////  what value was in what that controller pressed
-	playerTypes[1] = "warlock";
+var doorOpening = [];
+var doorsOpened = [];
+var doorClosing = [];
 
-players = [1,2];
+var opening = false;
+var doorBlock =false;
+var blockedDoorIndex =[];
 
-var items = [];
+var inActive = [];
 
-var itemSelectPressed=false;
-var itemSelectPressedCounter=0;
+var inDoorCrash={crash:false, id:0};
 
+var inArea={inIt:false, whatArea:currentArea};
 
-var menuCursor="nada";
+var doorKeys = [{id:301, key:1}, {id:402, key:1}];
 
-var menuTrack=1;
-var itemRow=0;
-var gunRow=0;
-
-var menuAnimCount=0;
- 
-
-var bullets = [50,0,0,0,0,0,0,0,0,0];  //// each weapon in its corresponding index
+var key1;
 
 
 
+/// WORLD TILES +
+var mapObsL1;
+
+var canvasWidth;
+var canvasHeight;
+
+var shiftX=0;
+var shiftY=0;
+
+
+///TILE SIZE
+var tileDiameter; 
+
+if(window.innerWidth>1000){
+	tileDiameter = 48;  // >>>> cambiar segun tamanho de pantalla
+}else{
+	tileDiameter = 48; /// mmm, maybe not..
+}
+
+
+var flash=0;
 
 
 
-var bulletsFired = []; /// = active bullets
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var firsty =false;
+/// ROOM TILE MAPS !!!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 function whatRoomMap(map){
-/// 010, 020 translte to 1, 2 before they can be turned to strings
-///        and using them as strings here makes the map less readable >>> 000 ommited
+/// 010|020 translate to 1|2,  unless turned to strings
+///  and using them as strings here makes the map less readable >>> 000 ommited
 
+
+/////                                      					 r   o   o   m     1
+	/// first: the basic layout and tile definition
 	if(map=="room-1"){
 		return  [222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,101,350,100,150,150,100,100,100,100,502,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,101,350,100,190,190,100,100,100,100,502,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,
 				 100,100,222,100,100,227,100,100,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 503,100,227,227,100,222,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,227,222,222,222,100,100,100,100,100,100,227,227,100,100,222,100,222,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,222,222,100,100,100,227,227,100,100,100,227,227,227,227,100,100,100,227,227,227,227,227,227,227,227,227,227,227,227,
+				 503,100,227,227,100,222,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,
+				 100,227,222,222,222,100,100,100,100,100,100,227,227,100,100,222,100,222,100,100,100,100,100,100,100,100,100,100,100,222,
+				 100,222,222,100,100,100,227,227,100,100,100,227,227,227,227,100,100,100,227,227,227,227,227,227,227,227,227,227,227,222,
 				 100,100,100,100,227,100,222,227,100,100,100,222,222,222,222,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,222,214,227,100,222,222,100,100,100,236,236,236,100,108,100,100,222,227,100,222,100,222,222,227,100,222,100,222,
-				 100,100,222,214,222,708,218,222,100,100,100,227,227,227,450,450,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
-				 100,100,500,222,222,708,709,222,100,100,100,227,227,227,450,450,227,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,500,500,222,708,708,110,100,100,100,400,668,227,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,100,100,222,222,222,100,100,100,100,400,710,401,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,100,100,100,100,100,100,100,100,100,227,710,222,714,714,402,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,100,100,100,100,100,100,227,100,100,222,222,222,301,301,222,100,227,227,227,227,227,227,227,227,227,227,227,227,
-				 100,100,100,100,120,120,120,100,222,227,100,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,120,130,120,120,222,222,100,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,120,130,130,120,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
-				 100,100,100,100,120,130,130,120,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
-				 100,100,100,105,105,130,130,120,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
-				 100,100,100,105,105,130,214,130,222,227,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,105,105,214,130,100,222,222,222,222,222,100,224,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,100,105,222,130,130,120,120,120,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
-				 100,100,100,100,100,100,214,214,214,214,222,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
+				 100,100,222,214,227,100,222,222,110,111,100,236,236,236,108,108,100,100,222,227,100,222,100,222,222,227,100,222,100,222,
+				 100,100,222,214,222,708,218,222,100,114,100,227,227,227,450,450,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,500,222,222,708,709,222,100,114,100,227,227,227,450,450,227,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,500,500,222,708,708,100,110,114,100,400,668,227,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,222,
+				 100,100,100,100,222,222,222,100,112,113,100,400,710,401,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,222,
+				 100,100,100,100,100,100,100,100,100,100,100,227,710,222,714,714,402,100,100,100,100,100,100,100,100,100,100,100,100,222,
+				 100,100,100,100,100,100,100,100,227,100,100,222,222,222,301,301,222,100,227,227,227,227,227,227,227,227,227,227,227,222,
+				 100,100,100,100,160,160,160,100,222,227,100,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,100,160,160,160,160,160,222,222,100,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,160,160,160,160,160,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,100,100,160,160,160,160,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
+				 100,171,100,105,100,160,160,160,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,222,
+				 100,171,170,105,105,100,214,166,222,227,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,171,171,100,105,105,214,166,100,222,222,222,222,222,100,224,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,100,105,222,166,166,160,160,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,100,100,100,100,214,214,214,214,222,160,160,160,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
 
-}else if(map=="room-1L2"){
-		return  [100,150,150,150,150,150,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,101,350,100,150,100,100,100,100,100,502,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
+	/// second floor >>> swap after hitting "transition" area
+	}else if(map=="room-1L2"){
+		return  [100,190,190,190,190,190,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,101,350,100,190,100,100,100,100,100,502,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,222,100,100,227,100,100,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
 				 503,100,227,227,100,222,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,227,222,222,222,100,100,100,100,100,100,227,227,100,100,222,100,222,100,100,100,100,100,100,100,100,100,100,100,100,
@@ -279,50 +259,45 @@ function whatRoomMap(map){
 				 100,100,100,100,222,222,222,100,100,100,100,400,710,401,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,100,100,100,100,100,100,100,100,100,227,710,222,714,714,402,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,100,100,100,100,100,100,227,100,100,222,222,222,714,714,222,100,227,227,227,227,227,227,227,227,227,227,227,227,
-				 100,100,100,100,120,120,120,100,222,227,100,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,120,130,120,120,222,222,100,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,120,130,130,120,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
-				 100,100,100,100,120,130,130,120,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
-				 100,100,100,105,105,130,130,120,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
-				 100,100,100,105,105,130,214,130,222,227,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,105,105,214,130,100,222,222,222,222,222,100,224,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,100,105,222,130,130,120,120,120,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
-				 100,100,100,100,100,100,214,214,214,214,222,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
+				 100,100,100,100,160,160,160,100,222,227,100,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,100,100,160,166,160,160,222,222,100,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,160,166,166,160,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,100,100,160,166,166,160,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
+				 100,100,100,105,105,166,166,160,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
+				 100,100,100,105,105,166,214,166,222,227,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,100,100,105,105,214,166,100,222,222,222,222,222,100,224,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,100,105,222,166,166,160,160,160,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,100,100,100,100,214,214,214,214,222,160,160,160,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
 
-				 ///Same as before, but difference in obstacles when in level 2
-}else if(map=="room-1Over"){
+ 	/// then: what the tiles look like (independent of what they might be)
+	}else if(map=="room-1Over"){
 		return  [100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
 				 100,100,350,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,214,100,100,214,100,100,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 503,100,214,214,100,222,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,214,222,222,222,100,100,100,100,100,100,214,214,100,100,222,100,222,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,222,222,100,100,100,214,214,100,100,100,214,214,214,214,100,100,100,214,214,214,214,214,214,214,214,214,214,214,214,
-				 100,100,100,100,214,100,222,214,100,100,100,222,222,222,222,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,214,214,222,100,232,222,100,100,100,232,232,232,108,108,100,100,222,214,100,222,100,222,222,214,100,222,100,222,
-				 100,100,222,214,222,708,218,222,100,100,100,218,218,218,450,450,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
-				 100,100,500,222,222,708,709,222,100,100,100,218,218,218,450,450,214,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,500,500,222,708,708,110,100,100,100,400,668,218,711,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,100,100,222,222,222,100,100,100,100,400,710,401,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,100,100,100,100,100,100,100,100,100,219,710,222,714,714,402,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,100,214,100,100,214,110,114,111,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 503,100,214,214,100,222,114,114,114,111,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,214,222,222,222,114,114,114,114,114,100,214,214,100,100,222,100,222,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,222,222,100,100,112,214,214,114,114,100,214,214,214,214,100,100,100,214,214,214,214,214,214,214,214,214,214,214,214,
+				 100,100,100,100,214,100,222,214,114,114,100,222,222,222,227,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,214,214,222,100,232,222,114,114,100,232,232,232,107,108,100,100,222,214,100,222,100,222,222,214,100,222,100,222,
+				 100,100,222,214,222,708,218,222,114,114,100,218,218,218,450,450,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
+				 100,100,500,222,222,708,709,222,114,114,100,218,218,218,450,450,214,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,500,500,222,708,708,114,114,113,100,400,668,218,711,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,100,100,100,222,222,222,114,113,100,100,400,710,401,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,100,100,100,100,100,112,113,100,100,100,219,710,222,714,714,402,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,100,100,100,100,100,100,219,100,100,222,222,222,301,301,222,100,214,214,214,214,214,214,214,214,214,214,214,214,
-				 100,100,100,100,120,120,120,100,222,219,100,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,120,120,130,120,120,222,222,100,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,120,120,130,130,120,100,100,100,100,222,222,100,100,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
-				 100,100,105,105,120,130,130,120,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
-				 100,100,105,105,105,130,130,120,219,100,100,222,222,222,720,222,101,100,214,214,214,214,214,214,214,214,214,214,214,214,
-				 100,100,105,105,105,130,214,130,222,219,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,105,105,214,130,100,222,214,222,222,222,100,224,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,100,105,222,130,130,120,120,120,222,222,100,100,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
-				 100,100,100,100,100,100,214,214,214,214,214,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
-
-
-
-
+				 100,100,100,162,160,160,160,161,222,219,100,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,100,160,160,160,160,160,222,222,100,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,160,160,160,160,160,100,100,100,100,222,222,100,100,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
+				 100,100,100,164,160,160,160,160,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
+				 100,171,100,105,164,160,160,160,219,100,100,222,222,222,710,222,101,100,214,214,214,214,214,214,214,214,214,214,214,214,
+				 100,171,170,105,105,100,214,166,222,219,100,222,222,222,710,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,171,171,100,105,105,214,166,167,222,214,222,222,222,100,218,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,100,105,222,166,166,160,160,161,222,222,100,100,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
+				 100,100,100,100,100,100,214,214,214,214,214,160,160,160,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
 
 
 
 /////                                       r   o   o   m     2
-
 
 }else if(map=="room-2"){
 		return  [222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,
@@ -338,10 +313,10 @@ function whatRoomMap(map){
 				 100,100,100,100,222,710,710,110,100,100,100,227,227,227,710,218,218,100,100,100,100,669,100,100,100,100,100,100,100,100,
 				 100,100,100,100,222,222,222,100,100,100,100,403,710,222,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,100,100,501,100,100,100,100,100,100,227,710,222,714,710,222,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,100,100,100,100,120,100,227,100,100,222,222,222,714,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
-				 100,100,100,100,120,120,120,100,222,227,100,222,222,222,100,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,120,130,120,120,222,222,100,222,222,222,222,222,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,100,130,120,100,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,100,100,100,161,160,162,227,100,100,222,222,222,714,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
+				 100,100,100,100,160,160,160,160,222,227,100,222,222,222,100,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,100,100,160,166,160,160,222,222,100,222,222,222,222,222,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,163,166,160,162,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
 				 100,100,500,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
 				 100,100,100,100,100,100,100,100,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
 				 100,100,100,100,105,105,105,100,222,100,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
@@ -360,22 +335,18 @@ function whatRoomMap(map){
 				 100,100,500,500,222,710,710,110,100,100,100,227,227,227,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,100,100,222,222,222,100,100,100,100,403,710,401,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,100,100,100,100,100,100,100,100,100,227,710,222,714,710,402,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,501,100,100,100,120,100,227,100,100,222,222,222,714,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
-				 100,100,100,100,120,120,120,100,222,227,100,222,222,222,714,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,120,130,120,120,222,222,100,222,222,222,301,222,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,100,130,120,100,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,501,100,100,100,160,100,227,100,100,222,222,222,714,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
+				 100,100,100,100,160,160,160,100,222,227,100,222,222,222,714,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,100,100,160,166,160,160,222,222,100,222,222,222,301,222,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,100,166,160,100,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
 				 100,100,500,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
 				 100,100,100,100,100,100,100,100,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
 				 100,100,100,100,105,105,105,100,222,227,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
 	}
 }
 
-
-
-/// this is kept here so you don't have to constantly define it  when you need it elsewhere, 
-/// and with the maps right up there it's easy to adjust
-
-// needed to calculate width and height of MAP
+/// this is kept here so you don't have to constantly define it  when you need it elsewhere 
+////  (to calculate distances|width&height| in map for different room sizes) 
 function checkTileNumbers(room){
 
 	if(room=="room-1"){
@@ -385,13 +356,13 @@ function checkTileNumbers(room){
 		roomNumberTilesY = 20;
 		roomNumberTilesX = 30;
 	}
-
+///with the maps right up there it's easy to adjust
 }
 
 
 
 
-var doorBlock =false;
+
 
 ///     ///
   //   //
@@ -401,295 +372,347 @@ var doorBlock =false;
 ///    //   /////    //  ///////
 
 
-///from Event Listener
+var keysPressed = []; 
+
+var keyDown={isDown:false, whatKey:null};
+
+///from Event Listener (at Init)
 function checkKey(e, value, checkArrows) {
 
-if(!blockInput){
+	if(!blockInput){
 
-	if(checkArrows){
-		return e.keyCode;
-	}else{
+		if(checkArrows){
+			return e.keyCode;
+		}else{
 
-		keyDown.isDown=true;
-		// e = e || event; 
-		keysPressed[e.keyCode] = e.type;
+			keyDown.isDown=true;
+			// e = e || event; 
+			keysPressed[e.keyCode] = e.type;
 
-		if(e.keyCode==38||e.keyCode==39||e.keyCode==40||e.keyCode==37){
-			latestKeys.push(e.keyCode);/////    IGNORE  ANY OTHER KEY BUT ARROWS!!!!
-		}
+			if(e.keyCode==38||e.keyCode==39||e.keyCode==40||e.keyCode==37){
+				latestKeys.push(e.keyCode);/////    IGNORE  ANY OTHER KEY BUT ARROWS!!!!
+			}
 	
 
-		// YEAH!! it remembers last keysPressed so can go from 1 diagonal to another!!
+			// YEAH!! it remembers last keysPressed so can go from 1 diagonal to another!!
 
-		if (keysPressed[38]) { 
-			
-			superLastKey=38;		
-			//player1 should change to "Da player"
-			if(keysPressed[39]||latestKeys[0]==39){
-				player1.direction = "right-up";  /// to know it can do another one..
-				player1.facing = "right-up";
-			}else if(keysPressed[37]||latestKeys[0]==37){
-				player1.direction = "left-up";  /// to know it can do another one..
-				player1.facing = "left-up";
-			}else{
-				player1.direction = "up";
-				player1.facing = "up";
-			}
-
-			if(paused){
-				player1.direction = "nada";
-
-				menuCursor = "up";
-
-			
-			}                 
-		}
-
-
-		if (keysPressed[40]) {  /////////////////////////////// YES, WORKS 
-
-
-			superLastKey=40;
-
-
-
-			if(keysPressed[39]||latestKeys[0]==39){
-				player1.direction = "right-down";  /// to know it can do another one..
-				player1.facing = "right-down";
-			}else if(keysPressed[37]||latestKeys[0]==37){
-				//console.log("YEAH!");
-				player1.direction = "left-down";  /// to know it can do another one..
-				player1.facing = "left-down";
-			}else {      
-				player1.direction = "down";  /// to know it can do another one.. 
-				player1.facing = "down";
-			}
-			
-			 
-			
-
-			if(paused){
-				//clearCtx(ctxMenu);
+			if (keysPressed[38]) { 
 				
-				
-				console.log("watch OUT");
-				menuCount=0;
-				daMenu.draw();
-				
-				
-				player1.direction = "nada";
-
-				menuCursor = "down";
-
-
-
-		/// this could be other buttons>> like R-L   
-		
-		if(menuTrack==0){
-				
-				if(typeof player1.items[1]!="undefined"&&itemRow!=player1.items.length-2){
-
-					itemRow+=1;
-					//console.log("row"+menuRow);
-					menuItemAlreadyPainted=false;
-		  
-					  
-					
-				}else if(itemRow==player1.items.length-2){
-
-					 itemRow=0;
-					menuItemAlreadyPainted=false;
-					
+				superLastKey=38;		
+				//player1 should change to "Da player"
+				if(keysPressed[39]||latestKeys[0]==39){
+					player1.direction = "right-up";  /// to know it can do another one..
+					player1.facing = "right-up";
+				}else if(keysPressed[37]||latestKeys[0]==37){
+					player1.direction = "left-up";  /// to know it can do another one..
+					player1.facing = "left-up";
+				}else{
+					player1.direction = "up";
+					player1.facing = "up";
 				}
-				 selecto();
-		}else if(menuTrack==1){
-				
-				
-					//alert(menuRow);
-				
-					console.log("LLLL "+player1.guns.length);
 
+
+				if(paused){
+
+					player1.direction = "nowhere";
+					player1.facing = "nowhere";
+
+					if(menuTrack==0){
+							//console.log(itemRow+ "HHH "+(player1.items.length-1));
+						if(typeof player1.items[1]!="undefined"&&itemRow!=0){
+
+							itemRow-=1;
+							//console.log("row"+menuRow);
+							menuItemAlreadyPainted=false;
+				
+						}else if(itemRow==0){
+
+							itemRow=player1.items.length-2;
+							menuItemAlreadyPainted=false;
+								
+						}
+
+						selecto();
+
+					}else if(menuTrack==1){
+							
+						if((gunRow-1)<0){
+							gunRow=player1.guns.length-1;
+						}else if((gunRow-1)<player1.guns.length){
+							gunRow-=1;
+						}
+								
+						menuGunAlreadyPainted=false;
+
+						selecto();
+					}
+				}                 
+			}
+
+
+			if (keysPressed[40]) {  /////////////////////////////// YES, WORKS 
+
+				superLastKey=40;
+
+
+				if(keysPressed[39]||latestKeys[0]==39){
+					player1.direction = "right-down";  /// to know it can do another one..
+					player1.facing = "right-down";
+				}else if(keysPressed[37]||latestKeys[0]==37){
+					//console.log("YEAH!");
+					player1.direction = "left-down";  /// to know it can do another one..
+					player1.facing = "left-down";
+				}else {      
+					player1.direction = "down";  /// to know it can do another one.. 
+					player1.facing = "down";
+				}
+				
+		
+
+				if(paused){
+
+					player1.direction = "nowhere";
+					player1.facing = "nowhere";
+
+					menuCount=0;
+					daMenu.draw();
 					
-					
-					if((gunRow+1)==player1.guns.length){
-						gunRow=0;
-					}else if((gunRow+1)<player1.guns.length){
-						gunRow+=1;
+					/// this could be other buttons>> like R-L   
+			
+					if(menuTrack==0){
+							
+						if(typeof player1.items[1]!="undefined"&&itemRow!=player1.items.length-2){
+
+							itemRow+=1;
+							//console.log("row"+menuRow);
+							menuItemAlreadyPainted=false;
+				
+						}else if(itemRow==player1.items.length-2){
+
+							itemRow=0;
+							menuItemAlreadyPainted=false;
+								
+						}
+
+						selecto();
+
+					}else if(menuTrack==1){
+							
+						console.log("LLLL "+player1.guns.length);
+
+						if((gunRow+1)==player1.guns.length){
+							gunRow=0;
+						}else if((gunRow+1)<player1.guns.length){
+							gunRow+=1;
+						}
+								
+						console.log("GRR"+gunRow);
+						//console.log("row"+menuRow);
+						menuGunAlreadyPainted=false;
+
+						selecto();
+					}
+
+					menuH_items.draw();
+
+					clearCtx(ctxEntities);
+
+					for(var i=0; i< items.length; i++){
+					   items[i].draw();
+					}
+					player1.direction = "nada";
+
+					console.log(player1.direction);
+
+				}// if paused  
+
+			}// DOWN arrow
+
+
+
+			if (keysPressed[39]) {  
+
+				if(mBorderX>256){
+					oldmBorderCount=0;
+					mBorderCount=0;
+					mBorderX=0;
+				}
+
+				superLastKey=39;	
+			
+				if(keysPressed[40]||latestKeys[0]==40){
+					//console.log("DOWN");
+					player1.direction = "right-down";  /// to know it can do another one..
+					player1.facing = "right-down";
+				}else if(keysPressed[38]||latestKeys[0]==38){
+					player1.direction = "right-up";  /// to know it can do another one..
+					player1.facing = "right-up";
+				}else{
+					player1.direction = "right";  /// to know it can do another one..
+					player1.facing = "right";
+				}
+			   
+				if(paused){
+					player1.direction = "nowhere";
+					player1.facing="nowhere";
+
+					if(menuTrack==0){
+						menuTrack=1;
+						 selecto();
+						menuH_guns.draw();
+					}else if(menuTrack==1){
+						menuTrack=0;
+						 selecto();
+						menuH_items.draw();
+					}
+				}
+			}
+			if (keysPressed[37]) {  /////////////////////////////// YES, WORKS
+			if(mBorderX>256){
+						oldmBorderCount=0;
+						mBorderCount=0;
+						mBorderX=0;
+					}
+				/// this is the problem, for some reason Last Key 39 goes back to 37
+				superLastKey=37;
+
+				if(keysPressed[40]||latestKeys[0]==40){
+					player1.direction = "left-down";  /// to know it can do another one..
+					player1.facing = "left-down";
+				}else if(keysPressed[38]||latestKeys[0]==38){
+					player1.direction = "left-up";  /// to know it can do another one..
+					player1.facing = "left-up";
+				}else{
+					player1.direction = "left";  /// to know it can do another one..   
+					player1.facing = "left";
+				}
+				if(paused){
+
+					player1.direction = "nowhere";
+					player1.facing="nowhere";
+
+					if(menuTrack==0){
+						menuTrack=1;
+						 selecto();
+						menuH_guns.draw();
+					}else if(menuTrack==1){
+						menuTrack=0;
+						 selecto();
+						menuH_items.draw();
+					}
+				}       
+			}/// key pressed 37
+
+
+			//////////////////////////////////////////////////////////////////
+			/// Player DASH
+			if (keysPressed[16]) { 
+				dashCount=0;
+
+				dash=true;
+				    
+
+			}/// key: SHIFT
+
+
+			if (keysPressed[18]) { 
+
+				if(!paused){
+					for(var n = 0; n < player1.nonSelectItems.length; n++ ){
+						if(player1.nonSelectItems[n].itemNumber==3){
+						   // console.log(player1.nonSelectItems[n].itemNumber);			
+							tele=true;
+						}
+					}
+				}
+			}/// key: alt
+
+			if (keysPressed[32]) {  /////////////////////////////// YES, WORKS
+
+				console.log("FACING ?"+player1.facing);
+
+				if(facingBeforePause==null){
+					facingBeforePause=player1.facing;
+				}
+				
+
+				player1.direction="nowhere"; /// leave or not... a matter of style
+				player1.facing="nowhere";
+
+				clearCtx(ctxMenu);
+				clearCtx(ctxMenuOver);
+
+				if(!paused){
+
+					if(player1.items.length<=1){
+						menuTrack=1;
+					}
+					paused=true;
+					selecto();
+					pause();
+
+					////also : pause IS BEING SENT TO OUTSIDE FUNCTION SO AS TO RECOURSE IT WHILE notPlaying & WHILE STILL LISTENING TO KEYS 
+					////                                                                            which trigger different parts of pause(function)
+				   
+				}else{
+					paused=false;
+					player1.facing=facingBeforePause;
+					facingBeforePause=null;
+					pause();
+				}
+			} /// key: SPACE
+
+			// C
+			if (keysPressed[67]) { 
+				
+				if(flash==0){
+					flash=1;
+				}else if(flash==1){
+					flash=2;
+				}else{
+					flash=0;
+				}
+				
+				
+			}/// key: C
+
+
+
+			if(keysPressed[50]){
+				
+				if(doorBlock){
+					doorBlock=false;
+				}
+
+				if(player1.direction!="room-change"){
+					player1.shooting=true;
+				}
+			} /// key: 2 >>> B button
+
+
+			if(keysPressed[49]){
+
+				if(player1.direction!="room-change"&&player1.items.length>1){
+					if(itemDecrementCount==0){
+						player1.usingItem=true;
 					}
 					
-					console.log("GRR"+gunRow);
-					//console.log("row"+menuRow);
-					menuGunAlreadyPainted=false;
+					//console.log("using Item");
+				}
+			} /// key: 1 >>> A button
 
-					  
-					
+
+			if(keysPressed[17]){
 				
-				 selecto();
-		}
+				console.log("START button")
+			} /// key: crtl >>> START button
 
-		menuH_items.draw();
+			e.preventDefault();
 
-		clearCtx(ctxEntities);
+		}// IF !checkArrows
+	}// IF !blockInput
 
-		for(var i=0; i< items.length; i++){
-		   items[i].draw();
-		}
-		/////////
-		///////////////////////////////////////////////////////
-
-
-			}  
-		}
-
-		if (keysPressed[39]) {  
-		if(mBorderX>256){
-					oldmBorderCount=0;
-					mBorderCount=0;
-					mBorderX=0;
-				}
-			superLastKey=39;	
-		
-			if(keysPressed[40]||latestKeys[0]==40){
-				//console.log("DOWN");
-				player1.direction = "right-down";  /// to know it can do another one..
-				player1.facing = "right-down";
-			}else if(keysPressed[38]||latestKeys[0]==38){
-				player1.direction = "right-up";  /// to know it can do another one..
-				player1.facing = "right-up";
-			}else{
-				player1.direction = "right";  /// to know it can do another one..
-				player1.facing = "right";
-			}
-		   
-			if(paused){
-				player1.direction = "nada";
-
-				menuCursor = "right";
-
-				if(menuTrack==0){
-					menuTrack=1;
-					 selecto();
-					menuH_guns.draw();
-				}else if(menuTrack==1){
-					menuTrack=0;
-					 selecto();
-					menuH_items.draw();
-				}
-			}
-		}
-		if (keysPressed[37]) {  /////////////////////////////// YES, WORKS
-		if(mBorderX>256){
-					oldmBorderCount=0;
-					mBorderCount=0;
-					mBorderX=0;
-				}
-			/// this is the problem, for some reason Last Key 39 goes back to 37
-			superLastKey=37;
-
-			if(keysPressed[40]||latestKeys[0]==40){
-				player1.direction = "left-down";  /// to know it can do another one..
-				player1.facing = "left-down";
-			}else if(keysPressed[38]||latestKeys[0]==38){
-				player1.direction = "left-up";  /// to know it can do another one..
-				player1.facing = "left-up";
-			}else{
-				player1.direction = "left";  /// to know it can do another one..   
-				player1.facing = "left";
-			}
-			if(paused){
-
-				player1.direction = "nada";
-
-				menuCursor = "left";
-
-				if(menuTrack==0){
-					menuTrack=1;
-					 selecto();
-					menuH_guns.draw();
-				}else if(menuTrack==1){
-					menuTrack=0;
-					 selecto();
-					menuH_items.draw();
-				}
-			}       
-		}/// key pressed 37
-
-		///////////////////////////////////////////////////////////////////////////
-		//// probando, check, check, 1, 2, lifebar
-		if (keysPressed[71]) {  /////////////////////////////// YES, WORKS
-			player1.life-=3;
-			if(player1.life<=0){
-				alert("MUERTE");
-			}
-		}
-
-		////////////////////////////////////////////////////////////////////////////
-
-		if (keysPressed[16]) {  /////////////////////////////// YES, WORKS
-			
-			dash=true;
-				/// have to repeat here, or else it only happens after let go of arrows and press again
-			//console.log(dashCount);
-			if(dashCount<3){
-				player1.speed=16;			   	
-			}else{
-			   	dash=false;	   	
-			}
-		}
-
-		if (keysPressed[32]) {  /////////////////////////////// YES, WORKS
-			player1.direction="nowhere"; /// leave or not... a matter of style
-
-			clearCtx(ctxMenu);
-			clearCtx(ctxMenuOver);
-
-			if(!paused){
-
-				paused=true;
-				selecto();
-				pause();
-
-				////also : pause IS BEING SENT TO OUTSIDE FUNCTION SO AS TO RECOURSE IT WHILE notPlaying & WHILE STILL LISTENING TO KEYS 
-				////                                                                            which trigger different parts of pause(function)
-			   
-			}else{
-				paused=false;
-				pause();
-			}
-		}
-
-
-		//openDoor
-		if(keysPressed[49]){
-			///when item selected and button-press >>>
-			/// loop through obstacles & open the ones ready to be opened with that item....
-			doorOpen(obstacles[obstacleIndex].doorID);
-	
-		}
-
-
-		if(keysPressed[50]){
-			
-			if(doorBlock){
-				doorBlock=false;
-			}
-
-			if(player1.direction!="room-change"){
-				player1.shooting=true;
-			}
-		
-				
-			
-			
-		}
-
-		e.preventDefault();
-
-	}
-
-}
-
-}//END check KEYS
+}//END CheckKEYS
 
 
 
@@ -697,24 +720,7 @@ if(!blockInput){
 
 
 
-function clearCtx(ctx) {
-	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-}
-
-function randomRange (min, max) {
-	return Math.floor(Math.random() * (max + 1 - min)) + min;
-}
-
-
-
-
-
-
-
-///      P   H   I   S  Y  C  S
-
-var lastDir;
-
+///    P   H   I   S  Y  C  S
 function friction(){
 
 
@@ -723,61 +729,95 @@ function friction(){
 	//														and to pin point the definite angle player1 is facing
 	if(releaseCounterCount>4){
 		slowDownDirection=player1.direction;
-		lastDir=player1.direction;
 		player1.facing=player1.direction;
 	}else{
-		slowDownDirection=player1.facing;
-		lastDir=player1.facing;
-	}
+		slowDownDirection=player1.facing;	
+	}/// but remember NES games didn't even go that far
 
 	slowDownDirection=player1.facing;
 
+	// diagonal friction
+	if(latestKeys.length>0){
 
-		if(latestKeys.length>0){
-
-				
-		///  this is almost working, but needs to work outside keyUP or something.. even though now at least keeps the previous direction, when taking 1 input of diagonal out, it still won't then add a new input to go for the other diagonal (in a row)... got it, it sbecause the diagonals arent chekcing for latestKeys yet
-
-
-			//console.log("LENGTH "+latestKeys[0]);
-			if(latestKeys[0]==39){
-				player1.direction="right"; 
-			}else if(latestKeys[0]==37){
-				player1.direction="left"; 
-			}else if(latestKeys[0]==40){
-				player1.direction="down"; 
-			}else if(latestKeys[0]==38){
-				player1.direction="up"; 
-			}
-
-			
-			
-		}else{
-			//// stright to ZERO  or try actual PHISYCHS         
-
-			//either this if for friction
-			if(player1.speed>0){
-				slowDown=true;
-
-			}
-
-			//or this for not-firciton
-			// player1.speed=0;
-			// player1.direction="nada"; 
-			
+		if(latestKeys[0]==39){
+			player1.direction="right"; 
+		}else if(latestKeys[0]==37){
+			player1.direction="left"; 
+		}else if(latestKeys[0]==40){
+			player1.direction="down"; 
+		}else if(latestKeys[0]==38){
+			player1.direction="up"; 
+		}
 		
-
+	}else{ 
+		//either this if for friction
+		if(player1.speed>0){
+			slowDown=true;
 		}
 
+		////or this for not-friction
+		// player1.speed=0;
+		// player1.direction="nada"; 
+			
+	} // else IF latestKeys.length>0
+ 
+}/// FUNC friction
+
+var releaseCounter=false;
 
 
-}/// friction
 
 
 
+///l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]
+///
+///             S  E  L  E  C  T      I  N  V  E  N  T  O  R  Y
+///
+///l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]
 
 
+function selecto(){
+	////  WHEN A GUNTYPE FIRSTPICK >> GOES AND SELECT IT AND DRAWS IT IN MENU AS CURRENT
+console.log("IT R "+itemRow);
+	if(menuTrack==0){
 
+		//if not true already..
+		menuH_items.isSelected=true;
+
+		///loop row =>> loop player1.items...
+		for(var i=0; i<player1.items.length-1; i++){
+			if(itemRow==i){
+				player1.itemSelected=player1.items[i+1].itemNumber;
+
+				console.log("ITEMS?" +player1.itemSelected);
+				//console.log(player1.items[i+1].itemNumber);
+				menuH_items.rowSelec=i;
+			}
+		}
+
+		menuH_items.draw();
+
+	/// ELSE if .... gunSelectPressed
+	}else if(menuTrack==1){
+
+		/// IF menuTrack==0
+
+		//if not true already..
+		menuH_guns.isSelected=true;
+		//console.log("GGeeee"+player1.guns.length);
+		for(var i=0; i<player1.guns.length; i++){
+					
+			if(gunRow==i){	
+				//console.log("A VER A VER "+player1.guns[i+1].itemNumber);
+				//player1.gunSelected=player1.guns[i+1].itemNumber;
+				player1.weaponSelected=player1.guns[i].itemNumber;
+				menuH_guns.rowSelec=i;
+			}
+		}
+		/// ELSE if menuTrack ==1 .... gunSelectPressed
+		menuH_guns.draw();
+	}
+}/// selecto
 
 
 ////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_///L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\|_-_////L]_^#@~~/\\\
@@ -786,40 +826,28 @@ function friction(){
 
 
 
+									 ////   ////   ///   ////   ////////      
+									 ////   /////  ///   ////       ///            
+									 ////   ////// ///   ////       ///                          
+ 									 ////   //////////   ////       ///     
+									 ////   /// //////   ////       ///           
+									 ////   ///  /////   ////       ///       
 
 
 
 
-
-
-													 ////   ////   ///   ////   ////////      
-													 ////   /////  ///   ////       ///            
-													 ////   ////// ///   ////       ///                          
- 													 ////   //////////   ////       ///     
-													 ////   /// //////   ////       ///           
-													 ////   ///  /////   ////       ///       
-
-
-
-
-
-
-
-var releaseCounter=false;
 
 window.addEventListener("load", initGame, false);
 
 //should be in Funtion => GAME
 function initGame() {
 
-
-	/////  for stupid display types (ex, when the hegth's bigger than the width) use:
-	/// window.innerWidth; >>>> window.innerHeight / 6  o lo que sea   <<<   matiene aspect ratio
-
 	//// better to keep display at hard pixels and change a few times depending ongeneral screen-size, maintaining aspect ratio and adding black
-///////          this mainly because canvas goes fckng slow when on bigger-than screen, and the speed variation at diff sizes is insane 
-	//////                                                                                                  (still need to adjust to it)
 
+	///////  this mainly because canvas goes fckng slow when scales up, 
+	///		and the speed variation at diff sizes is insane 
+
+	/// CANVAS hardwired sizes  << possibly change, few diff options
 	canvasBg.width =900;
 	canvasBg.height = 600;
 	canvasBgTop.width =900;
@@ -833,12 +861,14 @@ function initGame() {
 	canvasOverlay.width =900;
 	canvasOverlay.height = 600;
 	canvasOverOverlay.width =900;
-	canvasOverOverlay.height = 600;
+	canvasOverOverlay.height = 720;
 	canvasPause.width =900;
 	canvasPause.height = 600;
 
 	canvasMenu.width =900;
 	canvasMenu.height = 100;
+
+	/// FOR SOME REASON IT DOESNT DO THIS ONE.. (hardcoded on index.html)
 	canvasMenuOver.width =900;
 	canvasMenuOver.height = 600;
 
@@ -848,7 +878,6 @@ function initGame() {
 	canvasMenuOverOver.width =900;
 	canvasMenuOverOver.height = 100;
 
-
 	if(canvasBg.width<window.innerWidth){
 		document.getElementById("container").style.margin= "0 "+(window.innerWidth-canvasBg.width)/2+"px";
 	}else{
@@ -857,36 +886,29 @@ function initGame() {
 	// CSS margin won't work
 
 
-
-
-
+	/// Key   Down|Up   LISTENERS!!                                       
+	//																	K - D O W N
 	document.addEventListener("keydown", function(e) {
-
-		
-		player1.speed=8;
 
 		checkKey(e, true, false); 
 		
 		 if(checkKey(e, true, true)==37||checkKey(e, true, true)==38||checkKey(e, true, true)==39||checkKey(e, true, true)==40){
 			
-		   		player1.speed=12;
+		 		/// NO PUEDE SER IMPAR por alguna razon
+		   		player1.speed=8; //// = 12, = currentSpeed <<<   should vary throughout the game
 		   		releaseCounter=false;
-				
-			
+
 				slowDown=false;
-				slowDownDirection=player1.direction;
+				slowDownDirection=player1.direction;		
+		}// IF Check for Arrows (D-pad) pressed	
 
-			////////  currentSpeed <<<   should vary throughout the game
-		}
-
-		
 	}, false);
+	/// END KeyDown
 
 
-	document.addEventListener("keyup", function(e) {
+	/// 																  K - U P	
+	document.addEventListener("keyup", function(e) {	
 		 
-
-
 		for (var i = 0; i<latestKeys.length;i++) {
 			//console.log(latestKeys[i]);
 			if(checkKey(e, true, true)==latestKeys[i]){
@@ -894,25 +916,26 @@ function initGame() {
 				latestKeys.splice(i,1);
 				i=i-1; /// otherwise after splicing, the next i comes to take the current i's place and on the next iteration it won't be checked anymore (and too late to check on this one, so it passes)
 			}
-		}
+		}// FOR latest keys
+
 		keysPressed = [];
 		keyDown.isDown=false; 
 
-		//player1.direction = "nowhere"; ///  ALGO ME TIENE QUE DETENER, NO EL LEVANTAR UNA TECLA, si no no puedo correr y disparar al mismo tiempo
-				///ONLY IF ARROWS keyUp!!!
+		///ONLY IF ARROWS keyUp!!!
 		if(checkKey(e, true, true)==37||checkKey(e, true, true)==38||checkKey(e, true, true)==39||checkKey(e, true, true)==40){
 
-
-			//console.log(checkKey(e, true, true));
 			releaseCounter=true;
 
-			friction(); /// this should stop player when key up
+			/// this should stop player when key up  << but with a little delay
+			if(!dash){
+				friction(); 
+			}
+			
+		}// IF check Arrows Pressed
 
-		}
 
 
-
-	//// ignore and delete this mess when moving to controller-input.......
+		//// ignore and delete this mess when moving to controller-input.......
 		if(checkKey(e, true, true)==38){ //up
 
 			//console.log("DFDFDSFD"+player1.direction);
@@ -946,11 +969,6 @@ function initGame() {
 				player1.direction="down";
 			}
 
-
-			/// SAME PROBLEM AGAIN, now SuperLastKey takes too long to get back....
-			/////// ... at least there is just this one to fix now..
-			//// and this side seems to be the end for it.
-
 		}
 
 		if(checkKey(e, true, true)==39){//right
@@ -966,71 +984,55 @@ function initGame() {
 				player1.direction="up";
 			}else if(player1.direction=="down"&&superLastKey!=37){
 				player1.direction="down";
-			}
-			////
-			///////////////// SOMETHING LIKE THIS SHOULD BYPASS THAT DELAYED-RETARDED latestKeys[0] check
-
-			
-
+			}	
 		}
 
-
-
+		/// Shooting's UP (SpaceBar Release)
 		if(checkKey(e, true, true)==50){
-
 			player1.shooting=false;
 		}
 
+		/// Dash button (presumably A, as powered by item)
 		if(checkKey(e, true, true)==16){
 			player1.speed=8;/////////    this has to come from array.. diff speeds according to situations
 			dashCount=0;
+			dash=false;
+			friction();
 		}
 
+
+		if(checkKey(e, true, true)==49){
+			player1.usingItem=false;
+			itemDecrementCount=0;
+		}
+
+
 	},false);
+	/// END KeyUp
 
-	alert("FFFF "+window.outerHeight);
 
+	///////////  S T A R T    G A M E  ///////////////
 	begin();
 
-}
+}/// FUNC initGame
 
 
 
 
 
+  ////////               ////////                        ///   ///
+ //////////           /////             ////////         //   ///
+//////   /////        ///            ///      ///       //   ///
+/////     /////          ///       ///                  //   
+/////     ////        ///         ///                   //
+/////////////////    ///           ///                 //
+//////      /////    ///            ///      ////     ///
+////////////////     /////          /////     ////   ///
+  /////////////       ///////////    //////////      ///
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  ////////////        ///////////
- //////////          /////    ////
-//////               ///       ///
-/////                ///       ///
-/////                ///       ///  
-/////      //////    ///       ///
-//////      /////    ///       ///
-////////////////     /////    ////
-  /////////////       ///////////
-
-
-
-var playerChoosing="player1";
-	playerChosen="warrior";
 
 function begin() {
-	///
-
 
 	currentRoom= "room-1";
 	currentArea="default";
@@ -1044,59 +1046,65 @@ function begin() {
 	// ... then release it, ad there you go
 
 
+	if(playerChoosing=="player1"){
+		
+		player1 = new Player(playerTypes[0]); /////// [0] <<<< VAR depending on playerType chosen at introScreen
+	}
 
 	isPlaying = true;
+
 	requestAnimFrame(loop);
 
 
-	
-	if(playerChoosing=="player1"){
-		if(playerChosen=="warrior"){
-			for (var i = 0; i < players.length; i++) {
-				player1 = new Player(playerTypes[0]);
-			}
-		}else if(playerChosen=="warlock"){
-			for (var i = 0; i < players.length; i++) {
-				player1 = new Player(playerTypes[1]);
-			}
-		}
-	}
-	  
+
+	///// Initial GAME ITEMS  (unlike enemy drops which appear as the game goes)
+	items.push( 
+
+		new Item(0,176, 290,80, tileDiameter, tileDiameter,"item", 1, false, false, null, "room-1"), 
+
+		new Item(96,128, 350,200, tileDiameter, tileDiameter,"item", 4, true, false, null, "room-1"), 
+		new Item(96,176, 345, 100, tileDiameter, tileDiameter, "item", 2, true, false, null, "room-1"), 
+
+		new Item(48,128, 430,160, tileDiameter, tileDiameter,"item", 3,false, false, null, "room-1"), 
+
+		new Item(96,128, 200,100, tileDiameter, tileDiameter,"item", 4, true, false, null, "room-1")); 
 
 
-	//CAN BE DONE PROGRAMATICALLY TOO
-
-  //player1 = new Player(); /////////////  if (hitPlayer){  hitPlayer||player1 =  new Player(player1)
-	// doors.push(
-	//     new Door(325, 325, 25, 25, "inDoor")
-	// );
+	items.push( 
+		new Item(144,176,  150,250, tileDiameter, tileDiameter,"gun", 0, false, false, null, "room-1"), 
+		new Item(192,176, 200,250, tileDiameter, tileDiameter,"gun", 1, false, false, null, "room-1"), 
+		new Item(192,176, 388,250, tileDiameter, tileDiameter, "gun", 1, false, false, null, "room-1"));
 
 
-	//should be in room  object?
+	items.push( 
+		new Item(192,128,  550,110, tileDiameter, tileDiameter,"ammo", 1, false, false, null, "room-1"), 
+		new Item(0,128,  480,150, tileDiameter, tileDiameter,"life", 1, false, false, null, "room-1"));
 
 
-	///(srcX, y, drawX, yy, w, h, item, gun, ammo, life, selec,caught, branch)
-
-
-	items.push( new Item(580,605,  0,tileDiameter*3, tileDiameter, tileDiameter, "item", 1, false, false, null, "room-1"), new Item(580,405, 200,200, tileDiameter, tileDiameter,"item", 3, false, false, null, "room-1"), new Item(580,605, 250,900, tileDiameter, tileDiameter,"item", 1, false, false, null, "room-2"), new Item(596,605, 330,160, tileDiameter, tileDiameter,"item", 4, false, false, null, "room-1"), new Item(610,605, 350,200, tileDiameter, tileDiameter,"item", 2, false, false, null, "room-1") );
-
-	items.push( new Item(570,605,  150,250, tileDiameter, tileDiameter,"gun", 0, false, false, null, "room-1"), new Item(570,605, 200,250, tileDiameter, tileDiameter,"gun", 0, false, false, null, "room-1"), new Item(600,605, 350,250, tileDiameter, tileDiameter, "gun", 1, false, false, null, "room-1"));
-
-
-	items.push( new Item(700,605,  550,150, tileDiameter, tileDiameter,"ammo", 1, false, false, null, "room-1"), new Item(650,605,  580,150, tileDiameter, tileDiameter,"life", 1, false, false, null, "room-1"));
-
-
-	menuH_items = new menuH(itemSprite, 700, 600, 30, 30, 200, 100, "item", false);
-	menuH_guns = new menuH(itemSprite, 700, 600, 30, 30, 230, 100, "gun", false);
+	menuH_items = new menuH(700, 600, 30, 30, 200, 100, "item", false);
+	menuH_guns = new menuH(700, 600, 30, 30, 230, 100, "gun", false);
 
 
 	player1.guns[0]={srcX:570, srcY:605, width:45, height:45, selec:true, itemType:"gun", itemNumber:0, lifeType:null,amount:0};
-	selecto();
-
-				////also : pause IS BEING SENT TO OUTSIDE FUNCTION SO AS TO RECOURSE IT WHILE notPlaying & WHILE STILL LISTENING TO KEYS 
-				////                                                                            which trigger different parts of pause(function)
-			   
+ 
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1169,9 +1177,16 @@ function update() {
 		
 	}
 
-	roomDraw(currentRoom, currentArea, 0, tileDiameter, shiftX, shiftY, "not-first");
+	
 
 }
+
+
+
+
+
+
+
 
 
 
@@ -1194,14 +1209,10 @@ function draw() {
 		bulletsFired[i].draw();
 	}
 
-
+	roomDraw(currentRoom, currentArea, 0, tileDiameter, shiftX, shiftY, "not-first");
 }
 
-var startTime = Date.now();
-var gameSpeed=40;  ////  + == slower game >>> KEEP IN MIND EDGES SLOW GAME DOWN, so keep this at the slowest the game is seen performing, so then it doesn't suddenly speed up (when in an Area were Edges almost don't take place)
 
-var then = startTime;/// I don't know, it seems to make it faster than having startTime down there
-///            >> maybe it doesn't have to calculate Date.now() twice, but gets it from a closer set of memory
 
 
 
@@ -1232,10 +1243,23 @@ function loop() {
 
 
 
-
-
-//TYUIH^*@()//TYUIH^*@(//TYUIH^*@()//TYUIH^*@()//TYUIH^*@(
+//TYUIH^*@()//TYUIH^*@(//TYUIH^*@()//TYUIH^*@()//TYUIH^*@(//TYUIH^*@()//TYUIH^*@(//TYUIH^*@()//TYUIH^*@()//TYUIH^*@(
+//TYUIH^*@()//TYUIH^*@(//TYH^*@()//TYUIH^*@()//TYUIH^*@(//TYUIH^*@()//TYUIH^*@(//TYUIH^*@()//TYUIH^*@()//TYUIH^*@(
 //TYUIH^*@()//TYUIH^*@(//TYH^*@()//TYUIH^*@()//TYUIH^*@(
+//TYUIH^*@()//TYUIH^*@(//TYUIH^*@()//TYUIH^*@()//TYUIH^*@(//TYUIH^*@()//TYUIH^*@(//
+//TYUIH^*@()//TYUIH^*@(//TYH^*@()//TYUIH^*@()//TYUIH^*@(
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1255,8 +1279,7 @@ var itemCounter = 0;
 var gunCounter = 0;
 ///Menu items  >>> only updated on pause
 
-function menu(img, srcX, srcY, w, h, x, y) {
-	this.image=img;
+function menu(srcX, srcY, w, h, x, y) {
 	this.srcX=srcX;
 	this.srcY=srcY;
 	this.width = w;
@@ -1273,6 +1296,9 @@ var repeat=0;
 menu.prototype.draw = function () {
 /////  no FLASH, OR RESET ANIMCOUNTER >>> IF ITS NOT YOUR MENUTRACK (no flashing gun-item when scrolling item-item)
 	//// in pause mode you can scroll and select other ones with the arrows)
+
+	var itemX=0;
+
 	for (var i =0; i<3; i++) { ///// 3 Tracks
 			
 		if(i==0){
@@ -1280,59 +1306,55 @@ menu.prototype.draw = function () {
 								
 				clearCtx(ctxMenu);
 				clearCtx(ctxMenuOver);
+
+
+
 						
 				for (var j = 0;j<player1.items.length; j ++) {			 
 								
 							/// FOR  ROW>>> IT COULD BE INFINITE!    for player1.items  igual que en checkKey
 					if(itemRow==j){
-						if(typeof player1.items[j+1]!="undefined"){
+						if(typeof player1.items[j]!="undefined"){
+
+							//console.log( " L"+player1.itemSelected);
+
+							if(player1.itemSelected==1){
+								itemX=0;
+							}else if(player1.itemSelected==2){
+								itemX=64;
+							}else if(player1.itemSelected==3){
+								itemX=128;
+							}else if(player1.itemSelected==4){
+								itemX=128;
+							}
 
 							///ONLY DRAW IF SELECTABLE!!!  and only apply effects if items-> thisRow <<<< MOR THAN ONE
 							///// so duplicate this if elses and >> if player1.items 
-									// if(j>0){
-
-									// 	/// DONT DO THIS SHIFT IF FIRST-PRESS\\\\\\
-									// 	ctxMenuOver.drawImage(itemSprite, player1.items[j+1].srcX, player1.items[j+1].srcY, 30, 30, 170, 40, player1.items[j+1].width, player1.items[j+1].height);
-
-
-	        //   							ctxMenuOver.drawImage(itemSprite, player1.items[j].srcX, player1.items[j].srcY, 30, 30, 170, 100, player1.items[j].width, player1.items[j].height);
-	        //   						}else{
-
-	        //   							if(player1.items.length<=1){
-
-	          								
-		       //    							ctxMenuOver.drawImage(itemSprite, player1.items[j+1].srcX, player1.items[j+1].srcY, 30, 30, 170, 0, player1.items[j+1].width, player1.items[j+1].height);
-		       //    						///then when there's more it can swap them with animations !!!!!!!!!!
-	        //   							}else{
-	        //   								ctxMenuOver.drawImage(itemSprite, player1.items[j+1].srcX, player1.items[j+1].srcY, 30, 30, 170, 0, player1.items[j+1].width, player1.items[j+1].height);
-	        //   								ctxMenuOver.drawImage(itemSprite, player1.items[player1.items.length-1].srcX, player1.items[player1.items.length-1].srcY, 30, 30, 170, 0, player1.items[player1.items.length-1].width, player1.items[player1.items.length-1].height);
-	        //   							}
-	        //   						}
-
-	          					/// or do it the simple way:  comment out  if(j>0){ above, and uncomment this one
+									
+	          	
 	          				if(paused&&menuTrack==0&&pauseType=="gamePause"){
 	          					repeat++;
-	          					console.log("RRR "+repeat);
+	          					//console.log("RRR "+repeat);
 	          					if(itemCounter<20){
-	          						ctxMenuOver.drawImage(itemSprite, player1.items[j+1].srcX, player1.items[j+1].srcY, 30, 30, 80, 14,64, 64);
+	          						ctxMenuOver.drawImage(itemsMenu, itemX, 0, 64, 64, 80, 14,64, 64);
 
 	          						itemCounter++;
-	          						console.log("I C " +itemCounter);
+	          						//console.log("I C " +itemCounter);
 	          					}else if(itemCounter>=20&&itemCounter<27){
 	          						itemCounter++;
-	          						console.log("I C " +itemCounter);
+	          						//console.log("I C " +itemCounter);
 	          						clearCtx(ctxMenuOver);
 	          					}else{
 	          						itemCounter=0;
-	          						console.log("I C " +itemCounter);
+	          						//console.log("I C " +itemCounter);
 	          					}
 	          				}else{
-	          					ctxMenuOver.drawImage(itemSprite, player1.items[j+1].srcX, player1.items[j+1].srcY, 30, 30, 80, 14, 64, 64);
+	          					ctxMenuOver.drawImage(itemsMenu, itemX, 0, 64, 64, 80, 14, 64, 64);
 	          				}
 
 	          					
-
-
+	          				//console.log("CUANTOS YA? "+player1.nonSelectItems.length);
+	          				
 
 						}    
 					}
@@ -1345,6 +1367,11 @@ menu.prototype.draw = function () {
 				
 		}else if(i==1){
 				
+			//clearCtx(ctxMenuOverOver);
+		
+			
+			
+
 			if(player1.guns[0]!=null&&player1.guns[0]!="undefined"){
 
 
@@ -1358,13 +1385,16 @@ menu.prototype.draw = function () {
 							//console.log(player1.guns[j].itemNumber);
 							if(player1.guns[j].itemNumber==0){
 								srccX=0;
+
+								
 								//console.log("une");
 							}else if(player1.guns[j].itemNumber==1){
 								srccX=64;
 								//console.log("duw");
+								
 							}
 									
-							ctxMenuOver.clearRect(230,0, 64, 64);
+							//ctxMenuOver.clearRect(230,0, 64, 64);
 
 															//// not gun width but custom width
 							if(paused&&menuTrack==1&&pauseType=="gamePause"){
@@ -1390,12 +1420,49 @@ menu.prototype.draw = function () {
 			}
 		}// if i = 1>> menuTrack
 
+
+
+
+
 	   	// ctxMenu.clearRect(170,140,46, 46);   /// this blocks the bottom ITEM in the "sliding-trick"
 	}/// FOR  menuTrack
 		
 
-	if(paused){
 
+	if(paused&&pauseType=="gamePause"){
+
+		//clearCtx(ctxOverlay);
+		ctxOverlay.fillStyle = "rgba(0, 0, 0, 0.28)";
+		ctxOverlay.fillRect(0, 0, 900, 100);
+
+		ctxOverlay.fillStyle = "rgba(3, 0, 6, 0.24)";
+		ctxOverlay.fillRect(0, 100, 900, 100);
+
+		ctxOverlay.fillStyle = "rgba(3, 0, 6, 0.21)";
+		ctxOverlay.fillRect(0, 200, 900, 100);
+
+		ctxOverlay.fillStyle = "rgba(3, 0, 6, 0.16)";
+		ctxOverlay.fillRect(0, 300, 900, 100);
+
+		ctxOverlay.fillStyle = "rgba(3, 0, 6, 0.12)";
+		ctxOverlay.fillRect(0, 400, 900, 100);
+
+		ctxOverlay.fillStyle = "rgba(3, 0, 6, 0.1)";
+		ctxOverlay.fillRect(0, 500, 900, 100);
+
+
+		/// maybe should be other canvas...   so comes from the side only when needed (Start vs Select)
+
+		for (var i=0; i< player1.nonSelectItems.length; i++) {
+			
+			if(player1.nonSelectItems[i].itemNumber==1){
+				
+				ctxOverOverlay.drawImage(itemsMenu, 0, 64, 64, 64, 110, 214, 64, 64);
+			}else if(player1.nonSelectItems[i].itemNumber==3){
+				
+				ctxOverOverlay.drawImage(itemsMenu, 128, 64, 64, 64, 410, 214, 64, 64);
+			}		
+		}
 		// ctxMenu.clearRect(170,30,46, 46);
 		
 		if(menuCount<20){
@@ -1409,28 +1476,43 @@ menu.prototype.draw = function () {
 			menuCount=20;
 
 		}
+
+
 			
 	}
 
-
-	
-	///make this a canvas-large bg continuous drawing
-	for(var i=0; i<roomNumberTilesX; i++){
-
-
-		ctxMenu.drawImage(itemSprite, 100, 400,4, 4, 0+(i*tileDiameter), 0, tileDiameter, tileDiameter);	
 		
 		
-	}
-			var shifto=0;
-	
-	ctxMenuOverOver.clearRect(360,0, 400, 300);
+	// }
+	var shifto=0;
+
+	ctxMenuOver.clearRect(360,0, 400, 300);
 	for (var i = 0; i<player1.life; i++) {
-		/// tal vez window.innerHeight... no se ve cuando achicas
-		ctxMenuOverOver.drawImage(itemSprite,650,605, 4, 20, 360+shifto,0, 4, 30); ///////////// ctx player so it gets updated
-		shifto+=7;
+
+		ctxMenuOver.fillStyle = "red";					
+		ctxMenuOver.fillRect(360+shifto, 20, 2, 20);
+
+		shifto+=3;
 	};
-}
+
+
+
+}/// END MenuDraw
+
+
+
+
+
+
+
+
+
+
+
+//////^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+
+//////^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+
+
+
 
 
 
@@ -1438,8 +1520,7 @@ menu.prototype.draw = function () {
 
 
 //Menu Highlighter
-function menuH(img, srcX, srcY, w, h, x, y, type, selec) {
-	this.image=img;
+function menuH(srcX, srcY, w, h, x, y, type, selec) {
 	this.srcX=srcX;
 	this.srcY=srcY;
 	this.width = w;
@@ -1462,12 +1543,25 @@ menuH.prototype.draw = function(){
 	
 	//clearCtx(ctxMenu);
 
+	ctxMenuOverOver.font="20px Georgia";
+	ctxMenuOverOver.fillStyle="blue";
 
+	ctxMenuOverOver.fillText(bullets[player1.weaponSelected].current,170,40);
+
+	for(var j=0; j<player1.items.length; j++){
+		if(player1.items[j].itemNumber==player1.itemSelected){
+			//console.log("ITEM SELECTED "+ player1.itemSelected);
+
+			if(typeof player1.items[j] !="undefined"&&player1.items.length>1){
+				ctxMenuOverOver.fillText(player1.items[j].amount ,70,40);
+			}
+
+		}
+	}
 	if(paused){
 
 		
-
-		if(menuTrack==0){
+		if(menuTrack==0&&player1.items.length>1){
 
 			////  SO THIS 2 HAVE TO GO ON A DIFF CANVAS >>> HIDE ON afterPAUSE
 
@@ -1490,7 +1584,7 @@ menuH.prototype.draw = function(){
 					 
 			
 			  
-			  							////   64 + counter to make anim
+			  							////   48 + counter to make anim
 				ctxMenuOverOver.drawImage(menuBorder, mBorderX, 0, 64, 64, 210, 14, 64, 64);
 
 				mBorderCount++;
@@ -1506,30 +1600,27 @@ menuH.prototype.draw = function(){
 
 
 
-	////  HEALTH BAR !!
-
-///////////////////////////////////////////////////////////////////////////////
-	//same with this, even though it is part of Player, it belongs in the menu
-	var shifto=0;
-
-	for (var i = 0; i<player1.life; i++) {
-		/// tal vez window.innerHeight... no se ve cuando achicas
-		ctxMenuOverOver.drawImage(itemSprite,650,605, 4, 20, 360+shifto,0, 4, 30); ///////////// ctx player so it gets updated
-		shifto+=7;
-	};
+}/// END Menu Highlighter Draw
 
 
-}/// Menu Draw
+//////^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+///^)*_+
 
 
 
 
 
-///////   ////    ////////   //////
-//   //  /////    ////     ////
-// //// //  //    / ////// /////
-//     //   //   //     // ////
-//    //    /////// /////   /////
+
+
+
+
+
+										///////   ////    ////////   //////
+										//   //  /////    ////     ////
+										// //// //  //    / ////// /////
+										//     //   //   //     // ////
+										//    //    /////// /////   /////
+
+
 
 
 
@@ -1541,22 +1632,37 @@ function pause(){
 	daMenu.draw();
 
 	if(paused){
-		
+
+		// canvasOverOverlay.style.background="rgba(0,0,0,0.8)";
+		// canvasOverOverlay.style.zIndex=4000;
+
+		player1.speed=0;
 		isPlaying = false;
 
+	//// pause IS BEING SENT TO OUTSIDE FUNCTION SO AS TO RECOURSE IT WHILE notPlaying WHILE STILL LISTENING TO KEYS 
+		/// which trigger different parts of pause(function)
 		requestAnimFrame(pause);
 		
 	}else{		 
-		// if(!itemSelectPressed){ 		
-		// }
+		
+		// canvasOverOverlay.style.background="transparent";
+		// canvasOverOverlay.style.zIndex=6000;
+
 		if(mBorderX>256){
-					oldmBorderCount=0;
-					mBorderCount=0;
-					mBorderX=0;
-				}
+			oldmBorderCount=0;
+			mBorderCount=0;
+			mBorderX=0;
+		}
 		isPlaying = true;
 
+		// player1.direction = "nada";
+		// player1.facing = "nada";
 		//player1.direction =player1.facing;
+
+		///erased nonSelect Items  from screen
+		clearCtx(ctxOverOverlay);
+
+
 		requestAnimFrame(loop);
 	}
 }/// pause
@@ -1564,53 +1670,8 @@ function pause(){
 
 
 
-///l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]
-///
-///             S  E  L  E  C  T      I  N  V  E  N  T  O  R  Y
-///
-///l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]|[]/l]
 
 
-function selecto(){
-	////  MAKE SO WHEN A GUNTYPE FIRSTPICK >> GOES AND SELECT IT AND DRAWS IT IN MENU AS CURRENT
-	if(menuTrack==0){
-
-		//if not true already..
-		menuH_items.isSelected=true;
-
-
-		///loop row =>> loop player1.items...
-		for(var i=0; i<player1.items.length-1; i++){
-			if(itemRow==i){
-				player1.itemSelected=i+1;
-				//console.log(player1.items[i+1].itemNumber);
-				menuH_items.rowSelec=i;
-			}
-		}
-
-		menuH_items.draw();
-
-	/// ELSE if .... gunSelectPressed
-	}else if(menuTrack==1){
-
-		/// IF menuTrack==0
-
-		//if not true already..
-		menuH_guns.isSelected=true;
-		//console.log("GGeeee"+player1.guns.length);
-		for(var i=0; i<player1.guns.length; i++){
-					
-			if(gunRow==i){	
-				//console.log("A VER A VER "+player1.guns[i+1].itemNumber);
-				//player1.gunSelected=player1.guns[i+1].itemNumber;
-				player1.weaponSelected=player1.guns[i].itemNumber;
-				menuH_guns.rowSelec=i;
-			}
-		}
-		/// ELSE if menuTrack ==1 .... gunSelectPressed
-		menuH_guns.draw();
-	}
-}/// selecto
 
 
 
@@ -1618,10 +1679,6 @@ function selecto(){
 
 //||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\
 //||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||\\||//||
-
-
-
-
 
 
 
@@ -1639,6 +1696,7 @@ function selecto(){
 
 
 
+////                                                                                      O B S T A C L E S
 function Obstacle(x, y, w, h, type, id, active, timer, openClosed) {
 	this.drawX = x;
 	this.drawY = y;
@@ -1656,7 +1714,8 @@ function Obstacle(x, y, w, h, type, id, active, timer, openClosed) {
 	this.isActive = active;
 }
 
-////  Area type door?
+
+////                                                                                           A R E A S
 function Area(x, y, w, h, n, type, id, doorTo, column, row, roomTo,  blocked, n2) {
 	this.drawX = x;
 	this.drawY = y;
@@ -1683,6 +1742,7 @@ function Area(x, y, w, h, n, type, id, doorTo, column, row, roomTo,  blocked, n2
 
 
 
+
 	
    
 ///////   |||||\\\\  |||||\\\\  ||\ |\ /\         //////    ///////    ////   |||||\\\\
@@ -1693,20 +1753,32 @@ function Area(x, y, w, h, n, type, id, doorTo, column, row, roomTo,  blocked, n2
 
 
 
+///Global Sprites
+var imgPlayer = new Image();
+	imgPlayer.src = "images/playerSpriteBig.png";
+
+var imgBullets = new Image();
+	imgBullets.src = "images/bullets.png";   
+
+var itemsMenu = new Image();
+	itemsMenu.src = "images/itemsprite.png";
+
+var weaponS = new Image();
+	weaponS.src = "images/weaponsprites.png";
+
+var menuBorder = new Image();
+	menuBorder.src = "images/menuhighlight2.png";
 
 
 
 
 function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, firstDraw, level){
 
-	var img;
+	var img = new Image();
+	img.src = "images/spritesBg2.png";
 
-
-
-
-
-	img = new Image();
-	img.src = "images/spritesBg.png";
+	anim = new Image();
+	anim.src = "images/spritesAnim.png";
 
 	doors = new Image();
 	doors.src = "images/door-over-sprites.png";
@@ -1717,41 +1789,13 @@ function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, 
 	edges = new Image();
 	edges.src = "images/edges-sprites.png";
 
-	animEdges = new Image();
-	animEdges.src = "images/anim-edges-sprites.png";
 
-
-	imgSpriteTile1 = new Image();
-	imgSpriteTile1.src = "images/bg.png";    ///spritesBg
-
-
-	imgSpriteTile4 = new Image();
-	imgSpriteTile4.src = "images/sprite.png";
-
-	imgSpriteTile5 = new Image();
-	imgSpriteTile5.src = "images/sprite2.png";
-
-	imgSpriteTile6 = new Image();
-	imgSpriteTile6.src = "images/sprite.png";
-
-
-
-
-	imgSpriteTile3 = new Image();
-	imgSpriteTile3.src = "images/bg.png";
-
-
-	
-
+	// Uncaught SyntaxError: Duplicate parameter name not allowed in this context
 	var newTileIndexX = tileIndexX;
 		
-
-
 	if(currentRoom == "room-1"){
 
-
 		checkTileNumbers("room-1");
-
 
 		roomLengthY= roomNumberTilesY * tileWidthHeight;
 		roomLengthX= roomNumberTilesX * tileWidthHeight;
@@ -1767,12 +1811,10 @@ function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, 
 			var mapObsL1 =  whatRoomMap("room-1L2");
 		}
 
-
 		var mapOverDraw=whatRoomMap("room-1Over");
 
 
-		}else if(currentRoom == "room-2"){
-
+	}else if(currentRoom == "room-2"){
 
 		///seems to be fine having different NumberTiles per room
 		checkTileNumbers("room-2");
@@ -1787,7 +1829,6 @@ function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, 
 
 		var mapObsL1 =  whatRoomMap("room-2");
 
-
 		var mapOverDraw=whatRoomMap("room-2Over");
 
 	}/// if WHAT ROOM
@@ -1799,14 +1840,11 @@ function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, 
 		obstacles =[];
 		areas = [];
 
-
-
 			tilesDefine(shiftX, shiftY, img, area, {mapObsL1}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX);
 
 			//   cuando pisa zona 150 (area transision), roomDraw(transition, level2)  [transition se ve igual que default, pero tiene que seguir siendo eso, asi no vuelve a nivel 1..mientras siga en transition]  
 			//////////////////
 			//////////                         Level 2 se ve exactamente igual, con la diferencia que los blockes que te impedian entrar en level 2 desde abajo, ahora son area3(transition) caminable, y en cambio se corrieron y no te dejan bajar [un ajuste en firstDraw]... Lo demas todo igual
-
 	}else{
 
 		////then on second pass over Tiles is time to actually DRAW them
@@ -1815,13 +1853,11 @@ function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, 
 		/// areaTrigger: the inside-area they belong to (at which area they will show their second sprite-hook)
 		///	   those that say: "all" never show a "second sprite-hook" and simply go black when at any of these areas
 
-
-		 tilesOverlayDraw(shiftX, shiftY, img, area, {mapOverDraw}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX, {t:100, areaTrigger:"all"}, {t:101, areaTrigger:"all"}, {t:110, areaTrigger:"all"} ,{t:105, areaTrigger:"all"} ,{t:108, areaTrigger:"all"},{t:120, areaTrigger:"all"}, {t:130, areaTrigger:"all"} ,{t:222, areaTrigger:"all"}, {t:214, areaTrigger:"all"}, {t:218, areaTrigger:"all"}, {t:219, areaTrigger:"uno"}, {t:227, areaTrigger:"uno"}, {t:232, areaTrigger:"uno"}, {t:250, areaTrigger:"uno"}, {t:710, areaTrigger:"uno"}, {t:708, areaTrigger:"dos"}, {t:711, areaTrigger:"uno"}, {t:714, areaTrigger:"uno"}, {t:709, areaTrigger:"dos"}, {t:400, areaTrigger:"uno"}, {t:401, areaTrigger:"uno"},{t:402, areaTrigger:"uno"},{t:500, areaTrigger:"uno"}, {t:502, areaTrigger:"uno"},{t:503, areaTrigger:"uno"}, { t:668, areaTrigger:"uno"}, {t:350, areaTrigger:"uno"}, {t:301, areaTrigger:"uno"}, {t:310, areaTrigger:"uno"}, {t:450, areaTrigger:"uno"} ); 
+		 tilesOverlayDraw(shiftX, shiftY, img, area, {mapOverDraw}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX, {t:100, areaTrigger:"all"}, {t:101, areaTrigger:"all"}, {t:110, areaTrigger:"all"},{t:105, areaTrigger:"all"},{t:108, areaTrigger:"all"},{t:107, areaTrigger:"all"},{t:110, areaTrigger:"all"},{t:111, areaTrigger:"all"},{t:112, areaTrigger:"all"},{t:113, areaTrigger:"all"},{t:114, areaTrigger:"all"},{t:160, areaTrigger:"all"}, {t:161, areaTrigger:"all"},{t:162, areaTrigger:"all"},{t:166, areaTrigger:"all"} ,{t:167, areaTrigger:"all"} ,{t:163, areaTrigger:"all"},{t:164, areaTrigger:"all"},{t:165, areaTrigger:"all"},{t:170, areaTrigger:"all"}, {t:171, areaTrigger:"all"} ,{t:222, areaTrigger:"all"}, {t:214, areaTrigger:"all"}, {t:218, areaTrigger:"all"}, {t:219, areaTrigger:"uno"}, {t:227, areaTrigger:"uno"}, {t:232, areaTrigger:"uno"}, {t:250, areaTrigger:"uno"}, {t:710, areaTrigger:"uno"}, {t:708, areaTrigger:"dos"}, {t:711, areaTrigger:"uno"}, {t:714, areaTrigger:"uno"}, {t:709, areaTrigger:"dos"}, {t:400, areaTrigger:"uno"}, {t:401, areaTrigger:"uno"},{t:402, areaTrigger:"uno"},{t:500, areaTrigger:"uno"}, {t:502, areaTrigger:"uno"},{t:503, areaTrigger:"uno"}, { t:668, areaTrigger:"uno"}, {t:350, areaTrigger:"all"}, {t:301, areaTrigger:"uno"}, {t:310, areaTrigger:"uno"}, {t:450, areaTrigger:"uno"} ); 
 		 
 	}/// if first pass (define) or second+ (draw)
 	
 }/// roomDraw
-
 
 
 
@@ -1839,261 +1875,176 @@ function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, 
 
 
 
-
 var inAct=false;
 
 /// tilesDefine - level2  >>> this 2 defineLevel 1-2 functions >> they define what is what>>>  later, tilesOverlayDraw actually DRAWS the tiles you see on the screen
 
 function tilesDefine(newShiftX, newShiftY, img, area, {mapObsL1}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX){
 
-
-
 	inAct=false;
-//// cuidado con los ID de las puertas... si son iguales puede haber problemas
-			
-		for(var i =0; i<roomNumberTilesY; i++){
-			for(var e=0; e<roomNumberTilesX; e++){
+		
+	/// Aqui se llenan los arrays de areas[] y obstacles[]
+	for(var i =0; i<roomNumberTilesY; i++){
+		for(var e=0; e<roomNumberTilesX; e++){
 
+			if(mapObsL1[tileMapIndex].toString().substring(0,1)==1){ ///////// area (default)
 
-					if(mapObsL1[tileMapIndex].toString().substring(0,1)==1){ ///////// area (default)
+				if(mapObsL1[tileMapIndex]==190){ /////////  TRANSITION area
+					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "transition"));
+				}else if(mapObsL1[tileMapIndex]==160){ // & maybe many other >> diff types/colors of water
+					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default", null, null, null, null, null, null, null, "water"));
 
-						if(mapObsL1[tileMapIndex]==150){ /////////  doorTOout
+				/// end if tile 160
+				}else if(mapObsL1[tileMapIndex]==166){ /////////  doorTOout
 
-							areas.push(
-								new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "transition")
-								/////////////////////////////           PLUS:  TO WHAT DOOR IN WHAT ROOM
-							);
-						}else if(mapObsL1[tileMapIndex]>=120&&mapObsL1[tileMapIndex]<130){ /////////  doorTOout
+					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default", null, null, null, null, null, null, null, "deep-water"));
+					
+					obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed"));
 
-							areas.push(
-								new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default", null, null, null, null, null, null, null, "water")
-								/////////////////////////////           PLUS:  TO WHAT DOOR IN WHAT ROOM
-							);
-						
-							
-						}else if(mapObsL1[tileMapIndex]>=130&&mapObsL1[tileMapIndex]<150){ /////////  doorTOout
+				/// end if tile 166
+				}else if(mapObsL1[tileMapIndex]==170){ 
+					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default", null, null, null, null, null, null, null, "orange-lava"));
 
-							areas.push(
-								new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default", null, null, null, null, null, null, null, "deep-water")
-								/////////////////////////////           PLUS:  TO WHAT DOOR IN WHAT ROOM
-							);
+				/// end if tile 160
+				}else if(mapObsL1[tileMapIndex]==171){ 
 
-							
+					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default", null, null, null, null, null, null, null, "red-lava"));
 
-							obstacles.push(
-								new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed")
-							);
+				/// end if tile 170
+				}else{
+					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default"));
+				}
 
-						
-						}else{
-							areas.push(
-								new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default")
-							);
+			/// if mapObsL1[tileMapIndex] ==1...	 
+			}else if(mapObsL1[tileMapIndex]>=200&&mapObsL1[tileMapIndex]<249){ ///////// obstacle out
 
+				//NORMAL OBSACLES
+				obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", mapObsL1[tileMapIndex], "active"));
 
-						}
+			}else if(mapObsL1[tileMapIndex]>=250&&mapObsL1[tileMapIndex]<275){ ///////// obstacle in area
+					 
+				obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", mapObsL1[tileMapIndex], "active"));			
 
-					   
-					}else if(mapObsL1[tileMapIndex]>=200&&mapObsL1[tileMapIndex]<249){ ///////// obstacle out
+			//// AREAS	
+			}else if(mapObsL1[tileMapIndex].toString().substring(0,1)==7&&mapObsL1[tileMapIndex]!=708&&mapObsL1[tileMapIndex]!=709){ ///////// area 1
 
-						
-						obstacles.push(
-							new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", mapObsL1[tileMapIndex], "active")
-						);
-					}else if(mapObsL1[tileMapIndex].toString().substring(0,1)==7&&mapObsL1[tileMapIndex]!=708&&mapObsL1[tileMapIndex]!=709){ ///////// area 1
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno"));
+			}else if(mapObsL1[tileMapIndex]==708){ ///////// area 1
 
 					 
-						areas.push(
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno")
-						);
-					}else if(mapObsL1[tileMapIndex]==708){ ///////// area 1
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "dos"));
+			}else if(mapObsL1[tileMapIndex]==709){ ///////// area 1
 
 					 
-						areas.push(
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "dos")
-						);
-					}else if(mapObsL1[tileMapIndex]==709){ ///////// area 1
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "dos"));
 
-					 
-						areas.push(
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "dos")
-						);
-					}else if(mapObsL1[tileMapIndex].toString().substring(0,1)==4){ ///////// door in area
-						areas.push(
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno")
-						);
+
+					//// INSIDE DOORS
+			}else if(mapObsL1[tileMapIndex].toString().substring(0,1)==4){ ///////// door in area
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno"));
 						
-						if(inActive.length==0){
-							obstacles.push(
-								new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed")//// ID has to be = to the tileNumber
-								);
-						}else{
+				if(inActive.length==0){
+					obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed"));
+				}else{
+					///WHATS HAPPENING:
+					/// inAct keeps track of whether this Tile's number has had any match within the inactive Obstacles.
+					// if at any poin it did, then doesn't matter what happens, inAct is true and the obstacle is not (this way it waits for the whole inActive-obs Array to finish before deciding to draw or not)
 
-							///WHATS HAPPENING:
-							/// inAct keeps track of whether this Tile's number has had any match within the inactive Obstacles.
-							// if at any poin it did, then doesn't matter what happens, inAct is true and the obstacle is not (this way it waits for the whole inActive-obs Array to finish befire deciding to draw or not)
+					// repeat same for breakableObstacles
+					console.log(inAct);
 
-							// repeat same for breakableObstacles
-							console.log(inAct);
-
-							for (var a = 0; a < inActive.length; a++) {
-								if(inActive[a]==mapObsL1[tileMapIndex]){
-									inAct=true;
+					for (var a = 0; a < inActive.length; a++) {
+						if(inActive[a]==mapObsL1[tileMapIndex]){
+							inAct=true;
 									
-								}else if(inActive[a]!=mapObsL1[tileMapIndex]){
-									if(!inAct){
-										inAct=false;
-									}
+						}else if(inActive[a]!=mapObsL1[tileMapIndex]){
+							if(!inAct){
+								inAct=false;
+							}
 									 
-								}
-							}
-
-							if(inAct){
-								obstacles.push(
-									new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "inActive", 30, "closed")//// ID has to be = to the tileNumber
-									);
-									
-							}else{
-								obstacles.push(
-									new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed")//// ID has to be = to the tileNumber
-									);
-									
-							}
-
 						}
+					}
 
-						inAct=false;
+					if(inAct){
+						obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "inActive", 30, "closed"));	
+					}else{
+						obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed"));		
+					}
+				}// if 4 Active
+
+				inAct=false;
 						
-					}else if(mapObsL1[tileMapIndex].toString().substring(0,1)==3){ ///////// door out
+
+					//// OUTSIDE DOORS	
+			}else if(mapObsL1[tileMapIndex].toString().substring(0,1)==3){ ///////// door out
 
 						/// has to also be an area >> when opened >> so changes from inside room to outside
-						areas.push(
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default")
-						);
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default"));
 					 
-					    if(inActive.length==0){
-							obstacles.push(
-								new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed")//// ID has to be = to the tileNumber
-								);
+					  if(inActive.length==0){
+							obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed"));
 
-						}else{
+				}else{
 
-							for (var a = 0; a < inActive.length; a++) {
-								if(inActive[a]==mapObsL1[tileMapIndex]){
-									inAct=true;
-									
-								}else if(inActive[a]!=mapObsL1[tileMapIndex]){
-									if(!inAct){
-										inAct=false;
-									}
-									 
-								}
-							}
-
-							if(inAct){
-								obstacles.push(
-									new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "inActive", 30, "closed")//// ID has to be = to the tileNumber
-									);
-									
-							}else{
-								obstacles.push(
-									new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed")//// ID has to be = to the tileNumber
-									);
-									
-							}
-
+					for (var a = 0; a < inActive.length; a++) {
+						if(inActive[a]==mapObsL1[tileMapIndex]){
+							inAct=true;	
+						}else if(inActive[a]!=mapObsL1[tileMapIndex]){
+							if(!inAct){
+								inAct=false;
+							} 
 						}
-
-						inAct=false;
-
-
-
-
-
-					}else if(mapObsL1[tileMapIndex]>=250&&mapObsL1[tileMapIndex]<275){ ///////// obstacle in area
-
-					 
-						obstacles.push(
-							new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", mapObsL1[tileMapIndex], "active")
-						);
-					}else if(mapObsL1[tileMapIndex]==668){ ///////// doorTO in area
-
-					 
-						areas.push(////////////////////////////////    //  IMPORTANT!!!  after "door"=.n >> 888 = id, 885, dooTo >>> door is going to
-										/////// now here below, this room it is going to (888)>> 888 tile has to be given it's 885 id so dootTo here MATCHES!!
-										///first is ID of this door, then ID doorItIsGoinggTo
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno", "door", 668, 501, tileIndexX, tileIndexY,"room-2")
-						);
-					}else if(mapObsL1[tileMapIndex]==669){ ///////// doorTO in area
-
-					 
-						areas.push(////////////////////////////////    //  IMPORTANT!!!  after "door"=.n >> 888 = id, 885, dooTo >>> door is going to
-										/////// now here below, this room it is going to (888)>> 888 tile has to be given it's 885 id so dootTo here MATCHES!!
-										///first is ID of this door, then ID doorItIsGoinggTo
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 669, 668, tileIndexX, tileIndexY,"room-1")
-						);
-					}else if(mapObsL1[tileMapIndex]==503){ ///////// doorTO in area
-
-					 
-						areas.push(
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 503, 503, tileIndexX, tileIndexY, "room-1")
-						);
-					}else if(mapObsL1[tileMapIndex]==500){ /////////  doorTOout
-
-					 
-						areas.push(
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 500, 500,tileIndexX, tileIndexY,  "room-2",)
-							/////////////////////////////           PLUS:  TO WHAT DOOR IN WHAT ROOM
-						);
-					}else if(mapObsL1[tileMapIndex]==501){ /////////  doorTOout
-
-					 
-						areas.push(
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 501, 668,tileIndexX, tileIndexY,  "room-1",)
-							/////////////////////////////           PLUS:  TO WHAT DOOR IN WHAT ROOM
-						);
-					}else if(mapObsL1[tileMapIndex]==502){ /////////  doorTOout
-
-					 
-						areas.push(
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 502, 501,tileIndexX, tileIndexY,  "room-2",)
-							/////////////////////////////           PLUS:  TO WHAT DOOR IN WHAT ROOM
-						);
-					}else if(mapObsL1[tileMapIndex]==708){ ///////// doorTO in area
-
-					 
-						areas.push(
-							new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "dos")
-						);
 					}
-					/////////////    ALSO THERES GOTTA BE OBSTACLES IN/OUT  THAT LOOK LIKE SOMETHING ELSE (SO DIFF NUMBER)
-					///////                                         OR SOMETHING ELSES (IN/OUT) THAT LOK LIKE OBSTACLES
 
-					////
-					//                      NUMBERS ARE TOO FEW, need to RE-MAP  with LETTERS!!!! 
-					///
+					if(inAct){
+						obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "inActive", 30, "closed")//// ID has to be = to the tileNumber
+						);			
+					}else{
+						obstacles.push(
+						new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed"));	
+					}
+				}// if 3  Active
+
+				inAct=false;
 
 
-				 ///// IF OTHER NUMBER >>>>  AREA type DOOR-to-other room (inArea)  >> sprite: area/roof vs door
-
-				///// IF OTHER NUMBER >>>>  AREA type DOOR-to-other room (outArea)  >>  door vs blackened (or whatever outside of area looks like)
-
+			///////DOORS TO OTHER ROOMS
+			}else if(mapObsL1[tileMapIndex]==668){ ///////// doorTO in area
+					 
+				areas.push(////////////////////////////////    //  IMPORTANT!!!  after "door"=.n >> 888 = id, 885, dooTo >>> door is going to
+										/////// now here below, this room it is going to (888)>> 888 tile has to be given it's 885 id so dootTo here MATCHES!!
+										///first is ID of this door, then ID doorItIsGoinggTo
+				new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno", "door", 668, 501, tileIndexX, tileIndexY,"room-2"));
+			}else if(mapObsL1[tileMapIndex]==669){ ///////// doorTO in area
+					 
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 669, 668, tileIndexX, tileIndexY,"room-1"));
+			}else if(mapObsL1[tileMapIndex]==503){ ///////// doorTO in area
+					 
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 503, 503, tileIndexX, tileIndexY, "room-1"));
+			}else if(mapObsL1[tileMapIndex]==500){ /////////  doorTOout
+					 
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 500, 500,tileIndexX, tileIndexY,  "room-2",));
+			}else if(mapObsL1[tileMapIndex]==501){ /////////  doorTOout
+					 
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 501, 668,tileIndexX, tileIndexY,  "room-1",));
+			}else if(mapObsL1[tileMapIndex]==502){ /////////  doorTOout
+					 
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default", "door", 502, 501,tileIndexX, tileIndexY,  "room-2",));
+			}else if(mapObsL1[tileMapIndex]==708){ ///////// doorTO in area
+				 
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "dos"));
+			}
 
 			tileIndexX+= tileWidthHeight;
 
 			tileMapIndex++;
 
-			}
+		}//roomNumberTilesX
+
 		tileIndexY+=tileWidthHeight;
 		tileIndexX=newTileIndexX;
 
-
-		///////// 3d FX
-		// variance++;
-		// tileWidthHeight+=1;
-		/// not worth the efforst in map translation + calculating diagonals for smoth against the wall moving
-
-		}
+	}//roomNumberTilesY
 
 } /////   tilesDefine  
 
@@ -2105,12 +2056,18 @@ function tilesDefine(newShiftX, newShiftY, img, area, {mapObsL1}, roomNumberTile
 
 
 
+
+
 var areaEdgeX=0;
 
-var areaY=0;
-var areaX=0;
 
-var animX=0;
+/// for flashes and light effects
+var yAnim=0;
+var yyAnim=0;// animated tiles have a slightly diff sprite layout
+/// for animation effects
+var xAnim=0;
+/// for animation effects
+var xAnimCounter=0;
 
 var doorsOpened=[];
 var animC=0;
@@ -2172,74 +2129,56 @@ var aver = false;
 				   ///    //    //////  ////|            /////   //  //    //____\   \||||\
 				   										 ///			  //     \
 
-var tileC=0;
-
-menuDotCount=0
-menuDotOld=0;
 
 function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX){
 
-	//console.log(currentArea);
-
-	
-
+	xAnimCounter++;  /// moves ANIM-frames for the animated tiles
 
 	var doorX=0;
+
 	var doorY=0;
 
+
+
+	
 	var tallerDoor=0;
 
 	//// this will take the tiles sent by  tilesDefineOver after this standard parameters
 	var defaultTiles = [];
-
-	var doorOpenClose;
-	/// j =11>>  11 are the arguments we got in tilesOverlayDraw(). The tiles we want to get come after and we don't know how many they could be.
+	/// j =11>>  11 are the arguments we got in tilesOverlayDraw() - The tiles we want to get come after and we don't know how many they could be...
 	for(var j=0; j < arguments.length; j++){
 		if(j>11){
-			/// after that number (11) we store this SpriteTile coordinate values in an array defaultTiles...
+			///... after the arguments (11) we store this SpriteTile coordinate values in an array defaultTiles...
 			defaultTiles.push(arguments[j]);
 		}
 	}////////////  
 
-	
 
-
-// function drawTiles(){ 
-// since currentArea is being updated every time along with this, a funciton(parameter) is not needed
 
 	var srcX;
 	var srcY;
 
 	var columnsPerRow=0;
-
 	var countingColumns=0;
-
-
 	var columnsPerRow2=0;
-
 	var countingColumns2=0;
 
-
 	var done=false;
-
-	/// menuMap back-ground >> drawn only once, under
+	
+	/// menuMap back-ground >> drawn only once, underneath  >> and probably make some for items/guns
 	ctxMapOverMenu.fillStyle = "#000";					
-	//ctxMapOverMenu.fillRect(1140, 0, 4, 4);
 	ctxMapOverMenu.fillRect(0, 10, 130, 100);
+
 
 	for(var i =0; i<roomNumberTilesY; i++){
 
 		for(var e=0; e<roomNumberTilesX; e++){
 
 
-
 			for(var j=0; j < defaultTiles.length; j++){	
 
 
-
-
 				if(mapOverDraw[tileMapIndex]==defaultTiles[j].t){ 
-
 
 
 					doorCounter=0;
@@ -2248,102 +2187,98 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 		
 						if(mapOverDraw[tileMapIndex]==doorGroupsTotal[u].id){
 
-								doorsFound.push(doorGroupsTotal[u].id);
+							doorsFound.push(doorGroupsTotal[u].id);
 
+							if(doorGroupsTotal[u].n==4||doorGroupsTotal[u].n==8){
+								columnsPerRow=doorGroupsTotal[u].n/2;
 
+								for (var b = 0; b < doorsFound.length; b++){
 
-								if(doorGroupsTotal[u].n==4||doorGroupsTotal[u].n==8){
-									columnsPerRow=doorGroupsTotal[u].n/2;
-
-
-
-									for (var b = 0; b < doorsFound.length; b++){
-
-										if(doorsFound[b]==doorGroupsTotal[u].id){
-											if(doorCounter<doorGroupsTotal[u].n){
-												doorCounter++;
-											}else{
-												doorCounter=0;
-											}
-											
+									if(doorsFound[b]==doorGroupsTotal[u].id){
+										if(doorCounter<doorGroupsTotal[u].n){
+											doorCounter++;
+										}else{
+											doorCounter=0;
 										}
+											
 									}
+								}
 								//console.log(doorCounter);
 
-									if(inArea.inIt){
-										if(doorCounter<=columnsPerRow){
-											srcX=getTileX(defaultTiles[j].t, "door-top");
-											//console.log(doorCounter);
-										}else{
-											srcX=getTileX(defaultTiles[j].t, "door-bottom");
-											//console.log(doorCounter);
-										}
-									}else if(mapOverDraw[tileMapIndex]<450&&!inArea.inIt){
-
-										if(doorCounter<=columnsPerRow){
-											srcX=getTileX(defaultTiles[j].t, "door-top");
-											//console.log(doorCounter);
-										}else{
-											srcX=getTileX(defaultTiles[j].t, "door-bottom");
-											//console.log(doorCounter);
-										}
+								if(inArea.inIt){
+									if(doorCounter<=columnsPerRow){
+										srcX=getTileX(defaultTiles[j].t, "door-top");
+										//console.log(doorCounter);
+									}else{
+										srcX=getTileX(defaultTiles[j].t, "door-bottom");
+										//console.log(doorCounter);
 									}
+								}else if(mapOverDraw[tileMapIndex]<450&&!inArea.inIt){
+
+									if(doorCounter<=columnsPerRow){
+										srcX=getTileX(defaultTiles[j].t, "door-top");
+											//console.log(doorCounter);
+									}else{
+										srcX=getTileX(defaultTiles[j].t, "door-bottom");
+											//console.log(doorCounter);
+									}
+								}
 									
 									/// IF doorGroupsTotal  4 ||8
-								}else if(doorGroupsTotal[u].n==6||doorGroupsTotal[u].n==9){
-									columnsPerRow=doorGroupsTotal[u].n/3;
+							}else if(doorGroupsTotal[u].n==6||doorGroupsTotal[u].n==9){
+								columnsPerRow=doorGroupsTotal[u].n/3;
 
 
 
-									for (var b = 0; b < doorsFound.length; b++){
+								for (var b = 0; b < doorsFound.length; b++){
 
-										if(doorsFound[b]==doorGroupsTotal[u].id){
-											if(doorCounter<doorGroupsTotal[u].n){
-												doorCounter++;
-											}else{
-												doorCounter=0;
-											}
-											
+									if(doorsFound[b]==doorGroupsTotal[u].id){
+										if(doorCounter<doorGroupsTotal[u].n){
+											doorCounter++;
+										}else{
+											doorCounter=0;
 										}
+											
 									}
+								}
 									//console.log(doorCounter);
 
 							
-									if(inArea.inIt&&mapOverDraw[tileMapIndex]>=450){
-										if(doorCounter<=columnsPerRow*2){
-											srcX=getTileX(defaultTiles[j].t, "door-top");
+								if(inArea.inIt&&mapOverDraw[tileMapIndex]>=450){
+									if(doorCounter<=columnsPerRow*2){
+										srcX=getTileX(defaultTiles[j].t, "door-top");
+										//console.log(doorCounter);
+									}else{
+										srcX=getTileX(defaultTiles[j].t, "door-bottom");
 											//console.log(doorCounter);
-										}else{
-											srcX=getTileX(defaultTiles[j].t, "door-bottom");
-											//console.log(doorCounter);
-										}
-									}else if(!inArea.inIt&&mapOverDraw[tileMapIndex]<450){
-
-										if(doorCounter<=columnsPerRow*2){
-											srcX=getTileX(defaultTiles[j].t, "door-top");
-											//console.log(doorCounter);
-										}else{
-											srcX=getTileX(defaultTiles[j].t, "door-bottom");
-											//console.log(doorCounter);
-										}
-									}else if(mapOverDraw[tileMapIndex]<450&&inArea.inIt){
-
-										if(doorCounter<=columnsPerRow*2){
-											srcX=getTileX(defaultTiles[j].t, "a");
-											//console.log(doorCounter);
-										}else{
-											srcX=getTileX(defaultTiles[j].t, "b");
-											//console.log(doorCounter);
-										}
 									}
+								}else if(!inArea.inIt&&mapOverDraw[tileMapIndex]<450){
+
+									if(doorCounter<=columnsPerRow*2){
+										srcX=getTileX(defaultTiles[j].t, "door-top");
+											//console.log(doorCounter);
+									}else{
+										srcX=getTileX(defaultTiles[j].t, "door-bottom");
+											//console.log(doorCounter);
+									}
+								}else if(mapOverDraw[tileMapIndex]<450&&inArea.inIt){
+
+									if(doorCounter<=columnsPerRow*2){
+										srcX=getTileX(defaultTiles[j].t, "a");
+											//console.log(doorCounter);
+									}else{
+										srcX=getTileX(defaultTiles[j].t, "b");
+											//console.log(doorCounter);
+									}
+								}
 									
 									
-								}/// IF doorGroupsTotal 6||9
+							}/// IF doorGroupsTotal 6||9
 
 								
-								done=true;
+							done=true;
 								
-							} // IF mapOverDraw[tileMapIndex] == door ID
+						} // IF mapOverDraw[tileMapIndex] == door ID
 
 
 						if(!done){
@@ -2359,6 +2294,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 								/// tiles INside areas
 								srcX=getTileX(defaultTiles[j].t, "b");
+							}else{
+								srcX=getTileX(defaultTiles[j].t, "c");
 							}
 
 						}///  Tiles draws SET
@@ -2368,42 +2305,69 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 					done=false; // goes back to false to check next Tile (maybe a door, maybe not)
 					
-					
+
+
+					//     	   TILE  
+					//		   SRC
+                    //\\      ///
+				      //\\  ///   	
+			           //////   
+				       //\\\\    
+			          ///  \\\     
+				    ///     \\\\
 
 					//  TILE srcX >> Area-PAIR COMBINATIONS
 					function getTileX(tileID, tileArea){
 	
 						tileBgMap=[
-						{n:100, a:64, b:0}, 
-						{n:120, a:1472, b:0}, 
-						{n:130, a:1662, b:0},
-						{n:101, a:128, b:0},
-						{n:105, a:64, b:0}, 
-						{n:108, a:384, b:512},
-						{n:110, a:64, b:64},
-						{n:214, a:384, b:576},
-						{n:218, a:384, b:512},
-						{n:219, a:384, b:0},
-						{n:222, a:256, b:0},
-						{n:227, a:384, b:576},
-						{n:232, a:256, b:576},
-						{n:250, a:64, b:0},
-						{n:710, a:384, b:448},
-						{n:708, a:384, b:448},
-						{n:709, a:384, b:448},
-						{n:711, a:384, b:448},
-						{n:714, a:256, b:448},
-						{n:400, a:384, b:448},
-						{n:401, a:384, b:448},
-						{n:402, a:384, b:448},
-						{n:403, a:384, b:448},
-						{n:450, a:384, b:64, top:200, bottom:448},
-						{n:301, a:448, b:512, top:192, bottom:128},
-						{n:310, a:448, b:512, top:192, bottom:128},
-						{n:350, a:64, b:64}, 
-						{n:500, a:896, b:0}, 
-						{n:668, a:384, b:1024},
-						{n:503, a:896, b:0}]
+						{n:100, a:48, b:0}, 
+						{n:160, a:0, b:0},    ///anim sprites
+						{n:161, a:0, b:0},    ///anim sprites
+						{n:162, a:0, b:0},    ///anim sprites
+						{n:163, a:0, b:0},    ///anim sprites
+						{n:164, a:0, b:0},    ///anim sprites
+						{n:165, a:0, b:0},    ///anim sprites
+						{n:166, a:144, b:0},   ///anim sprites
+						{n:167, a:144, b:0},   ///anim sprites
+						{n:170, a:288, b:0},    ///anim sprites
+						{n:171, a:432, b:0},   ///anim sprites
+
+						{n:101, a:96, b:0},
+						{n:105, a:48, b:0}, 
+						{n:108, a:288, b:384},
+						{n:107, a:288, b:384},
+
+						{n:110, a:480, b:0},
+						{n:111, a:528, b:0},
+						{n:112, a:576, b:0},
+						{n:113, a:614, b:0},
+						{n:114, a:672, b:0},
+					
+
+						{n:214, a:288, b:432},
+						{n:218, a:288, b:384},
+						{n:219, a:288, b:0, c:0},
+						{n:222, a:192, b:864},
+						{n:227, a:192, b:432, c:0},
+						{n:232, a:192, b:432, c:0},
+						{n:250, a:48, b:0},
+						{n:710, a:288, b:336, c:0},
+						{n:708, a:288, b:336, c:0},
+						{n:709, a:288, b:336, c:0},
+						{n:711, a:288, b:336, c:0},
+						{n:714, a:192, b:336, c:0},
+						{n:400, a:288, b:336, c:0},
+						{n:401, a:288, b:336, c:0},
+						{n:402, a:288, b:336, c:0},
+						{n:403, a:288, b:336, c:0},
+						{n:450, a:288, b:48, c:0, top:48, bottom:240},
+						{n:301, a:336, b:288, top:144, bottom:96},
+						{n:310, a:336, b:288, top:144, bottom:96},
+						{n:350, a:48, b:0, c:0}, 
+						{n:500, a:720, b:0, c:0}, 
+						{n:668, a:288, b:768, c:0},
+						{n:503, a:672, b:0, c:0}
+						]
 
 
 						for(var i = 0; i <tileBgMap.length; i++){
@@ -2412,6 +2376,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 									return tileBgMap[i].a;
 								}else if(tileArea =="b"){
 									return tileBgMap[i].b;
+								}else if(tileArea =="c"){
+									return tileBgMap[i].c;
 								}else if(tileArea =="door-top"){
 									return tileBgMap[i].top;
 								}else if(tileArea =="door-bottom"){
@@ -2422,57 +2388,66 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 						
 					}// FUNC getTileX
 
-			
-					/// TILE src Y  SAME TO ALL <<<<<  this is what is manipulated to control "flashes" and such
+
+					//     TILE  
+					//		SRC
+					//	    \\
+					 ///   \\
+					  ///// 
+					  ///
+					///  
+
+					// TILE src Y  SAME TO ALL <<<<<  this is what is manipulated to control "flashes" and such
 					srcY= 0;
+					yyAnim=0;
+					yAnim=0;
+					if(flash==1){
+						//console.log("FLASH "+flash);
+						yAnim=48;
+						yyAnim=336;
+					}else if(flash==2){
+						//console.log("FLASH "+flash);
+						yAnim=96;
+						yyAnim=672;
+					}
 
 
+					//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	 \\\\\	\\\\	 \\\\\	\\\\	 \\\\\	\\\\	 \\\\\	\\\\	 \\\\\	\\\\	 \\\\\	\\  ////
+					//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+					//\///\\//\  ///////    ///    //  /    ///         //\///\\//\   	 ///\      //////// 
+					///\\\\\\\\  ///       /////  //  /    ///          ///\\\\\\\\     /\\\ \     //   //
+					///\\\\\\\\  /////    /// // //  /    ///           ///\\\\\\\\    ////\ \\    //////
+					//// \/ \\\  ///     ///  ////  /    ///            //// \/ \\\   ////  \\ \   //
+					///    \ \\  //////////   ///  ////////             ///    \ \\  ////    \ \\  //
 
+					// Menu Map here so Tiles have been Defined already (as dependent on them)
 
-			//\///\\//\  ///////    ///    //  /    ///         //\///\\//\   	 ///\      //////// 
-			///\\\\\\\\  ///       /////  //  /    ///          ///\\\\\\\\     /\\\ \     //   //
-			///\\\\\\\\  /////    /// // //  /    ///           ///\\\\\\\\    ////\ \\    //////
-			//// \/ \\\  ///     ///  ////  /    ///            //// \/ \\\   ////  \\ \   //
-			///    \ \\  //////////   ///  ////////             ///    \ \\  ////    \ \\  //
+					//////  gameCounter Global, or else, if placed within here, the dot flickers faster in other Rooms
 
-		
-
-			//////  THE PROBLEM OF THE DOT(counter) GOING FASTER on other Rooms
-			//////						SOLVED BY USING A (universal) COUNTER AT UPDATE!! (gameCounter)
-			   ////	                                                           rather than one on this function
-
+					///flicker FX
 					if(gameCounter<22){
 						//console.log(gameCounter);
 						ctxMapOverMenu.fillStyle = "rgba(255, 120, 160, 1)";
-					
 					}else if(gameCounter>=22&&gameCounter<30){
-						
 						ctxMapOverMenu.fillStyle = "black";
 					}else if(gameCounter>=30){
 						gameCounter=0; /// rinse & repeat	
 					}
 
-					
-
-					////////////  	THIS BELOW IF TILEDIAMTER ==  40......
-
-					ctxMapOverMenu.fillRect(8+newDrawX/12, 20+newDrawY/12, 4, 4);
+					////////////  	THIS BELOW IF TILEDIAMTER ==  48......
+					ctxMapOverMenu.fillRect(10+newDrawX/12, 20+newDrawY/12, 4.8, 4.8);
 
 					if(defaultTiles[j].t.toString().substring(0,1)==1){
 						ctxMapOverMenu.fillStyle = "#0b0020";
-						ctxMapOverMenu.fillRect(8+e*4+shiftX/12, 20+i*4+shiftY/12, 4, 4);
+						ctxMapOverMenu.fillRect(8+e*4+shiftX/12, 20+i*4+shiftY/12, 4.8, 4.8);
 					}else if(defaultTiles[j].t.toString().substring(0,1)==2){
 						ctxMapOverMenu.fillStyle = "#aa001f";
-						ctxMapOverMenu.fillRect(8+e*4+shiftX/12, 20+i*4+shiftY/12, 4, 4);
+						ctxMapOverMenu.fillRect(8+e*4+shiftX/12, 20+i*4+shiftY/12, 4.8, 4.8);
 					}
 
-
-					/////////// or this if == 64
-
+					/////////// OR THIS IF == 64
 					//ctxMapOverMenu.fillRect(25+newDrawX/16, 25+newDrawY/16, 4, 4);
 
 					// if(defaultTiles[j].t.toString().substring(0,1)==1){
@@ -2486,17 +2461,9 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 					///"rgba example
 					//ctxMapOverMenu.fillStyle = "rgba(255, 120, 0, 1)";
 
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
 
-					
-
-
-
-
-					 
 
 
 
@@ -2510,30 +2477,29 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 				    /// 
 
 
+					if(defaultTiles[j].t>=160&&defaultTiles[j].t<190){
 
-					if(defaultTiles[j].t>=120&&defaultTiles[j].t<150){
-
-						if(animX>=0&&animX<5){
-							areaX=0;
+						if(xAnimCounter>=0&&xAnimCounter<5){
+							xAnim=0;
 							areaEdgeX=0;
-						}else if(animX>=5&&animX<10){
-							areaX=64;
-							areaEdgeX=64;
-						}else if(animX>=10&&animX<15){
-							areaX=128;
-							areaEdgeX=128;
-						}else if(animX>=15){
-							areaX=0;
-							animX=0;
+						}else if(xAnimCounter>=5&&xAnimCounter<10){
+							xAnim=48;
+							areaEdgeX=48;
+						}else if(xAnimCounter>=10&&xAnimCounter<15){
+							xAnim=96;
+							areaEdgeX=96;
+						}else if(xAnimCounter>=15){
+							xAnim=0;
+							xAnimCounter=0;
 							areaEdgeX=0;
-							/// animX lies at the bottom of this whole function, so the anim-frame doesn't move until ALL tiles have been set
+							/// xAnimCounter++ >> so the anim-frame doesn't move until ALL tiles have been set
 							/// (otherwise it animates like waterfall, pretty cool too)
-
-							/// TRy to keep a limited amount of tiles being animated!! (or check speed on avg computer)
+						
+						/// TRy to keep a limited amount of tiles being animated!! (or check speed on avg computer)
 						}
 
 					}else{
-						areaX=0; ///// back to ZERO so the other tiles, which aren't this animated one, don't shift
+						xAnim=0; ///// back to ZERO so the other tiles, which aren't this animated one, don't shift
 					}
 
 					/// wrap all this in a function, and call with parameter(CURRENTAREA) to which it loads x or xx...
@@ -2546,18 +2512,18 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 						
 					
 
-						   ////  + AreaX >>>  ANIMATION
+						   ////  + xAnim >>>  ANIMATION
 
 						   /// this is just to prove that you can differentiate within tiles that have same first substring, but different second... so you can pass different images pointing to the SAME SPRITE starting X for all 1s... (ex: diff types of defaultTiles), here you can plus it or whatever to suit more specific differences
 						if(!inArea.inIt){   
 
 
 
-							if(mapOverDraw[tileMapIndex].toString().substring(0,2)>=10&&mapOverDraw[tileMapIndex].toString().substring(0,2)<15){
+							if(mapOverDraw[tileMapIndex].toString().substring(0,2)>=10&&mapOverDraw[tileMapIndex].toString().substring(0,2)<16){
 
-								ctxBg.drawImage(img, srcX+areaX, srcY+areaY, 64, 64, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+								ctxBg.drawImage(img, srcX, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
 
-
+								//ctxBg.drawImage(anim, srcX+xAnim, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
 
 								if(mapOverDraw[tileMapIndex+1]>=400&&mapOverDraw[tileMapIndex+1]<450||mapOverDraw[tileMapIndex-1]>=400&&mapOverDraw[tileMapIndex-1]<450){
 
@@ -2568,7 +2534,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 										   
 										   if(doorOpening[q].id==mapOverDraw[tileMapIndex+1]){
 
-												doorY=0;714
+												doorY=0;
 
 										    }else {
 											 	doorY=60;   
@@ -2662,23 +2628,23 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 												}
 
 
-												tallerDoor=0;
-											}else{
-												if(!doorOpened){
-													doorOpened=false;
-												}
-											}
-			
-										}/// FOR doorOpening.length
+														tallerDoor=0;
+													}else{
+														if(!doorOpened){
+															doorOpened=false;
+														}
+													}
+					
+												}/// FOR doorOpening.length
 
 
-									//// IF DOORS NOT OPENED 
-									}/////////////////////////// Same with doorClosing!!!!!!!!!!!!!!
+											//// IF DOORS NOT OPENED 
+											}/////////////////////////// Same with doorClosing!!!!!!!!!!!!!!
 
 
 
-								}
-							}
+										}
+									}
 
 
 
@@ -2733,18 +2699,23 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 
 							// END if >=10<15    
-							}else if(mapOverDraw[tileMapIndex].toString().substring(0,2)==15){
-								ctxBg.drawImage(img, srcX+areaX, srcY+areaY, 64, 64, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
-							}else if(mapOverDraw[tileMapIndex].toString().substring(1,3)==90){ /////  Numeros reservados para Overlays
+							}else if(mapOverDraw[tileMapIndex].toString().substring(0,2)>=16&&mapOverDraw[tileMapIndex].toString().substring(0,2)<19){
 
+								if(mapOverDraw[tileMapIndex]==161){
+									srcY=48;
+								}else if(mapOverDraw[tileMapIndex]==162){
+									srcY=96;
+								}else if(mapOverDraw[tileMapIndex]==163){
+									srcY=144;
+								}else if(mapOverDraw[tileMapIndex]==164){
+									srcY=192;
+								}else if(mapOverDraw[tileMapIndex]==167){
+									srcY=240;
+								}
 
+								ctxBg.drawImage(anim, srcX+xAnim, srcY+yyAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
 
-								ctxBg.drawImage(img, srcX+areaX, srcY+areaY, 64, 64, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);  
-								
-									  
-							/// >>>>  HERE could go  EDGES -UNDER - PLAYER 
-
-							} 
+							}
 
 						}else{//// else if  inArea
 
@@ -2752,10 +2723,10 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 							///HERE GOES INNER ANIMATIONS!!!!!!!!!!!!!
 							// this right here below is an animation going when inside Area... no probs
-							///ctxBg.drawImage(img, srcX+areaX, srcY+areaY, 64, 64, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+							///ctxBg.drawImage(img, srcX+xAnim, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
 
 							
-							ctxBg.drawImage(img, srcX, srcY, 64, 64, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+							ctxBg.drawImage(img, srcX, srcY, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 						}
 
 
@@ -2773,7 +2744,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 						getDoor(mapOverDraw[tileMapIndex]);
 
 
-						// ctxBg.drawImage(img, srcX+areaX, srcY+areaY, 64, 64, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+						// ctxBg.drawImage(img, srcX+xAnim, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 
 
 					/// how do I separate this so it draws the right srcX for each part of the door............
@@ -2781,7 +2752,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 
 								
-						ctxBg.drawImage(img, srcX+areaX, srcY+areaY, 64, 64, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+						ctxBg.drawImage(img, srcX+xAnim, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 						
 						
 					
@@ -2816,7 +2787,6 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 							doorsChecked.push(id);	
 
-
 						}/// getDoor FUNC
 
 
@@ -2826,11 +2796,11 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 
 
-					 ///////   ||||||  ||||||  ||////   /////        //           ///////  |||  || || //|  ||
-					 //   ///  ||||||  ||||||  ||  //  ///           //          ///    | |||| || || // | ||/
-					 //  ///   ||||||  ||||||  ||///   //////     ////////      ///     ||  |||| || //  |||//
-					 //////    ||||||  ||||||  ||  \\     ///        //        //       |          //   |  //
-					 ////                              /////         //       //                           //
+					 ///////   ||||||  ||||||  ||////   /////                ///////  |||  || || //|  ||
+					 //   ///  ||||||  ||||||  ||  //  ///                  ///    | |||| || || // | ||/
+					 //  ///   ||||||  ||||||  ||///   //////              ///     ||  |||| || //  |||//
+					 //////    ||||||  ||||||  ||  \\     ///             //       |          //   |  //
+					 ////                              /////             //                           //
 
 							///  doorOpening needs to keep track of its own doorAnimC and X...
 							//                     so can open 2+ at the same time >> independent anim				
@@ -2866,24 +2836,31 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 										//alert(doorOpening[q].animC);
 									}	
 
+									///2,4,6,7(8)
+									//   vs
+									/// 3,6,9,11(12)
+
+						/////  MAKE VAR =0 >> that adds +2 or 3 depending if door multiples of 2 or 3 (6,4 vs 9,12)
+							///  and =var to put on this left-hand side
+
+						//otherwise looks weird as it either skips on square or jumps before doing all 3
 									
-									
-									if(doorOpening[q].animC>0&&doorOpening[q].animC<=3){
+									if(doorOpening[q].animC>0&&doorOpening[q].animC<=2){
 
 									
 										doorOpening[q].animX=0;
-									}else if(doorOpening[q].animC>3&&doorOpening[q].animC<=6){
+									}else if(doorOpening[q].animC>2&&doorOpening[q].animC<=4){
 										
 										doorOpening[q].animX=40;
-									}else if(doorOpening[q].animC>6&&doorOpening[q].animC<=9){
+									}else if(doorOpening[q].animC>4&&doorOpening[q].animC<=6){
 										
 										doorOpening[q].animX=80;
 											
-									}else if(doorOpening[q].animC>9&&doorOpening[q].animC<=11){
+									}else if(doorOpening[q].animC>6&&doorOpening[q].animC<=7){
 										
 										doorOpening[q].animX=120;
 											
-									}else if(doorOpening[q].animC>11){
+									}else if(doorOpening[q].animC>7){
 
 										if(calculateDoors("howmany")==4||calculateDoors("howmany")==8){		
 											if(doorOpening[q].lap==0){
@@ -2926,8 +2903,10 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 										doorX=0;
 										doorY=120;
 										tallerDoor=20;
-
-										ctxOverlay.drawImage(doors, doorX+doorOpening[q].animX, doorY, 40,40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+									
+										if(!inArea.inIt){
+											ctxOverlay.drawImage(doors, doorX+doorOpening[q].animX, doorY, 40,40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+										}
 
 									} else if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<450){
 											
@@ -2981,16 +2960,15 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 												}
 											}else if(doorOpening[q].lap==2){
 												if(calculateDoors("opening")=="bottom"||calculateDoors("opening")=="mid"){ 
+
 													doorOpening[q].animX = 120;
 												}
 
 											}else if(doorOpening[q].lap==3){
 											
 													doorOpening[q].animX = 120;
-												
 											} 
 										}/// howmany == 9||6
-												
 												
 										ctxOverlay.drawImage(doors, doorX+doorOpening[q].animX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
 
@@ -3025,11 +3003,17 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 											//console.log("nueve "+calculateDoors("howmany"));
 											if(doorOpening[q].lap==0){
 												if(calculateDoors("opening")=="top"||calculateDoors("opening")=="mid"){ 
-													doorOpening[q].animX = 0;
+													doorY+=40;
+													calculateDoors("static");
+													/// AND ALSO CHANGE  Y   
 												}
 											}else if(doorOpening[q].lap==1){
 												if(calculateDoors("opening")=="top"){ 
-													doorOpening[q].animX = 0;
+													doorY+=40;
+													calculateDoors("static");
+													/// AND ALSO CHANGE  Y   
+													/// so as to first repeat a slide, but not showing bg yet
+
 												}else if(calculateDoors("opening")=="bottom"){ 
 													doorOpening[q].animX = 120;
 												}
@@ -3085,7 +3069,12 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 										doorX=0;
 										doorY=120;
 										tallerDoor=20;
-										ctxOverlay.drawImage(doors, doorX, doorY, 40,40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);	
+										
+
+									if(!inArea.inIt){
+										ctxBg.drawImage(doors, doorX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+									}
+
 
 									} else if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<450){
 											
@@ -3145,7 +3134,10 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 								doorY=120;
 								tallerDoor=20;
 
-								ctxBg.drawImage(doors, doorX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+								if(!inArea.inIt){
+									ctxBg.drawImage(doors, doorX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+								}
+								
 
 							} else if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<450){
 											
@@ -3188,7 +3180,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 					}else{ /// other tiles
 
-						ctxBg.drawImage(img, srcX+areaX, srcY+areaY, 64, 64, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+						ctxBg.drawImage(img, srcX+xAnim, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 		  
 					}/// else... everything else
 
@@ -3202,18 +3194,18 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 									//console.log(doorClosing.length);
 									//alert(doorClosing[q].animC);
-							if(doorClosing[q].lap<=3){	
-								if(doorClosing[q].animC>0&&doorClosing[q].animC<=3){
+							if(doorClosing[q].lap<=4){	
+								if(doorClosing[q].animC>0&&doorClosing[q].animC<=4){
 								
 									doorXanimClose=120;
 
-								}else if(doorClosing[q].animC>3&&doorClosing[q].animC<=6){
+								}else if(doorClosing[q].animC>4&&doorClosing[q].animC<=8){
 									doorXanimClose=80;
 									//console.log("DOS" );
-								}else if(doorClosing[q].animC>6&&doorClosing[q].animC<=9){
+								}else if(doorClosing[q].animC>8&&doorClosing[q].animC<=12){
 									doorXanimClose=40;
 									//console.log("TRES" +doorClosing[q].lap);
-								}else if(doorClosing[q].animC>9){
+								}else if(doorClosing[q].animC>12){
 									doorXanimClose=0;
 									
 
@@ -3262,8 +3254,12 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 											doorY=120;
 											tallerDoor=20;
 
+										if(!inArea.inIt){
 											ctxBg.drawImage(doors, doorX+doorXAnim, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
-											tallerDoor=0;
+											
+										}
+										tallerDoor=0;
+											
 										}else if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<450){
 
 											doorX=200;
@@ -3310,7 +3306,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 													//console.log("why 0");
 												}else if(doorClosing[q].lap==1){
 													if(calculateDoors("opening")=="top"){ 
-														doorXanimClose = 0;
+														doorY+=40;
+													calculateDoors("static");
 													}if(calculateDoors("opening")=="mid"){ 
 														if(!aver){
 															doorXanimClose = 120;
@@ -3323,7 +3320,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 													//console.log("PUTAL LAWE");
 												}else if(doorClosing[q].lap==2){
 													if(calculateDoors("opening")=="top"||calculateDoors("opening")=="mid"){ 
-														doorXanimClose = 0;
+														doorY+=40;
+													calculateDoors("static");
 														//console.log("PUTAL LAWE");
 
 													}
@@ -3357,7 +3355,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 													}
 												}else if(doorClosing[q].lap==1){
 													if(calculateDoors("opening")=="top"){ 
-														doorXanimClose = 0;
+														doorY+=40;
+													calculateDoors("static");
 													}
 												}else if(doorClosing[q].lap==2){
 													
@@ -3375,7 +3374,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 													//console.log("why 0");
 												}else if(doorClosing[q].lap==1){
 													if(calculateDoors("opening")=="top"){ 
-														doorXanimClose = 0;
+														doorY+=40;
+													calculateDoors("static");
 													}if(calculateDoors("opening")=="mid"){ 
 														if(!aver){
 															doorXanimClose = 120;
@@ -3388,7 +3388,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 													//console.log("PUTAL LAWE");
 												}else if(doorClosing[q].lap==2){
 													if(calculateDoors("opening")=="top"||calculateDoors("opening")=="mid"){ 
-														doorXanimClose = 0;
+														doorY+=40;
+													calculateDoors("static");
 														//console.log("PUTAL LAWE");
 
 													}
@@ -3396,7 +3397,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 												}else if(doorClosing[q].lap==3){
 													
 													doorXanimClose = 0;
-														aver=false;
+													aver=false;
 												} 
 											}/// howmany == 9||6
 
@@ -3439,8 +3440,6 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 					}/// if doorClosing.length>0		
 
-																													
-													
 
 
 
@@ -3468,7 +3467,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 							if(!inArea.inIt){
 							/// 40 is the width of the portion to be drawn from the sprite (actual width in the sprite)
-							ctxOverlay.drawImage(img, srcX, srcY, 64, 64, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+							ctxOverlay.drawImage(img, srcX, srcY, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 							}
 								
 						}  
@@ -3477,10 +3476,10 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 
 						////  this ones always over player
-						if(mapOverDraw[tileMapIndex]==108){   /// y menos de la mitad
+						if(mapOverDraw[tileMapIndex]==108||mapOverDraw[tileMapIndex]==107||mapOverDraw[tileMapIndex]==227){   /// y menos de la mitad
 					   
 							/// 33 is the width of the portion to be drawn from the sprite (actual width in the sprite)
-							ctxOverlay.drawImage(img, srcX, srcY+areaY, 64, 64, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+							ctxOverlay.drawImage(img, srcX, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 								
 						}    
 						/// 301 when inside and notOpen
@@ -3493,7 +3492,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 							if(!inArea.inIt){
 							/// 40 is the width of the portion to be drawn from the sprite (actual width in the sprite)
-							ctxOverlay.drawImage(img, 1152,0, 64, 64, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+							ctxOverlay.drawImage(img, srcX,srcY, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 							}
 								
 						} /// 251 culd be something else like roof
@@ -3560,7 +3559,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 							if(!inArea.inIt){
 							/// 33 is the width of the portion to be drawn from the sprite (actual width in the sprite)
-							ctxOverlay.drawImage(img, defaultTiles[8].x, defaultTiles[8].y, 64, 64, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+							ctxOverlay.drawImage(img, defaultTiles[8].x, defaultTiles[8].y, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 							}
 								
 						}    
@@ -3599,9 +3598,9 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 					if(typeof mapOverDraw[tileMapIndex+roomNumberTilesX+1]!= "undefined"){
 
 
-						if(mapOverDraw[tileMapIndex].toString().substring(0,1)==1&&mapOverDraw[tileMapIndex+roomNumberTilesX].toString().substring(0,1)==2||mapOverDraw[tileMapIndex].toString().substring(0,1)==3&&mapOverDraw[tileMapIndex+roomNumberTilesX].toString().substring(0,1)==2){
+						if(mapOverDraw[tileMapIndex].toString().substring(0,1)==1&&mapOverDraw[tileMapIndex+roomNumberTilesX].toString().substring(0,1)==2||mapOverDraw[tileMapIndex+roomNumberTilesX]==108||mapOverDraw[tileMapIndex].toString().substring(0,1)==3&&mapOverDraw[tileMapIndex+roomNumberTilesX].toString().substring(0,1)==2||mapOverDraw[tileMapIndex+roomNumberTilesX]==108){
 							
-							tilesToCheck=[100, 101, 105, 108, 120, 130];
+							tilesToCheck=[100, 101, 110, 111, 112, 113, 114,  105, 160, 166,167, 710, 711, 714];
 
 							if(addEdges("roof-lower-left")){
 								if(!inArea.inIt){
@@ -3688,41 +3687,11 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 						}
 
 
-						// if(mapOverDraw[tileMapIndex]>=120&&mapOverDraw[tileMapIndex]<150){
-							
-						// 	tilesToCheck=[120, 130, 214];
-
-						// 	if(addEdges("floor-lower-left")){
-						// 		if(!inArea.inIt){
-						// 			ctxBg.drawImage(edges, 0, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 
-						// 		}
-								
-						// 	}
-						// 	if(addEdges("floor-lower-right")){
-						// 		if(!inArea.inIt){
-						// 			ctxBg.drawImage(edges, 40, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 
-						// 		}
-								
-						// 	}
-						// 	if(addEdges("floor-upper-left")){
-						// 		if(!inArea.inIt){
-						// 			ctxBg.drawImage(edges, 80, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 
-						// 		}
-								
-						// 	}
-						// 	if(addEdges("floor-upper-right")){
-						// 		if(!inArea.inIt){
-						// 			ctxBg.drawImage(edges, 120, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 
-						// 		}
-								
-						// 	}
-						// }
-
 
 
 						if(mapOverDraw[tileMapIndex].toString().substring(0,1)==2){
 							if(!inArea.inIt){
-								tilesToCheck=[222, 214, 218, 219, 227, 232, 710, 714, 709, 301, 400, 401, 402, 403];
+								tilesToCheck=[107, 167,222, 214, 218, 219, 227, 232, 710, 714, 709, 301, 400, 401, 402, 403];
 
 								if(addEdges("floor-lower-left")){
 									
@@ -3756,61 +3725,6 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 							}
 
 						}
-
-
-
-						/// ANIM edges  (over outsider sharp corners)
-
-						if(mapOverDraw[tileMapIndex].toString().substring(0,1)==2||mapOverDraw[tileMapIndex].toString().substring(0,1)==1){
-
-							if(!inArea.inIt){
-
-								tilesToCheck=[120, 130];
-
-								if(mapOverDraw[tileMapIndex-roomNumberTilesX]!=120){
-									if(addEdges("anim-lower-left")){
-										
-											ctxBg.drawImage(animEdges, 0+areaEdgeX, 0, 64, 64, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-										
-									}
-								}
-								if(mapOverDraw[tileMapIndex-roomNumberTilesX]!=120&&mapOverDraw[tileMapIndex-1]!=120){
-									if(addEdges("anim-lower-right")){
-										
-											ctxBg.drawImage(animEdges, 192+areaEdgeX, 0, 64, 64, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-									}
-								}
-								if(mapOverDraw[tileMapIndex]!=130&&mapOverDraw[tileMapIndex].toString().substring(0,1)!=2){
-									if(addEdges("anim-upper-left")){
-											
-										ctxBg.drawImage(animEdges, 380+areaEdgeX, 0, 64, 64, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-											
-									}
-								}
-								if(mapOverDraw[tileMapIndex]!=130&&mapOverDraw[tileMapIndex].toString().substring(0,1)!=2){
-									if(addEdges("anim-upper-right")){
-											
-										ctxBg.drawImage(animEdges, 576+areaEdgeX, 0, 64, 64, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-											
-									}
-								}
-
-								tilesToCheck=[130];
-
-								if(addEdges("anim-lower-left")){
-									
-										//console.log(areaEdgeX);
-										ctxBg.drawImage(animEdges, 768+areaEdgeX, 0, 64, 64, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-									
-								}
-								
-								if(addEdges("anim-lower-right")){
-									
-										ctxBg.drawImage(animEdges, 960+areaEdgeX, 0, 64, 64, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-							}
-						}
-
 
 
 
@@ -3998,7 +3912,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 							for (var i = 0; i< tilesToCheck.length ; i++){
 							//console.log("CHECKING" +tilesToCheck[i]);
 
-								if(mapOverDraw[tileMapIndex-roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex+1]==tilesToCheck[i]||mapOverDraw[tileMapIndex-roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex+1]==130){  
+								if(mapOverDraw[tileMapIndex-roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex+1]==tilesToCheck[i]||mapOverDraw[tileMapIndex-roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex+1]==166){  
 									
 										edgeCheck=true;
 
@@ -4123,18 +4037,11 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 							}	
 						}
 
-
 						if(edgeCheck){
 							return true;
 						}
-
-
 						
 					}
-
-
-
-
 
 
 
@@ -4159,7 +4066,12 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 	}// For roomTiles Y
 
 
-	animX++;  /// moves to the next ANIM-frame for the animated tiles
+
+
+
+																													
+													
+
 
 	doorsFound=[];
 	doorsReFound=[];
@@ -4215,6 +4127,12 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 		}
 		checkDoorGroups=true;
 	}
+
+
+
+
+
+
 
 
 
@@ -4344,6 +4262,12 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 		}// FOR doorGroupsTotal
 							//console.log("LENGHT "+doorsReFound.length);
 	}/// calculate Doors
+
+	/// has to be at the End... because.. 
+
+
+
+
 } /////   tilesOverDraw  
 
 
@@ -4396,6 +4320,30 @@ var memberII;
 function doorOpen(id, timer){
 
 	////>>>  Obstacle Breaking...
+
+	for (var i=0; i< doorKeys.length; i++) {
+		if(id==doorKeys[i].id){
+			var haveKey =false;
+			for (var h=0; h<player1.nonSelectItems.length; h++) {
+				
+				//return;
+				if(player1.nonSelectItems[h].itemNumber==doorKeys[i].key){
+					haveKey=true;
+					//ctxOverOverlay.drawImage(itemsMenu, 0, 0, 64, 64, 210, 214, 64, 64);
+				}
+
+
+				
+			}
+
+			if(!haveKey){
+				return;
+			}
+			
+			
+		}
+	}
+
 
 	//doorLaps=0;
 
@@ -4536,14 +4484,16 @@ function changeRoom(whatRoom, whatDoorId, newShiftX, newShiftY, type){ /////////
 
 		clearCtx(ctxPlayer);
 
+		//reset, since bullets left in other room won't be needed ever again
+		bulletID=0;
 
-		//block buttons so can't pause and go through door at the same time!!!!!!!!!!!!!
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// buttons blocked so can't pause and go through door at the same time!!!!!!!!!!!!!
+		blockInput=true;
 
+		// game stopped
 		isPlaying = false;
 
-		//////////// this 2-4 doen here will dpend on what door(to other room, diff from obstacle door -> Array) you went through
+		
 		nextRoom =whatRoom;
 		doorID=whatDoorId;
 
@@ -4564,6 +4514,8 @@ function changeRoom(whatRoom, whatDoorId, newShiftX, newShiftY, type){ /////////
 									////////////   so it can be change depending on when you call it!
 
 
+		dash=false;
+
 		roomChangeLoop();
 
 }
@@ -4574,7 +4526,7 @@ function changeRoom(whatRoom, whatDoorId, newShiftX, newShiftY, type){ /////////
 /// This is a bit messed up, it works but only if both rooms keep the same amount of Y tiles (or X I supposed, when X is implemented)...   but thats fine >>> the same room[tileMap] can be used for many different "mini" rooms
 
 
-
+var roomLooping=false;
 
 function roomChangeLoop() {
 			  
@@ -4588,9 +4540,7 @@ function roomChangeLoop() {
 		////    SOMEHOW
 //// 		this here fixes the RoomChange, when player gets to the door with last of momentum/friction/slowDown 
 /////																	( & therefore presumably speed 0)
-		if(player1.speed==0){
-			player1.speed=1;
-		}
+
 
 	}
 	
@@ -4647,9 +4597,25 @@ function roomChangeLoop() {
 
 			}///for areas
 
+			/// DIFFERENT CONDITIONS for each type of Transition
+			if(pauseType=="normal"){//
+				if(pauseCount<(Math.round(canvasOverOverlay.height/2))){
+					roomLooping=true;
+				}else{
+					roomLooping=false;
+				}
+
+			}else if(pauseType=="teleport"){
+				if(pauseCount<100){
+					roomLooping=true;
+				}else{
+					roomLooping=false;
+				}
+			}
+
 
 			 ///if still paused, then this inside
-			if(pauseCount<(Math.round(canvasOverOverlay.height/2))){   ///<(canvasHeight/2)
+			if(roomLooping){   ///<(canvasHeight/2)
 
 				// if opening screen(var).. do this real QUICK!
 
@@ -4663,8 +4629,29 @@ function roomChangeLoop() {
 					pauseCount+=4;
 
 				}else if(pauseType=="teleport"){
-					ctxOverOverlay.fillStyle = "#ff0000";
-					ctxOverOverlay.fillRect(0, 0, canvasWidth-50, 40+pauseCount);   
+					if(flash==0){
+						flash=1;
+					}else if(flash==1){
+						flash=2;
+					}else{
+						flash=0;
+					}
+					tileDiameter+=1;
+
+					shiftY-=10;
+					shiftX-=14;
+
+					for (var g=0; g<items.length; g++) {
+						console.log(items[g].drawX);
+						items[g].drawX-=14;
+						items[g].drawY-=10;
+						items[g].centerX-=14;
+						items[g].centerY-=10;
+					}
+			
+
+					//ctxOverOverlay.fillStyle = "#ff0000";
+					// ctxOverOverlay.fillRect(0, 0, canvasWidth-50, 40+pauseCount);   
 
 					// var pauseCountIncrease=Math.round(window.innerHeight)/(Math.round(window.innerHeight)/10);
 					var pauseCountIncrease=Math.round(window.innerHeight)/(Math.round(window.innerHeight)/10);
@@ -4673,16 +4660,12 @@ function roomChangeLoop() {
 
 
 
-
-				blockInput=true;
-
-
 				///roomChangeLoop();   // for gameCounter purposes
 
 				requestAnimFrame(roomChangeLoop);
 
 			}else{
-
+				tileDiameter =48;
 				clearCtx(ctxOverOverlay);
 
 				// cool roomChange graphics are over, 
@@ -4747,10 +4730,10 @@ function roomChangeLoop() {
 
 				if(doorIndexY>=canvasBg.clientHeight/2&&doorIndexY< mapHeight-(canvasBg.clientHeight/2)){
 
-					shiftY=(doorIndexY- canvasBg.clientHeight/2)*-1-menuHeight;
+					shiftY=(doorIndexY- canvasBg.clientHeight/2)*-1;
 
 				}else if(doorIndexY>= mapHeight-(canvasBg.clientHeight/2)){
-					shiftY= (mapHeight- canvasBg.clientHeight)*-1-menuHeight;
+					shiftY= (mapHeight- canvasBg.clientHeight)*-1;
 				}else if(doorIndexY<=canvasBg.clientHeight/2){
 					shiftY=0;
 				}
@@ -4769,7 +4752,7 @@ function roomChangeLoop() {
 
 				}
 
-		/// console.log(mapWidth-(canvasBg.clientWidth/2));
+		/// console.log(mapWidth-(window.outerWidth/2));
 
 		  ////////////////////////////////////////////////////////////////////////////////////////
 			/////////////
@@ -4844,29 +4827,20 @@ function roomChangeLoop() {
 				/// I don't even remember hpw this works, but it does
 				/// KEEPS ITEMS IN PLACE AFTER MOVING AROUND FROM ONE ROOM TO THE NEXT
 
-			  	for(var k =0; k<items.length; k++){
+				for(var k =0; k<items.length; k++){
 					  ///// OJO WHAT ROOM!! currentRoom
 
 				  ///ok, so that shiftY is being reset to zero, because of something to do with FirstDraw.. or whatever
 				  // point is, need to remember it before it goes to zero, to minus it to the items...
 
-				  if(!firsty){
-						items[k].drawY -=Math.abs(shiftY);
-						items[k].centerY -=Math.abs(shiftY);  
-							
-						items[k].drawX -=Math.abs(shiftX);
-						items[k].centerX -=Math.abs(shiftX); 
-
-						firsty=true;
-				  }else{
 						items[k].drawY -=Math.abs(shiftY)-Math.abs(memberShiftY);
 						items[k].centerY -=Math.abs(shiftY)-Math.abs(memberShiftY); 
 
 						items[k].drawX -=Math.abs(shiftX)-Math.abs(memberShiftX);
 						items[k].centerX -=Math.abs(shiftX)-Math.abs(memberShiftX); 
-				  }
+				  
 												 
-				}// for items
+				}// for ITEMS
 
 
 
@@ -4891,6 +4865,7 @@ function roomChangeLoop() {
 
 				bulletsFired=[];
 
+				
 
 			}// end IF pauseCount>(window.innerHeight/2)
 
@@ -4938,42 +4913,43 @@ function roomChangeLoop() {
 
 
 
-
+var itemDecrementCount=0;
 
 var releaseCounterCount=0;
 
 
 function Player(type) {
 	//where in sprite
-	this.srcX = 0;
-	this.srcY = 0;
+	this.srcX = 640;
+	this.srcY = 256;
 
-	this.upperSrcX= 1680;
-	this.upperSrcY=0;
+	this.upperSrcX = 1664;
+	this.upperSrcY=256;
 
 
 	//where in tileMap
 	this.drawX = 220;
 	this.drawY = 200;
-	//in sprite with & height/// Math.round it
-	// this.width = tileDiameter+(tileDiameter/4);
-	// this.height = tileDiameter+tileDiameter/1.6;
-	
-	this.width = 70; /// this only needs to be 64 (real tight), its 82 now because the Psprite is not using its whole size
-	this.height = 70; /// this only needs to be 64 (real tight), its 82 now because the sprite is not using its whole size
-	//center
-	this.centerX = this.drawX + (this.width / 2);
-	this.centerY = this.drawY + (this.height / 2);
+
+	//in sprite with & height	
+	this.width = 112;  
+	this.height = 112; 
+
+
 	//starting moving values & speed
 	this.speed = 0;
 	this.moving = true; //can it move?
 
 	this.direction = "nowhere";  // for moving mechanics purposes
-	this.facing="nowhere";  /// diff from direction, for shooting Animation/sprite- purposes
+	this.facing="nowhere";  /// diff from direction, for shooting Animation/sprite-purposes
 
 	//animation
 	this.isDead = false;
-	this.animRate = 1;  //  ??
+
+	this.animRatePlayer; 
+
+	this.animRateShooting; 
+
 
 	//special player characteristics  if/elses
 	this.playerType = type;
@@ -4985,8 +4961,23 @@ function Player(type) {
 	this.items = [];
 	this.guns = [];
 
+	this.nonSelectItems = [];
+
 	this.shooting=false;
 	this.shootingDirection="down";
+
+	this.usingItem=false;
+//this.shootingDirection="down";
+
+
+	this.outtaBullets=false;
+
+	this.shootCounter = 0;
+	this.oldShootCounter = 0;
+
+	/// this should probably be another dimension in array bullets[], since it depends on weapon Selected
+	this.weaponSpeedRate;/// > = slower,  0 =  contraLaser  
+
 
 	this.life=20; //also inside playerType if/elses
 	this.lifeTotal=100;
@@ -4996,116 +4987,302 @@ function Player(type) {
 	///
 	//   DIFFERENT QUALITIES LIKE speed, power, strength, intelligence.. hp, mp,  etc.....
 
-}
+}/// FUNC Player
 
 
-var outtaBullets=false;
 
-var shootCounter = 0;
-var oldShootCounter = 0;
-
-/// this should probably be another dimension in array bullets[]
-var weaponSpeedRate=1;/// > = slower,  0 =  contraLaser  
-
-var id=0;
 //Shit happens
 Player.prototype.update = function () {
 
+	if(currentSubArea=="water"){
+		if(!slowDown){
+			if(this.speed>0){
+				this.speed=4;
+			}
+		}
+	}
+
+	doorBlock=false;
+	
+
+	clearCtx(ctxMenuOverOver);
+
+	///on Update as it changes
+	this.centerX = (this.drawX + (this.width / 2));
+	this.centerY = (this.drawY + (this.height / 2));
+	
+/////////////////////////////////////////////////////////////////   H O W   M A N Y   I T E M S
+	ctxMenuOverOver.font="20px Georgia";
+	ctxMenuOverOver.fillStyle="blue";
+
+	ctxMenuOverOver.fillText(bullets[player1.weaponSelected].current,170,40);
+
+	for(var j=0; j<this.items.length; j++){
+		if(this.items[j].itemNumber==this.itemSelected){
+			//console.log("ITEM SELECTED "+ this.itemSelected);
+			if(typeof this.items[j] !="undefined"&&player1.items.length>1){
+				ctxMenuOverOver.fillText(this.items[j].amount ,70,40);
+			}
+		}
+	}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	this.checkMoving(this.direction, this.moving);//  a bit faster when called right after keyPress
-	this.animRate = this.speed/16;   //// like so
-	this.animationState(this.dead, this.direction, this.animRate, this.moving);
+
+	this.animationState(this.dead, this.direction, this.animRatePlayer, this.animRateShooting, this.moving);
 	this.checkArea();
 
+
+	///////////     RELATIVE TO PLAYER.SPEED!
+	this.animRatePlayer = 0.6;  
+
+
+	if(this.weaponSelected==0){
+		this.animRateShooting = 0.6;
+		this.weaponSpeedRate=7;
+	}else if(this.weaponSelected==1){
+		this.animRateShooting = 0.2;
+		this.weaponSpeedRate=30;
+	}
+
+
+
 	if(this.direction!="nowhere"){
-		//console.log(this.direction);
 		this.shootingDirection=this.direction;
 	}else{
-		//console.log(lastDir);
 		this.shootingDirection=this.facing;
 	}
 
+	
+	if(dash){
+		dashCount++;
+	}else{
+		dashCount=0;
+	}
+
+	//console.log("DASH C "+ dashCount);
+	//console.log(dashCount);
+
+	if(dash&&dashCount<14){
+		player1.speed=16;	
+		player1.animRatePlayer=0.8;		   	
+	}else if(dashCount>14){
+		friction();// or else it will never stop
+		dash=false;
+	}
+
+
+	this.shootCounter++;
 		
 
-	// /////////////   checking items
-	// for (var i = 0; i< player1.items.length; i++) {
-
-	// 	if(player1.items[i].itemType=="item"&&player1.items[i].itemNumber==1){
-	// 		console.log(player1.items[i].amount);
-	// 		///cool, so it succesfully keeps track of the amount of items of a certain "number"
-	// 		//// remember >>>  itemType=> item/gun/ammo/life <<>>>  itemNumber => different types of each of those
-	// 	}
-		
-	// }
-
-
-		if(dash){
-			dashCount++;
-		}
-
-		shootCounter++;
-			
-		if(this.shooting){     
-			
-			
-
-			if(oldShootCounter<shootCounter-weaponSpeedRate){
-
-				for(var i = 0; i<player1.guns.length; i++){
-					if(this.weaponSelected==i){
-						bullets[i]-=1;
+	if(this.shooting){     
 						
-						oldShootCounter=shootCounter;
-						if(bullets[i]<=0){
-							bullets[i]=0;
-							outtaBullets=true;
-						}else{
-							outtaBullets=false;
-						}
+		if(this.oldShootCounter<this.shootCounter-this.weaponSpeedRate){
+
+			for(var i = 0; i<player1.guns.length; i++){
+				if(this.weaponSelected==i){
+					bullets[i].current-=1;
+						
+					this.oldShootCounter=this.shootCounter;
+					if(bullets[i].current<=0){
+						bullets[i].current=0;
+						this.outtaBullets=true;
+					}else{
+						this.outtaBullets=false;
 					}
 				}
+			}
+
+			var weaponX=0;
+			var weaponY=0;
+			var bulletType;
+				
+			if(!this.outtaBullets){
+
+				if(typeof this.shootingDirection == "undefined"){
+					this.shootingDirection="down";
+				}
+				//console.log("first shot  " +this.shootingDirection);
+
+				/// this IF help with the "frozen-bullet" problem.. although not seen lately
+				if(player1.facing != "nowhere"){
+
+					////this.centerX HAS TO VARY (+ || -) DEPENDING ON WHERE PLAYER1 IS FACING
+					///									& even depending on weapon
 
 				
-				if(!outtaBullets){
-
-					if(typeof this.shootingDirection == "undefined"){
-						this.shootingDirection="down";
+					if(player1.facing=="down"){
+						weaponY=4;
+					}else if(player1.facing=="up"){
+						weaponY=-4;
+					}else if(player1.facing=="right"){
+						weaponX=4;
+					}else if(player1.facing=="left"){
+						weaponX=-4;
+					}else if(player1.facing=="right-up"){
+						weaponX=4;
+						weaponY=-4;
+					}else if(player1.facing=="right-down"){
+						weaponX=4;
+						weaponY=4;
+					}else if(player1.facing=="left-up"){
+						weaponX=-4;
+						weaponY=-4;
+					}else if(player1.facing=="left-down"){
+						weaponX=-4;
+						weaponY=4;
 					}
-					//console.log("first shot  " +this.shootingDirection);
+					
+					if(player1.weaponSelected==0){ 
+						bulletType="normal";
+					}else{
+						bulletType="weird";
+					}
 
-					/// this IF help with the "frozen-bullet" problem.. although not seen lately
-					if(player1.facing != "nowhere"){
+					/// maybe NOT all weapons >> BOMBS >>> place ExplosionPoint first >> then micro bullets func..
+					if(!doorBlock){
+						bulletsFired.push( new activeBullet(bulletID, undefined, undefined,this.drawX+weaponX+30,this.drawY+weaponY+30, [],[], 48, 48, this.weaponSelected, this.playerType, this.shootingDirection, true, undefined, bulletType, 0));
+											
+						bulletID++;
+					}
+				}
+			}// if(!this.outtaBullets)
+				
+		}// if weapon speed rate allows
 
-						if(!doorBlock){
-							bulletsFired.push( new activeBullet(id, 0,0,this.drawX,this.drawY+10, 10, 10, this.weaponSelected, this.playerType, this.shootingDirection, true));
-							///// sprite needs to be smaller
-							id++;
+	}/// if shooting
+
+	
+	if(this.usingItem){
+		itemDecrementCount++;
+		// console.log(itemDecrementCount);
+		// console.log("USINGgggg "+this.itemSelected);	
+		for(var i=0; i < this.items.length; i++){
+			//console.log(this.items[i].itemNumber);
+			if(this.items[i].itemNumber==this.itemSelected){
+				if(itemDecrementCount==1){
+
+					if(this.items[i].amount>1){
+
+						if(this.itemSelected==4){
+							this.life+=10;
 						}
 
+
+						this.items[i].amount--;
+						
+						
+					}else if(this.items[i].amount==1){
+
+						//console.log("USING "+this.itemSelected);
+						if(this.itemSelected==4){
+							this.life+=10;
+						}
+
+						this.items.splice(i,1);
+						// send back VAR so this.usingItem is flase >>> force to press again 
+						if(itemRow==this.items.length-1&&this.items.length>1){
+							itemRow-=1;
+						}
+						
+						selecto();
+						this.usingItem=false;
+
+					}else{
+
+
+						this.items.splice(i,1);
+						// send back VAR so this.usingItem is flase >>> force to press again 
+						if(itemRow==this.items.length-1&&this.items.length>1){
+							itemRow-=1;
+						}
+						
+						selecto();
+						this.usingItem=false;
+
+
+						/// Or else, could leave them on (faded) w ammount=0. (like in zelda>> bombs)
+						/// in that case comment out this else and >> this.items[i].amount>1  --->    >0
 					}
-				}// if(!outtaBullets)
-				
-			}// if weapon speed rate allows
+					
+				}else if(itemDecrementCount>1&&itemDecrementCount<30){
 
-		}/// if shooting
+					itemDecrementCount
+
+				}else if(itemDecrementCount>=30){
+					if(this.items[i].amount>1){
+
+						if(this.itemSelected==4){
+							this.life+=10;
+						}
+
+
+						this.items[i].amount--;
+						
+						
+					}else if(this.items[i].amount==1){
+
+
+						if(this.itemSelected==4){
+							this.life+=10;
+						}
+
+						
+
+						this.items.splice(i,1);
+						// send back VAR so this.usingItem is flase >>> force to press again 
+						if(itemRow==this.items.length-1&&this.items.length>1){
+							itemRow-=1;
+						}
+						
+						selecto();
+						this.usingItem=false;
+
+					}else{
+						this.items.splice(i,1);
+						// send back VAR so this.usingItem is flase >>> force to press again 
+						if(itemRow==this.items.length-1&&this.items.length>1){
+							itemRow-=1;
+						}
+						
+						selecto();
+						this.usingItem=false;
+
+
+						/// Or else, could leave them on (faded) w ammount=0. (like in zelda>> bombs)
+						/// in that case comment out this else and >> this.items[i].amount>1  --->    >0
+					}
+
+					
+					itemDecrementCount=2;
+
+				}
 
 
 
+			}
+		}
+	}
 
-////  DEPENDING ON SELECT WHAT MENU-ITEM PLAYER IS USING  >>>>  1 button for gun, another for life item
-///  while other item spermanently do/change something in the game/player  (like activating this dash ability up here)
 
-	if(releaseCounter){
+
+	//for friction purposes
+	if(releaseCounter){ 
 		releaseCounterCount++;
 	}
 	
-	//console.log(("Y " +this.drawY)+("  X "+this.drawX));
-	if(this.drawX>800){
-		blockInput=true;  /// por que no
-		//this.speed=0;
+	////EXPERIMENT TO SEE THAT YOU CAN CHANGE ROOM ON COMMAND (and not only upon hitting a door-area)
+	if(tele==true){
+		blockInput=true;  
 		this.direction="nowhere";
-		changeRoom("room-1", 668, shiftX, shiftY, "teleport");
+		this.speed=1;// por alguna razon resuelve el bug de caer en otra "area"						
+		changeRoom("room-1", 668, shiftX, shiftY, "teleport"); // "teleporting" type of roomChange
+		tele=false;
 	}
-};
+
+
+
+};// END Player UPDATE
 
 
 
@@ -5114,68 +5291,259 @@ Player.prototype.update = function () {
 
 
 
-/////////     
-//|\\/////    
-//|\\//////     ////\     ///////   ////   |||||\\\\
-//|\\//////     ///  \   ///  //   /////   |||||\\\\  
-//|\//////      //   /  ///////   //////   ||||	\\\\
-////////        /////  ///   /   /// ///   |||||\\\\
-////            ///   ///    /  ///  ///   |||||\\\\
+/////////         \\
+//|\\/////        \\\\
+//|\\//////       ////\     ///////   ////   
+//|\\//////       ///  \   ///  //   /////   //// \\\\  
+//|\//////        //|  /  ///////   //////   \\\   \\\
+////////          /////  ///   /   /// ///   \\\\ ////
+////              ////  ///    /  ///  ///   
+///               //
 ///           
-///           
 
 
+var lavaDamageCount=0;
+var damageCount=0;/// different as it blockes damage for longer
 
 //Shit is shown
 Player.prototype.draw = function () {
 
-////////////////////////////////////////   35, 50  ==>> this.width, this.height  ACTUAL W/H IN SPRITE
-
-									///// srcX, Y >> lower body
+///// srcX, Y >> lower body
 	
 //console.log("GUN SEL"+this.gunSelected); ///  ACCORDING TO THIS WE GO DOWN Y AXIS  inSpritethis.srcY+50, 50, 50, 50
-		//////////////////////  then in the future another dimension inSprite for the suits/armor you find
-	if(this.weaponSelected==1){
-		this.srcY=50;
-		this.upperSrcY=50;
-	}else if(this.weaponSelected==0){
-		this.srcY=100;
-		this.upperSrcY=100;
-	}else{
-		this.srcY=0;
-		this.upperSrcY=0;
-	}
-
-	//console.log("C Area " +currentSubArea);
-
-	if(currentSubArea != "water"&&currentSubArea != "deep-water"){
-		ctxPlayer.drawImage(imgPlayer, this.srcX, this.srcY, 35, 50, this.drawX, this.drawY, this.width, this.height);
-	}
-
+		//////////////////////  then in the future OTHER SPRITES for the suits/armor you find
 	
-/////////////////////////////            OK NOW DRAW SPRITE PROPERLY AND THE ANIMATION RIGHT WHEN SHOOTING
-////////////
-//////////                      moving changes srcX, Y... so should shooting (change upperSrcX, Y)
-														  /// upperXrcX + + + as in the if(this.shooting) below
+	/// WEAPON SELECTS!!!
 
-			///////////////   Y AXIS should have a + VAR >>>  + 350..==> all weapons.. if got suit, or + 0  
-		///// (at that point all weapon cicles are repeated, but wearing this mega-cool suit)
-		  /////
-			//////////////////  try same with certain items, such as the goggles or the belt... can be seen
-	if(currentSubArea != "deep-water"){
 
-		if(this.shooting){      ///// changing upperSrc Anim according to shooting
-			ctxPlayer.drawImage(imgPlayer, this.upperSrcX, this.upperSrcY, 35, 50, this.drawX, this.drawY, this.width, this.height);
-		}else{                     //// shifted sprite (srcX, Y) for upperBody parts
-			ctxPlayer.drawImage(imgPlayer, this.srcX+840, this.srcY, 35, 50, this.drawX, this.drawY, this.width, this.height);                 //// take off +3, that just to show its been drawn on top
-								////            +3 actually + length of sprite (legs/upperbody)
+	if(currentSubArea == "red-lava"||currentSubArea == "orange-lava"){
+		if(lavaDamageCount==0){
+			player1.life--;
+			lavaDamageCount++;
 		}
 
+		if(lavaDamageCount>0&&lavaDamageCount<4){// other DAMAGE can take longer (for flicker-invulnerability to go away)
+			lavaDamageCount++;
+		}else{
+			lavaDamageCount=0;	
+		}
 	}
+
+	if(lavaDamageCount>0&&lavaDamageCount<20){// flicker takes longer to go away when coming out of lava
+		lavaDamageCount++;
+	}else{
+		lavaDamageCount=0;	
+	}
+	
+
+	if((lavaDamageCount*100)%40==0||lavaDamageCount==0){/// add || NORMALdamagCount
+		/// LEGS
+		if(currentSubArea != "water"&&currentSubArea != "deep-water"&&currentSubArea != "red-lava"&&currentSubArea != "orange-lava"){
+			ctxPlayer.drawImage(imgPlayer, this.srcX, this.srcY, 128, 128, this.drawX, this.drawY, this.width, this.height);
+		}
+		//console.log(" L D C " +lavaDamageCount);
+	
+		/// BODY
+		if(currentSubArea != "deep-water"){
+
+			if(this.shooting){      ///// changing upperSrc Anim according to shooting
+				ctxPlayer.drawImage(imgPlayer, this.upperSrcX, this.upperSrcY, 128, 128, this.drawX, this.drawY, this.width, this.height);
+			}else{                     //// shifted sprite (srcX, Y) for upperBody parts
+				ctxPlayer.drawImage(imgPlayer, this.upperSrcX, this.srcY, 128, 128, this.drawX, this.drawY, this.width, this.height);                 //// take off +3, that just to show its been drawn on top
+										////            +3 actually + length of sprite (legs/upperbody)
+			}
+
+		}/// if  != "deep-water"  << draw Body
+
+	}/// IF DAMAGE COUNTS
 
 };
 
 
+
+
+
+
+
+
+
+/////////
+//|\\/////
+//|\\//////      /////           
+//|\\//////     ///  |  |||  ||  ||  //|   |
+//|\//////     ///   | |  ||||  ||  // |  ||
+////////      ///    ||    ||  ||  //  ||||/
+////         ///     |     |  ||  //      //
+///
+///   
+
+
+
+
+Player.prototype.animationState = function (dead, direction, animRatePlayer, animRateShooting, moving) {
+
+	// //DIFFERENT ANIMATIONS WITH DIFF WEAPON
+	// 	//// keep track of what weapon is selected and move whole srcY of the sprite one down (where player is holding corresponging gun
+
+	//console.log("SDSD" +this.direction)
+	if(this.direction!="nowhere"&&this.direction!="room-change"){
+		animCount += animRatePlayer; //// OTHER ANIM RATE@!!!!!! (not bound to weapon)
+
+		if(animCount>0&&animCount<1){
+			this.srcY=256;
+		}else if(animCount>=1&&animCount<2){
+			this.srcY=384;
+		}else if(animCount>=2&&animCount<3){
+			this.srcY=512;
+		}else if(animCount>=3&&animCount<4){
+			this.srcY=384;
+		}else if(animCount>=4&&animCount<5){
+			this.srcY=256;
+		}else if(animCount>=5&&animCount<6){
+			this.srcY=128;
+		}else if(animCount>=6&&animCount<7){
+			this.srcY=0;
+		}else{
+			animCount=0;
+		}
+	}
+
+	/// just  W A L KI N G
+	if(this.direction=="up"&&!this.shooting){
+		this.upperSrcX = 128;
+		this.srcX = 1152;
+	}else if(this.direction=="down"&&!this.shooting){
+		this.upperSrcX = 640;
+		this.srcX = 1664;						
+	}else if(this.direction=="right"&&!this.shooting){
+		this.upperSrcX = 384;
+		this.srcX = 1408;							
+	}else if(this.direction=="left"&&!this.shooting){
+		this.upperSrcX = 894;
+		this.srcX = 1920;							
+	}else if(this.direction=="right-up"&&!this.shooting){
+		this.upperSrcX = 256;
+		this.srcX = 1280;	
+	}else if(this.direction=="right-down"&&!this.shooting){
+		this.upperSrcX = 512;
+		this.srcX = 1536;								
+	}else if(this.direction=="left-up"&&!this.shooting){
+		this.upperSrcX = 1024;
+		this.srcX = 2048;								
+	}else if(this.direction=="left-down"&&!this.shooting){
+		this.upperSrcX = 768;
+		this.srcX = 1792;								
+	}else if(this.direction=="nowhere"){
+
+		this.srcY=256;
+
+		if(this.facing=="down"){
+			this.upperSrcX = 640;
+			this.srcX = 1664;	
+		}else if(this.facing=="up"){
+			this.upperSrcX = 128;	
+			this.srcX = 1152;	
+		}else if(this.facing=="right"){
+			this.upperSrcX = 384;
+			this.srcX = 1408;							
+		}else if(this.facing=="left"){
+			this.upperSrcX = 894;
+			this.srcX = 1920;							
+		}else if(this.facing=="right-up"){
+			this.upperSrcX = 256;
+			this.srcX = 1280;
+		}else if(this.facing=="right-down"){
+			this.upperSrcX = 512;
+			this.srcX = 1536;
+		}else if(this.facing=="left-up"){
+			this.upperSrcX = 1024;	
+			this.srcX = 2048;					
+		}else if(this.facing=="left-down"){
+			this.upperSrcX = 768;
+			this.srcX = 1792;							
+		}	
+
+	}// else if not moving
+
+
+	/// S H O T I N G  (upper body)
+	if(this.shooting && this.direction!="room-change"){
+
+		animShootingCount += animRateShooting;
+		   
+		   if(animShootingCount>0&&animShootingCount<2){
+				  this.upperSrcY = 256;
+			}else if(animShootingCount>=2&&animShootingCount<4){
+				this.upperSrcY = 384;
+			}else if(animShootingCount>=4&&animShootingCount<5){
+				this.upperSrcY = 512;
+				
+			}else{
+				animShootingCount =0;
+			}
+
+
+		
+		if(this.direction=="nowhere"){
+
+
+			if(this.facing=="down"){
+				this.srcX = 3712;
+				this.upperSrcX = 2688;
+			}else if(this.facing=="up"){
+				this.srcX = 3200;
+				this.upperSrcX = 2176;
+			}else if(this.facing=="right"){
+				this.srcX = 3456;
+				this.upperSrcX = 2432;
+			}else if(this.facing=="left"){
+				this.srcX = 3968;
+				this.upperSrcX = 2944;
+			}else if(this.facing=="right-up"){
+				this.srcX = 3328;
+				this.upperSrcX = 2304;
+			}else if(this.facing=="right-down"){
+				this.srcX = 3584;
+				this.upperSrcX = 2560;
+			}else if(this.facing=="left-up"){
+				this.srcX = 4096;	
+				this.upperSrcX = 3072;					
+			}else if(this.facing=="left-down"){
+				this.srcX = 3712;	
+				this.upperSrcX = 2816;						
+			}
+
+		}else{
+			if(this.direction=="down"){
+				this.srcX = 1664;	
+				this.upperSrcX = 2688;
+			}else if(this.direction=="up"){	
+				this.srcX = 1152;	
+				this.upperSrcX = 2176;
+			}else if(this.direction=="right"){
+				this.srcX = 1408;	
+				this.upperSrcX = 2432;						
+			}else if(this.direction=="left"){
+				this.srcX = 1920;	
+				this.upperSrcX = 2944;						
+			}else if(this.direction=="right-up"){
+				this.srcX = 1280;
+				this.upperSrcX = 2304;
+			}else if(this.direction=="right-down"){
+				this.srcX = 1536;
+				this.upperSrcX = 2560;
+			}else if(this.direction=="left-up"){
+				this.srcX = 2048;	
+				this.upperSrcX = 3072;						
+			}else if(this.direction=="left-down"){
+				this.srcX = 1792;	
+				this.upperSrcX = 2816;									
+			}
+		}
+	}
+
+
+};
 
 
 
@@ -5257,8 +5625,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 			if(slowDown){
 
 				if(player1.direction!="room-change"){
-				   this.direction=slowDownDirection;     
-				   this.speed-=2;
+				   this.direction=slowDownDirection; 
+				   if(player1.speed>0){
+				   	 this.speed-=2;
+				   }    
+				  
 				}
 				   //onsole.log(player1.direction)   
 				if(paused){
@@ -5332,6 +5703,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 
 				} 
 
+				for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawY += this.speed;
+					bulletsFired[l].centerY += this.speed;    
+
+				} 
+
 			}else{
 				this.drawY = this.drawY-this.speed;
 			}
@@ -5368,6 +5745,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 					items[k].centerY -= this.speed;    
 
 				}  
+
+				for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawY -= this.speed;
+					bulletsFired[l].centerY -= this.speed;    
+
+				}  
 				//console.log(areas[0].topY);         
 
 			}else{
@@ -5398,6 +5781,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 
 				} 
 
+				for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawX -= this.speed;
+					bulletsFired[l].centerX -= this.speed;    
+
+				}  
+
 			}else{
 
 				this.drawX = this.drawX+this.speed;
@@ -5425,18 +5814,15 @@ Player.prototype.checkMoving = function (direction, moving) {
 
 				} 
 
+				for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawX += this.speed;
+					bulletsFired[l].centerX += this.speed;    
+
+				}  
+
 			}else{
 				this.drawX = this.drawX-this.speed;
 			}
-
-
-
-
-
-
-
-
-
 
 
 
@@ -5466,6 +5852,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].centerY -= this.speed;    
 
 					}  
+
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawY -= this.speed;
+					bulletsFired[l].centerY -= this.speed;    
+
+				}  
 				//console.log(areas[0].topY);         
 
 				}else{
@@ -5492,6 +5884,13 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].centerX -= this.speed;    
 
 					} 
+
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawX -= this.speed;
+					bulletsFired[l].centerX -= this.speed;    
+
+				}  
+
 
 				}else{
 
@@ -5521,6 +5920,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 
 					} 
 
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawX -= this.speed;
+					bulletsFired[l].centerX -= this.speed;    
+
+				}  
+
 
 
 				}else{
@@ -5547,6 +5952,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].centerY -= this.speed;    
 
 					}  
+
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawY -= this.speed;
+					bulletsFired[l].centerY -= this.speed;    
+
+				}  
 
 				}else{
 					this.drawY = this.drawY+this.speed;
@@ -5589,6 +6000,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 
 					}
 
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawY -= this.speed;
+					bulletsFired[l].centerY -= this.speed;    
+
+				}  
+
 				}else{
 					this.drawY = this.drawY+this.speed;
 				}
@@ -5613,6 +6030,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].centerX += this.speed;    
 
 					} 
+
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawX += this.speed;
+					bulletsFired[l].centerX += this.speed;    
+
+				}  
 				}else{
 					this.drawX = this.drawX-this.speed;
 				}
@@ -5638,6 +6061,13 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].centerX += this.speed;    
 
 					} 
+
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawX += this.speed;
+					bulletsFired[l].centerX += this.speed;    
+
+				}  
+
 				}else{
 					this.drawX = this.drawX-this.speed;
 				}
@@ -5660,6 +6090,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].centerY -= this.speed;    
 
 					}
+
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawY -= this.speed;
+					bulletsFired[l].centerY -= this.speed;    
+
+				}  
 
 				}else{
 					this.drawY = this.drawY+this.speed;
@@ -5706,6 +6142,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 
 					}
 
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawY += this.speed;
+					bulletsFired[l].centerY += this.speed;    
+
+				}  
+
 				}else{
 					this.drawY = this.drawY-this.speed;
 				}
@@ -5729,6 +6171,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].centerX += this.speed;    
 
 					} 
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawX += this.speed;
+					bulletsFired[l].centerX += this.speed;    
+
+				}  
 				}else{
 					this.drawX = this.drawX-this.speed;
 				}
@@ -5753,6 +6200,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].centerX += this.speed;    
 
 					} 
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawX += this.speed;
+					bulletsFired[l].centerX += this.speed;    
+
+				}  
 				}else{
 					this.drawX = this.drawX-this.speed;
 				}
@@ -5780,6 +6232,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].centerY += this.speed;    
 
 					}
+
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawY += this.speed;
+					bulletsFired[l].centerY += this.speed;    
+
+				}  
 
 				}else{
 					this.drawY = this.drawY-this.speed;
@@ -5826,6 +6284,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 
 					} 
 
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawY += this.speed;
+					bulletsFired[l].centerY += this.speed;    
+
+				}  
+
 				}else{
 					this.drawY = this.drawY-this.speed;
 				}
@@ -5850,6 +6314,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].centerX -= this.speed;    
 
 					} 
+
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawX -= this.speed;
+					bulletsFired[l].centerX -= this.speed;    
+
+				}  
 
 				}else{
 
@@ -5879,6 +6349,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 
 					} 
 
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawX -= this.speed;
+					bulletsFired[l].centerX -= this.speed;    
+
+				}  
+
 				}else{
 
 					this.drawX = this.drawX+this.speed;
@@ -5906,7 +6382,13 @@ Player.prototype.checkMoving = function (direction, moving) {
 						items[k].drawY += this.speed;
 						items[k].centerY += this.speed;    
 
-					} 
+					}
+
+					for(var l =0; l<bulletsFired.length; l++){
+					bulletsFired[l].drawY += this.speed;
+					bulletsFired[l].centerY += this.speed;    
+
+				}   
 
 				}else{
 					this.drawY = this.drawY-this.speed;
@@ -5969,7 +6451,7 @@ Player.prototype.checkCrash = function () {
 /// add parameter on obstacles >>> "LOCKED" - "notLOCKED"  && "KEY#"  <<< if locked, only open when carrying that key
 										/////////////////   or when broken, if breakable
 
-			if(obstacles[obstacleIndex].doorID!=130){		
+			if(obstacles[obstacleIndex].doorID!=166){		
 			///////
 			///    UNLESS    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>     you got Deep-water Item <<<<   snorkel or smthing
 			///													
@@ -6565,107 +7047,6 @@ Player.prototype.checkArea = function (){
 
 
 
-	//// THIS HERE
-	//		 is essentially a little hack to get the right area, after changing doors which are in different ones.
-
-		//  in roomChangellop I have to force the player to move one step, for this checkArea to detect the right area and draw everything right. I didn't find another way to do it. 
-		/// Without this (and the player1.speed=1/direction.. at the end of roomChangeLoop) it does like one extra pass, over the player, and without edges......
-		/// ... but it also works as a stopper for the player, which had to be done two. So.. turns out to be semi-organic after all
-
-		// the < 0 fixes a little nasty bug, that, and having pauseCountIncrement as an exact division from the surface that it is checked against (window.height/2), thus dividing by this conditional surface, rather than picking a cold number for it (when checking the end of roomChangeLoop)
-
-	// if(this.speed==1){
-	// 	this.direction="nowhere";
-	// 	blockInput=false;
-
-	// }else if(this.speed<0){
-	// 	this.speed=0; ////// !!!!!!!!!!!!!!!!!!!!!!!
-	// 	this.direction="nowhere";
-	// 	player1.drawY=100;
-	// }
-
-	
-
-
-};
-
-
-
-
-
-/////////
-//|\\/////
-//|\\//////      /////           
-//|\\//////     ///  |  |||  ||  ||  //|   |
-//|\//////     ///   | |  ||||  ||  // |  ||
-////////      ///    ||    ||  ||  //  ||||/
-////         ///     |     |  ||  //      //
-///
-///   
-
-
-
-
-Player.prototype.animationState = function (dead, direction, animRate, moving) {
-
-	//DIFFERENT ANIMATIONS WITH DIFF WEAPON
-		//// keep track of what weapon is selected and move whole srcY of the sprite one down (where player is holding corresponging gun
-
-
-	if(this.direction=="up"){
-		this.srcX = 420;
-		this.srcY = 0;
-
-	}else if(this.direction=="down"){
-
-		this.srcX = 0;
-		animCount += animRate;
-		if(animCount<2){
-				
-		}else if(animCount>0&&animCount<3){
-			this.srcX=35;
-		}else if(animCount>3&&animCount<6){
-			this.srcX=70;
-		}else if(animCount>6){
-			this.srcX=0;
-			animCount =0;
-		}
-			
-	}
-
-	if(this.shooting){
-		animCount += animRate;
-		   
-
-		if(this.facing=="down"){
-			this.upperSrcX = 1680;
-
-			if(animCount<2){
-					
-			}else if(animCount>0&&animCount<3){
-				  this.upperSrcX = 1715;
-			}else if(animCount>3&&animCount<6){
-				this.upperSrcX = 1740;
-			}else if(animCount>6){
-				this.upperSrcX = 1680;
-				animCount =0;
-			}
-
-		}else{
-			this.upperSrcX = 1715;
-		}
-			
-	}else{
-		if(this.facing=="down"){
-			this.upperSrcX = 840;
-		}else{
-			this.upperSrcX = 840;
-		}
-	}
-
-
-
-
 };
 
 
@@ -6678,29 +7059,16 @@ Player.prototype.animationState = function (dead, direction, animRate, moving) {
 
 
 
+//////////////////////////////////////||
+ /////		    ////                //||    //     ///////\
+ /////		   ///  //             // ||   //|   ////
+ /////		  ///  //             //  ||  //||    ////
+ /////		 //// ////////		 //   || // ||     ////////\
+ /////		//// ///		    //    ||//  ||          \/// 
+ /////     ///// ///           //           ||          //// 
+ /////    ///// ////\         //            ||       //////
+//////// ////// ///////////////             ||///////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-////////
-////////
- /////
- /////
- /////
- /////
- /////
- /////
-////////
-////////
 
 
 
@@ -6741,28 +7109,13 @@ function Item(x,y, xx, yy, w,h, itemType, itemNumber, selec, caught, branch, roo
 
 
 Item.prototype.update = function () {
-	// img = new Image();
-	// img.src = "images/spritesBg.png";
-
-	// tileWidthHeight=tileDiameter;
 
 	tileIndexX=0;
 	tileIndexY=0;
 
 	this.pickUp();
-
-	// for(var i =0; i<roomNumberTilesY; i++){
-	// 	for(var e=0; e<roomNumberTilesX; e++){
-	// 		ctxMenuOverOver.drawImage(img, 0, 0, 2, 2, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
-	// 		tileIndexX+=2;
-	// 	}
-	// 	tileIndexY+=2;
-	// }
-
+	
 };
-
-
-
 
 
 
@@ -6792,7 +7145,7 @@ daMenu.draw();
 
 				if(currentRoom==this.inRoom){
 			////////////////////////////////////////                   30, 30 ==>>  tileDiameter changes >> this is  ACTUAL W/H IN SPRITE
-					ctxEntities.drawImage(itemSprite, this.srcX, this.srcY, 30, 30, this.drawX, this.drawY, tileDiameter, tileDiameter);
+					ctxEntities.drawImage(itemsMenu, this.srcX, this.srcY, 48, 48, this.drawX, this.drawY, tileDiameter, tileDiameter);
 				}
 			}else{
 
@@ -6808,7 +7161,7 @@ daMenu.draw();
 
 							if(inArea.whatArea == areas[i].n){
 								if(currentRoom==this.inRoom){
-									ctxEntities.drawImage(itemSprite, this.srcX, this.srcY, 30, 30, this.drawX, this.drawY, this.width, this.height);
+									ctxEntities.drawImage(itemsMenu, this.srcX, this.srcY, 48, 48, this.drawX, this.drawY, this.width, this.height);
 								}
 							}
 
@@ -6833,7 +7186,7 @@ Item.prototype.pickUp = function(){
 
 var itemAdd=false;
 var noItemAdd=false;
-var memberJ;
+var itemToIncrement;
 
 var gunAdd=false;
 var noGunAdd=false;
@@ -6871,16 +7224,19 @@ if(newCenterX>this.centerX-this.width/2&&newCenterX<this.centerX+this.width/2&&n
 					for(var j=0; j<player1.items.length; j++){
 						if(player1.items.length==1){
 							itemAdd=true;
-
+							console.log("number "+ player1.items[j].itemNumber + "  amount "+ player1.items[j].amount);
 						}else if(player1.items.length>1){
 						  
 							if(this.itemNumber!=player1.items[j].itemNumber&&j!=0){
 							   itemAdd=true;
-								
+								console.log("number "+ player1.items[j].itemNumber + "  amount "+ player1.items[j].amount);
+
 							}else if(this.itemNumber==player1.items[j].itemNumber&&j!=0) {
 							
+								console.log("ITEM #!! "+this.itemNumber);
+
 							  	noItemAdd=true;   
-								memberJ=j;  
+								itemToIncrement=player1.items[j].itemNumber;  
 							}
 						}
 						
@@ -6900,8 +7256,13 @@ if(newCenterX>this.centerX-this.width/2&&newCenterX<this.centerX+this.width/2&&n
 					 
 				}else if(this.itemType=="ammo"){
 					menuTrack=1;
-	 
-					//console.log("AMMO");
+	 	
+	 	
+					bullets[this.itemNumber].current+=300;
+
+					if(bullets[this.itemNumber].current>bullets[this.itemNumber].max){
+						bullets[this.itemNumber].current=bullets[this.itemNumber].max;
+					}
 
 				}else if(this.itemType=="life"){
 					//menuTrack=1;
@@ -6918,20 +7279,37 @@ if(newCenterX>this.centerX-this.width/2&&newCenterX<this.centerX+this.width/2&&n
 
 
 				if(itemAdd&&!noItemAdd){  
-					// itemRow=0;
-					if(player1.items.length<=1){
-						player1.items[0]={srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null, itemType:this.itemType, itemNumber:this.itemNumber, amount:1};   
+
+					if(this.select==true){
+						// itemRow=0;
+						if(player1.items.length<=1){
+							player1.items[0]={srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null, itemType:this.itemType, itemNumber:this.itemNumber, amount:1};   
+			
+						}
+
+			//// ADD PARAM >>>>    SELECTABLE/NON-SELECTABLE
+
+
+						player1.items.push({srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null, itemType:this.itemType, itemNumber:this.itemNumber, amount:1});   
+
+						selecto();
+
+  					}else{
+  						player1.nonSelectItems.push({srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null, itemType:this.itemType, itemNumber:this.itemNumber, amount:1}); 
+  					}
+
+				}else if(noItemAdd&&itemToIncrement!="undefined"){
+
+					    ////////////  maybe set a limit to this amount (like secret of Mana's magic 4....)
+					
+
+				
+					for(var j=0; j<player1.items.length; j++){
+						if(player1.items[j].itemNumber==this.itemNumber){
+							player1.items[j].amount++;
+						}
+
 					}
-
-		//// ADD PARAM >>>>    SELECTABLE/NON-SELECTABLE
-
-
-					player1.items.push({srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null, itemType:this.itemType, itemNumber:this.itemNumber, amount:1});   
-  
-				}else if(noItemAdd&&memberJ!="undefined"){
-
-					player1.items[memberJ].amount++;    ////////////  maybe set a limit to this amount (like secret of Mana's magic 4....)
-
 				}
 
 				noItemAdd=false;
@@ -6967,6 +7345,8 @@ if(newCenterX>this.centerX-this.width/2&&newCenterX<this.centerX+this.width/2&&n
 					if(player1.guns.length<=1){
 						//console.log("TYPE "+player1.guns[0].gunType);
 					   player1.guns[0]={srcX:this.srcX, srcY:this.srcY, width:this.width, height:this.height, selec:this.selec, rowSelec:null, trackSelec:null,itemType:this.itemType, itemNumber:this.itemNumber, lifeType:this.lifeType, bullets:0};
+
+
 					   //console.log("TYPE "+player1.guns[0].gunType);
 					}
 
@@ -6977,8 +7357,10 @@ if(newCenterX>this.centerX-this.width/2&&newCenterX<this.centerX+this.width/2&&n
 					//// FORCE select on new weapon
 					
 			
-							
-							bullets[this.itemNumber]+=5000;
+	
+							if(bullets[this.itemNumber].current>bullets[this.itemNumber].max){
+								bullets[this.itemNumber].current=bullets[this.itemNumber].max;
+							}
 								// console.log("BULL "+player1.guns[i+1].bullets);
 								// depending on weapon, first pick could come with a few bullets...
 							
@@ -6987,72 +7369,53 @@ if(newCenterX>this.centerX-this.width/2&&newCenterX<this.centerX+this.width/2&&n
 					if((gunRow+1)<player1.guns.length){
 						gunRow+=1;
 					}
-					console.log(gunRow);
-					///console.log("GR "+gunRow);
+					//console.log(gunRow);
       
 				}
 
 				noGunAdd=false;
 				gunAdd=false;
+       
 
 
-
-				if(this.itemType=="ammo"&&this.inRoom==currentRoom){
-
-
-					for (var i = 0; i<bullets.length; i++) {
-						if(this.itemNumber==i){
-							bullets[i]+=10;
-							//alert(bullets[i]);
-						}
-					}//for
-
-				}           
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		}//// IF this caught
-	
-	   }/// if this in room
+		    }//// IF this caught
+	    }/// if this in room
 
 		//console.log("DE ESTE "+player1.items[1].itemType+"HAY " +player1.items[1].amount); 
 
 	}/// IF  newCenterX == itemCoordinates
    
-}
+};
 
 
 
 
-        // ///////////////////       //  /               //////       // /////////////////  //////       // ///////////////// /  /////        // //////  //    /////  //////       // ////         ////////////        // ////        ////////////        // //////////////////////           /////////////////////
-
-
-
-                    // ///////////////////
-                   //  /               //////
-                   // /////////////////  //////
-                   // ///////////////// /  ///// 
-                   // //////  //    /////  //////
-                   // ////         /////////////
-                   // ////        /////////////
-                   // //////////////////////   
-                    /////////////////////
-
-
-
-//
-//   FOR BULLETS, essentially, copy Player >> draw, direction, check crash (if some gunSelected), animate
-//
-//                  they are created (new Bullet) when shooting (take direction..etc, from player shooting)
 
 
 
 
-							//// player => whoever shot the bullet, in case this ever supports multiplayer
-function activeBullet(id, x,y, xx, yy, w,h, weapon, player, direction, active) {   
+
+
+
+               // ///////////////////                     // ///////////////////
+              //  //              //////                 //  /               //////
+              // /////////////////  //////               // /////////////////  //////
+              // ///////////////// /  /////              // ///////////////// /  ///// 
+              // //////||//   \/////  //////             // //////||//   \/////  //////
+              // ////         /////////////              // ////         /////////////
+              // ////        /////////////               // ////        /////////////
+              // //////////////////////                  // //////////////////////   
+               /////////////////////                      /////////////////////
 
 
 
 
+
+							         
+
+function activeBullet(id, x,y, xx, yy, allX, allY, w,h, weapon, player, direction, active, speed, type, distance) {   
+
+								//// player => whoever shot the bullet, in case this ever supports multiplayer
 	//where in sprite
 	this.id=id;
 	this.srcX = x;
@@ -7063,8 +7426,6 @@ function activeBullet(id, x,y, xx, yy, w,h, weapon, player, direction, active) {
 	//in sprite with & height
 	this.width = w;
 	this.height =  h;
-	this.centerX = this.drawX + (this.width / 2);
-	this.centerY = this.drawY + (this.height / 2);
 
 	this.weapon = weapon; 
 	this.owner = player;  
@@ -7072,98 +7433,208 @@ function activeBullet(id, x,y, xx, yy, w,h, weapon, player, direction, active) {
 	this.active=active;
 
 	///dependent on type
-	this.speed = 10;
+	this.speed=speed;
+
+	this.type=type;
+
+	this.distanceCounter=distance;
+
+	this.allX=allX;
+	this.allY=allY;
 }
 
 
 activeBullet.prototype.update = function () {
 
-	//this.checkBulletDirection();
 
-	//  diff weapons have diff limits!!!   >> flame thrower: remember original drawX|Y and how far its gone <<< cut
-	/// send var down as thou it had crashBed
-	if(this.active){
-	if(this.direction=="down"){
-		this.drawY+=this.speed;
-	}else if(this.direction=="up"){
-		this.drawY-=this.speed;
-	}else if(this.direction=="left"){
-		this.drawX-=this.speed;
-	}else if(this.direction=="right"){
-		this.drawX+=this.speed;
-	}else if(this.direction=="right-up"){
-		this.drawX+=this.speed;
-		this.drawY-=this.speed;
-	}else if(this.direction=="left-up"){
-		this.drawX-=this.speed;
-		this.drawY-=this.speed;
-	}else if(this.direction=="right-down"){
-		this.drawX+=this.speed;
-		this.drawY+=this.speed;
-	}else if(this.direction=="left-down"){
-		this.drawX-=this.speed;
-		this.drawY+=this.speed;
+
+
+	for (var i=0; i< bulletsFired.length; i++) {
+
+		if(bulletsFired[i].weapon==0){
+
+			// if(bulletsFired[i].length>=5){
+			// 	bulletsFired.splice(0,1);
+			// }
+
+			bulletsFired[i].allX.push(bulletsFired[i].drawX);
+			bulletsFired[i].allY.push(bulletsFired[i].drawY);
+
+		}
+
+		if(bulletsFired[i].weapon==0){
+			bulletsFired[i].speed = 44;
+			bulletsFired[i].srcY=0;
+		}else{
+			bulletsFired[i].srcY=48;
+			bulletsFired[i].speed = 20;
+		}
 	}
 
-}
+	this.centerX = (this.drawX + (this.width / 2));
+	this.centerY = (this.drawY + (this.height / 2));
+
+	
+	/// PARAM on bullet << TYPE <<< DIFF BEHAVIOUR below, for different type
+	/// if this type...
+	///			 other types will keep drawX|Y the same, but increase height|width parallel to Player (contraLaser)
+	//																		      or perpendicular (ondas)
+	//											and down on ctxBullet will have their own .fillRect instead
+	//
+	//				maybe  drawX|Y == player drawX|Y and adjusts itelf while holding B button (ultimateLaser)
+	///
+	//              other types will replicate itself in several (slightly tilted) directions (contraSpread)
+	///
+	///     other types release a series of mini bullets (short distance, full circle) around its crash point
+	//												(based on distance of original bullet, or actual crash point)
+	//											of course these mini bullets have their "minu-bullet" type
+	//	
+	//  some type of bullet have distance limits!!! 
+	//							  >> flame thrower:  if this.type == (flameT type)
+	//													this.distCounter++
+	//												if distCounter >= X 
+	//											bullet height|width doesn't exceed this point
+	//													or if (shotgun type)
+	//									   bullet inactive(like crash) >> Func(mini-loop) release minu-bullets 	
+
+	if(this.active){
+		if(this.direction=="down"){
+			this.drawY+=this.speed;
+		}else if(this.direction=="up"){
+			this.drawY-=this.speed;
+		}else if(this.direction=="left"){
+			this.drawX-=this.speed;
+		}else if(this.direction=="right"){
+			this.drawX+=this.speed;
+		}else if(this.direction=="right-up"){
+			this.drawX+=this.speed;
+			this.drawY-=this.speed;
+		}else if(this.direction=="left-up"){
+			this.drawX-=this.speed;
+			this.drawY-=this.speed;
+		}else if(this.direction=="right-down"){
+			this.drawX+=this.speed;
+			this.drawY+=this.speed;
+		}else if(this.direction=="left-down"){
+			this.drawX-=this.speed;
+			this.drawY+=this.speed;
+		}
+
+	}
 
 	if(this.checkcrash().crashB){
 		//console.log(this.checkcrashB().id);
 		if(this.id==this.checkcrash().id){
 			this.active=false;
 		}
-		
-		////////////////////// so basically, because I'm splicing up there and the bullet won't exist anymore
-	}
-
-
-
-
-
-
-//console.log(this.checkcrashB());
+	}/// if this.checkcrash().crashB
 	
 };
 
 
 
-
+var animBullet=0;
+var animBulletX=0;
 
 activeBullet.prototype.draw = function () {
 
 	/// for loop all bullets...
 	//console.log(this.weapon);  //// according to this where to point the Sprite
-	
 
-	if(this.direction!="nowhere"){
-	
-			ctxBullets.drawImage(imgBullets, this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
-		
-					         //// point to debrisAnim +     // this.speed so debris is drawn on same place of crashB...
-			//else
-			//ctxBullets.drawImage(imgBullets, this.srcX+20, this.srcY, this.width, this.height, this.drawX-this.speed, this.drawY, this.width, this.height);
+	animBullet++;
 
 
-			/// here push X to debrisAnim frames
-			////   if srcX >  end of debrisAnim
-
-			//// debrisOver = true; >>>> AND THIS IS THE VAR THAT WILL ACTUALLY CUT THE BULLETS
-			/// so from active (bulletAnim) to inactive (debrisAnim) to debrisOver = dead/splice/recycle
-
-
-			/// bullets are 10 pixels, but debris can be a lot bigger <<< so not this.width but a number, depending on what debri for what weapon (pistol;tiny, bomb:huge (and probably source of new damage, etc...))
-
-			/// IF WEAPON SELECTED = BOMB >> from this.drawX/centerX >>> calculate damage radius
-				///////////////  how????  >> CREATE A  new activeBOMB >> static draxX
-				  //////					       only lasts a few secs, width A LOT bigger than 10
+	for (var i=0; i< bulletsFired.length; i++) {
 		
 
+		if(animBullet>0&&animBullet<=2){
+
+			
+			if(bulletsFired[i].id==bulletsFired[i].id){
+				if(bulletsFired[i].weapon==0){
+					if(bulletsFired[i].direction=="down"||bulletsFired[i].direction=="up"){
+						bulletsFired[i].srcX=0;
+					}else if(bulletsFired[i].direction=="left"||bulletsFired[i].direction=="right"){
+						bulletsFired[i].srcX=144;
+					}else if(bulletsFired[i].direction=="right-down"||bulletsFired[i].direction=="left-up"){
+						bulletsFired[i].srcX=288;
+					}else if(bulletsFired[i].direction=="left-down"||bulletsFired[i].direction=="right-up"){
+						bulletsFired[i].srcX=432;
+					}
+				}else{
+					
+						bulletsFired[i].srcX=0;
+					
+				}
+			}
+
+		}else if(animBullet>2&&animBullet<=4){
+			if(bulletsFired[i].id==bulletsFired[i].id){
+				if(bulletsFired[i].weapon==0){
+					if(bulletsFired[i].direction=="down"||bulletsFired[i].direction=="up"){
+						bulletsFired[i].srcX=48;
+					}else if(bulletsFired[i].direction=="left"||bulletsFired[i].direction=="right"){
+						bulletsFired[i].srcX=192;
+					}else if(bulletsFired[i].direction=="right-down"||bulletsFired[i].direction=="left-up"){
+						bulletsFired[i].srcX=336;
+					}else if(bulletsFired[i].direction=="left-down"||bulletsFired[i].direction=="right-up"){
+						bulletsFired[i].srcX=480;
+					}
+				}else{
+					
+						bulletsFired[i].srcX=48;
+					
+				}
+			}	
+		}else if(animBullet>4&&animBullet<=6){
+			if(bulletsFired[i].id==bulletsFired[i].id){
+				if(bulletsFired[i].weapon==0){
+					if(bulletsFired[i].direction=="down"||bulletsFired[i].direction=="up"){
+						bulletsFired[i].srcX=96;
+					}else if(bulletsFired[i].direction=="left"||bulletsFired[i].direction=="right"){
+						bulletsFired[i].srcX=240;
+					}
+				}else{
+					
+						bulletsFired[i].srcX=96;
+					
+				}
+			}
+		}else if(animBullet>6){
+			animBullet=0;
+		}
+		//console.log("LASTX" +bulletsFired[i].allX[bulletsFired[i].allX.length-1]);
+		// for(var j=0; j<bulletsFired[i].allX.length; j++){
+		// 	ctxBullets.drawImage(imgBullets, this.srcX, this.srcY, this.width, this.height, bulletsFired[i].allX[j], bulletsFired[i].drawY, bulletsFired[i].width, bulletsFired[i].height);
+		// }
+
 		
-	}
+		//ctxBullets.globalAlpha = 0.1;
+		// ctxBullets.drawImage(imgBullets, bulletsFired[i].srcX, bulletsFired[i].srcY, bulletsFired[i].width, bulletsFired[i].height, bulletsFired[i].allX[bulletsFired[i].allX.length-4], bulletsFired[i].allY[bulletsFired[i].allY.length-4], bulletsFired[i].width, bulletsFired[i].height);
+
+		// //ctxBullets.globalAlpha = 0.2;		
+		// ctxBullets.drawImage(imgBullets, bulletsFired[i].srcX, bulletsFired[i].srcY, bulletsFired[i].width, bulletsFired[i].height, bulletsFired[i].allX[bulletsFired[i].allX.length-3], bulletsFired[i].allY[bulletsFired[i].allY.length-3], bulletsFired[i].width, bulletsFired[i].height);
+			
+		// //ctxBullets.globalAlpha = 0.3;
+		// ctxBullets.drawImage(imgBullets, bulletsFired[i].srcX, bulletsFired[i].srcY, bulletsFired[i].width, bulletsFired[i].height, bulletsFired[i].allX[bulletsFired[i].allX.length-2],bulletsFired[i].allY[bulletsFired[i].allY.length-2], bulletsFired[i].width, bulletsFired[i].height);
+			
+		// //ctxBullets.globalAlpha = 0.6;
+		// ctxBullets.drawImage(imgBullets, bulletsFired[i].srcX, bulletsFired[i].srcY, bulletsFired[i].width, bulletsFired[i].height, bulletsFired[i].allX[bulletsFired[i].allX.length-1], bulletsFired[i].allY[bulletsFired[i].allY.length-1], bulletsFired[i].width, bulletsFired[i].height);
+			
+
+		//ctxBullets.globalAlpha = 1;
+		ctxBullets.drawImage(imgBullets, bulletsFired[i].srcX, bulletsFired[i].srcY, bulletsFired[i].width, bulletsFired[i].height, bulletsFired[i].drawX, bulletsFired[i].drawY, bulletsFired[i].width, bulletsFired[i].height);
+
+		///SO if it seems to get thicker, is because bullet never leaves and it keeps being drawn on top (0.1 + 0.1 +0.1 until it looks perfectly solid....)
+		// actually it is (0.6, first, then 0.6+0.3, then 0.6+0.3+0.2 , etc.... )
+
+		/// or I could do the effect using yet more sprites..
+
+
+
+	}// FOR bulletsFired.length
 	//console.log(this.owner);
 };
-
-
 
 
 
@@ -7179,13 +7650,13 @@ activeBullet.prototype.checkcrash = function () {
 
 			if(this.direction=="right"){
 
-				//// repeat this if/else on enemies drawX|Y -+
+				//// repeat this if/else on enemies centerX|Y -+
 
 				///in other words: as long as bullet in the block before the one you would be at if going right
-				if(this.drawY>=obstacles[i].topY&&this.drawY<obstacles[i].bottomY&&this.drawX<=obstacles[i].leftX&&this.drawX>obstacles[i].leftX-8) { ///// 10 => bullet diameter
+				if(this.centerY>=obstacles[i].topY&&this.centerY<obstacles[i].bottomY&&this.centerX<=obstacles[i].leftX&&this.centerX>obstacles[i].leftX-tileDiameter) { ///// 10 => bullet diameter
 
 					//but don't stop me just yet, only if not doing so would put me on the other side 
-					if(this.drawX+this.speed>=obstacles[i].leftX-(this.speed+1)){
+					if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)){
 
 						crashB = true; 
 						id=this.id;
@@ -7199,9 +7670,9 @@ activeBullet.prototype.checkcrash = function () {
 
 			if(this.direction=="left"){
 
-				if(this.drawY<=obstacles[i].bottomY&&this.drawY>obstacles[i].topY&&this.drawX>=obstacles[i].rightX&&this.drawX<obstacles[i].rightX+8){
+				if(this.centerY<=obstacles[i].bottomY&&this.centerY>obstacles[i].topY&&this.centerX>=obstacles[i].rightX&&this.centerX<obstacles[i].rightX+tileDiameter){
 					
-					if(this.drawX-this.speed<=obstacles[i].rightX+(this.speed+1)){
+					if(this.centerX-this.speed<=obstacles[i].rightX+(this.speed+1)){
 
 						    crashB = true;
 							id=this.id;
@@ -7212,9 +7683,9 @@ activeBullet.prototype.checkcrash = function () {
 
 			if(this.direction=="up"){
 
-				if(this.drawX>=obstacles[i].leftX&&this.drawX<obstacles[i].rightX&&this.drawY>=obstacles[i].bottomY&&this.drawY<obstacles[i].bottomY+8) {
+				if(this.centerX>=obstacles[i].leftX&&this.centerX<obstacles[i].rightX&&this.centerY>=obstacles[i].bottomY&&this.centerY<obstacles[i].bottomY+tileDiameter) {
 
-					if(this.drawY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
+					if(this.centerY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
 							crashB = true; 
 							id=this.id;
 					}         
@@ -7222,9 +7693,9 @@ activeBullet.prototype.checkcrash = function () {
 			}   
 			if(this.direction=="down"){
 
-				if(this.drawX>obstacles[i].leftX&&this.drawX<=obstacles[i].rightX&&this.drawY<=obstacles[i].topY&&this.drawY>obstacles[i].topY-8) {
+				if(this.centerX>obstacles[i].leftX&&this.centerX<=obstacles[i].rightX&&this.centerY<=obstacles[i].topY&&this.centerY>obstacles[i].topY-tileDiameter) {
 
-					if(this.drawY+this.speed>=obstacles[i].topY-(this.speed+1)){
+					if(this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
 							crashB = true;  
 							id=this.id;
 					}
@@ -7232,18 +7703,18 @@ activeBullet.prototype.checkcrash = function () {
 			}   
 
 
-////////////////////////////////////////
-//////////////////////////////	         d   I   A   G   O   N   A   L    S
-//////////////////////////////////
+		////////////////////////////////////////
+		//////////////////////////////	         d   I   A   G   O   N   A   L    S
+		//////////////////////////////////
 
 
 			if(this.direction=="right-down"){ 
 
 
-				if(this.drawY>=obstacles[i].topY&&this.drawY<obstacles[i].bottomY&&this.drawX<=obstacles[i].leftX&&this.drawX>obstacles[i].leftX-8) {
+				if(this.centerY>=obstacles[i].topY&&this.centerY<obstacles[i].bottomY&&this.centerX<=obstacles[i].leftX&&this.centerX>obstacles[i].leftX-tileDiameter) {
 
 					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
-					if(this.drawX+this.speed>=obstacles[i].leftX-(this.speed+1)){
+					if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)){
 						// crashB = true;  
 						// doorcrashB(i);
 						
@@ -7254,9 +7725,9 @@ activeBullet.prototype.checkcrash = function () {
 				}
 
 
-				if(this.drawX>obstacles[i].leftX&&this.drawX<=obstacles[i].rightX&&this.drawY<=obstacles[i].topY&&this.drawY>obstacles[i].topY-8) {
+				if(this.centerX>obstacles[i].leftX&&this.centerX<=obstacles[i].rightX&&this.centerY<=obstacles[i].topY&&this.centerY>obstacles[i].topY-tileDiameter) {
 
-					if(this.drawY+this.speed>=obstacles[i].topY-(this.speed+1)){
+					if(this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
 						// crashB = true;
 						// doorcrashB(i);
 				
@@ -7271,11 +7742,11 @@ activeBullet.prototype.checkcrash = function () {
 						// crashB = true;
 						// doorcrashB(i);
 
-				if(this.drawY<=obstacles[i].topY&&this.drawX<=obstacles[i].leftX) {
+				if(this.centerY<=obstacles[i].topY&&this.centerX<=obstacles[i].leftX) {
 
 					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
 					//console.log("WHAT"+player1.direction);
-					if(this.drawX+this.speed>=obstacles[i].leftX-(this.speed+1)&&this.drawY+this.speed>=obstacles[i].topY-(this.speed+1)){
+					if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)&&this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
 						
 							crashB = true;
 							id=this.id;
@@ -7288,25 +7759,15 @@ activeBullet.prototype.checkcrash = function () {
 
 
 
-/////
-///////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/////
+		///////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			if(this.direction=="left-down"){ 
 
-				 if(this.drawY<=obstacles[i].bottomY&&this.drawY>obstacles[i].topY&&this.drawX>=obstacles[i].rightX&&this.drawX<obstacles[i].rightX+8) {
+				 if(this.centerY<=obstacles[i].bottomY&&this.centerY>obstacles[i].topY&&this.centerX>=obstacles[i].rightX&&this.centerX<obstacles[i].rightX+tileDiameter) {
 					
-					if(this.drawX-this.speed<=obstacles[i].rightX+(this.speed+1)){
-					
-							crashB = true;
-							id=this.id;
-						
-					}
-				}
-
-				if(this.drawX>obstacles[i].leftX&&this.drawX<=obstacles[i].rightX&&this.drawY<=obstacles[i].topY&&this.drawY>obstacles[i].topY-8) {
-
-					if(this.drawY+this.speed>=obstacles[i].topY-(this.speed+1)){
+					if(this.centerX-this.speed<=obstacles[i].rightX+(this.speed+1)){
 					
 							crashB = true;
 							id=this.id;
@@ -7314,13 +7775,23 @@ activeBullet.prototype.checkcrash = function () {
 					}
 				}
 
+				if(this.centerX>obstacles[i].leftX&&this.centerX<=obstacles[i].rightX&&this.centerY<=obstacles[i].topY&&this.centerY>obstacles[i].topY-tileDiameter) {
+
+					if(this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
+					
+							crashB = true;
+							id=this.id;
+						
+					}
+				}
 
 
-				if(this.drawY<=obstacles[i].topY&&this.drawX>=obstacles[i].rightX) {
+
+				if(this.centerY<=obstacles[i].topY&&this.centerX>=obstacles[i].rightX) {
 
 					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
 					//console.log(crashBDir);
-					if(this.drawX-this.speed<=obstacles[i].rightX+(this.speed+1)&&this.drawY+this.speed>=obstacles[i].topY-(this.speed+1)){
+					if(this.centerX-this.speed<=obstacles[i].rightX+(this.speed+1)&&this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
 						
 							crashB = true;
 							id=this.id;
@@ -7334,16 +7805,16 @@ activeBullet.prototype.checkcrash = function () {
 			}
 
 
-/////
-///////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/////
+		///////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 			if(this.direction=="left-up"){ 
 
-				if(this.drawY<=obstacles[i].bottomY&&this.drawY>obstacles[i].topY&&this.drawX>=obstacles[i].rightX&&this.drawX<obstacles[i].rightX+8) {
+				if(this.centerY<=obstacles[i].bottomY&&this.centerY>obstacles[i].topY&&this.centerX>=obstacles[i].rightX&&this.centerX<obstacles[i].rightX+8) {
 					
-					if(this.drawX-this.speed<=obstacles[i].rightX+(this.speed+1)){
+					if(this.centerX-this.speed<=obstacles[i].rightX+(this.speed+1)){
 						
 							crashB = true;
 							id=this.id;
@@ -7351,9 +7822,9 @@ activeBullet.prototype.checkcrash = function () {
 					}
 				}
 
-				if(this.drawX>=obstacles[i].leftX&&this.drawX<obstacles[i].rightX&&this.drawY>=obstacles[i].bottomY&&this.drawY<obstacles[i].bottomY+8) {
+				if(this.centerX>=obstacles[i].leftX&&this.centerX<obstacles[i].rightX&&this.centerY>=obstacles[i].bottomY&&this.centerY<obstacles[i].bottomY+8) {
 
-					if(this.drawY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
+					if(this.centerY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
 						
 							crashB = true;
 							id=this.id;
@@ -7362,11 +7833,11 @@ activeBullet.prototype.checkcrash = function () {
 				}
 
 
-				if(this.drawY>=obstacles[i].bottomY&&this.drawX>=obstacles[i].rightX) {
+				if(this.centerY>=obstacles[i].bottomY&&this.centerX>=obstacles[i].rightX) {
 
 					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
 					//console.log(crashBDir);
-					if(this.drawX-this.speed<=obstacles[i].rightX+(this.speed+1)&&this.drawY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
+					if(this.centerX-this.speed<=obstacles[i].rightX+(this.speed+1)&&this.centerY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
 					
 							crashB = true;
 							id=this.id;
@@ -7383,9 +7854,9 @@ activeBullet.prototype.checkcrash = function () {
 
 	if(this.direction=="right-up"){ 
 
-				if(this.drawX>=obstacles[i].leftX&&this.drawX<obstacles[i].rightX&&this.drawY>=obstacles[i].bottomY&&this.drawY<obstacles[i].bottomY+8) {
+				if(this.centerX>=obstacles[i].leftX&&this.centerX<obstacles[i].rightX&&this.centerY>=obstacles[i].bottomY&&this.centerY<obstacles[i].bottomY+tileDiameter) {
 
-					if(this.drawY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
+					if(this.centerY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
 				
 							crashB = true;
 							id=this.id;
@@ -7394,10 +7865,10 @@ activeBullet.prototype.checkcrash = function () {
 				}
 
 					///in other words: as long as you are standing in the block before what would be the next one when going right
-				if(this.drawY>=obstacles[i].topY&&this.drawY<obstacles[i].bottomY&&this.drawX<=obstacles[i].leftX&&this.drawX>obstacles[i].leftX-8) {
+				if(this.centerY>=obstacles[i].topY&&this.centerY<obstacles[i].bottomY&&this.centerX<=obstacles[i].leftX&&this.centerX>obstacles[i].leftX-tileDiameter) {
 
 						//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
-						if(this.drawX+this.speed>=obstacles[i].leftX-(this.speed+1)){
+						if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)){
 						
 								crashB = true;
 								id=this.id;
@@ -7407,18 +7878,15 @@ activeBullet.prototype.checkcrash = function () {
 					}
 				
 
-				if(this.drawY>=obstacles[i].bottomY&&this.drawX<=obstacles[i].leftX) {
+				if(this.centerY>=obstacles[i].bottomY&&this.centerX<=obstacles[i].leftX) {
 
 					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
 					//console.log(crashBDir);
-					if(this.drawX+this.speed>=obstacles[i].leftX-(this.speed+1)&&this.drawY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
+					if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)&&this.centerY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
 				
 							crashB = true;
 							id=this.id;
-							//crashBDir="right-down";
-						
 
-						// crashBDir="right";
 					}
 				}
 
@@ -7433,4 +7901,4 @@ activeBullet.prototype.checkcrash = function () {
 	} else {
 		return {crashB:false, id:id};
 	}	
-}
+}// END Bullet-Check-Crash

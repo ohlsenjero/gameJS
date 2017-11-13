@@ -169,6 +169,11 @@ var doorOpening = [];
 var doorsOpened = [];
 var doorClosing = [];
 
+var twoDoors = [];
+
+var breakOpen = [];
+var breakClose = [];
+
 var opening = false;
 var doorBlock =false;
 var blockedDoorIndex =[];
@@ -220,27 +225,27 @@ function whatRoomMap(map){
 	/// first: the basic layout and tile definition
 	if(map=="room-1"){
 		return  [222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,101,350,100,190,190,100,100,100,100,502,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,
-				 100,100,222,100,100,227,100,100,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 503,100,227,227,100,222,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,
-				 100,227,222,222,222,100,100,100,100,100,100,227,227,100,100,222,100,222,100,100,100,100,100,100,100,100,100,100,100,222,
-				 100,222,222,100,100,100,227,227,100,100,100,227,227,227,227,100,100,100,227,227,227,227,227,227,227,227,227,227,227,222,
-				 100,100,100,100,227,100,222,227,100,100,100,222,222,222,222,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,222,214,227,100,222,222,110,111,100,236,236,236,108,108,100,100,222,227,100,222,100,222,222,227,100,222,100,222,
-				 100,100,222,214,222,708,218,222,100,114,100,227,227,227,450,450,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,350,100,190,190,100,100,100,100,100,290,290,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,
+				 100,100,222,100,100,100,100,100,100,100,290,290,290,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 503,100,227,227,100,100,270,100,100,100,290,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,
+				 100,227,222,222,222,100,270,100,100,100,290,227,227,100,100,222,100,222,100,100,100,100,100,100,100,100,100,100,100,222,
+				 100,222,222,100,100,100,270,227,100,100,100,227,227,227,100,100,100,100,227,227,227,227,227,227,227,227,227,227,227,222,
+				 100,100,100,100,227,100,100,227,100,100,100,222,222,222,222,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,222,214,227,452,222,451,451,111,100,236,236,236,107,108,100,100,222,227,100,222,100,222,222,227,100,222,100,222,
+				 100,100,222,214,222,452,222,451,451,114,100,227,227,227,450,450,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
 				 100,100,500,222,222,708,709,222,100,114,100,227,227,227,450,450,227,100,222,222,222,222,222,222,222,222,222,222,222,222,
 				 100,100,500,500,222,708,708,100,110,114,100,400,668,227,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,222,
 				 100,100,100,100,222,222,222,100,112,113,100,400,710,401,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,222,
-				 100,100,100,100,100,100,100,100,100,100,100,227,710,222,714,714,402,100,100,100,100,100,100,100,100,100,100,100,100,222,
-				 100,100,100,100,100,100,100,100,227,100,100,222,222,222,301,301,222,100,227,227,227,227,227,227,227,227,227,227,227,222,
-				 100,100,100,100,160,160,160,100,222,227,100,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,160,160,160,160,160,222,222,100,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,160,160,160,160,160,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,100,100,100,100,100,100,100,100,100,227,710,218,714,714,402,100,100,100,100,100,100,100,100,100,100,100,100,222,
+				 100,100,100,100,100,100,100,100,227,100,100,222,218,218,301,301,222,100,227,227,227,227,227,227,227,227,227,227,227,222,
+				 100,100,100,100,100,100,100,100,222,227,100,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,100,100,160,160,160,100,222,222,100,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,160,160,160,160,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
 				 100,100,100,100,160,160,160,160,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
-				 100,171,100,105,100,160,160,160,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,222,
-				 100,171,170,105,105,100,214,166,222,227,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,171,171,100,105,105,214,166,100,222,222,222,222,222,100,224,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,100,105,222,166,166,160,160,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,181,100,105,160,160,160,160,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,222,
+				 100,181,180,105,100,100,214,170,222,227,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,181,181,100,105,105,214,170,169,222,222,222,222,222,100,224,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,100,105,222,170,170,160,160,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
 				 100,100,100,100,100,100,214,214,214,214,222,160,160,160,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
 
 	/// second floor >>> swap after hitting "transition" area
@@ -261,39 +266,39 @@ function whatRoomMap(map){
 				 100,100,100,100,100,100,100,100,227,100,100,222,222,222,714,714,222,100,227,227,227,227,227,227,227,227,227,227,227,227,
 				 100,100,100,100,160,160,160,100,222,227,100,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
 				 100,100,100,100,160,166,160,160,222,222,100,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,160,166,166,160,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
-				 100,100,100,100,160,166,166,160,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
-				 100,100,100,105,105,166,166,160,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
-				 100,100,100,105,105,166,214,166,222,227,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,105,105,214,166,100,222,222,222,222,222,100,224,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,100,105,222,166,166,160,160,160,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,100,100,160,170,170,160,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,100,100,160,170,170,160,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
+				 100,100,100,105,105,170,170,160,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
+				 100,100,100,105,105,170,214,170,222,227,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,100,100,105,105,214,170,100,222,222,222,222,222,100,224,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,100,105,222,170,170,160,160,160,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
 				 100,100,100,100,100,100,214,214,214,214,222,160,160,160,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
 
  	/// then: what the tiles look like (independent of what they might be)
 	}else if(map=="room-1Over"){
-		return  [100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,350,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,214,100,100,214,110,114,111,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 503,100,214,214,100,222,114,114,114,111,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,214,222,222,222,114,114,114,114,114,100,214,214,100,100,222,100,222,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,222,222,100,100,112,214,214,114,114,100,214,214,214,214,100,100,100,214,214,214,214,214,214,214,214,214,214,214,214,
-				 100,100,100,100,214,100,222,214,114,114,100,222,222,222,227,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,214,214,222,100,232,222,114,114,100,232,232,232,107,108,100,100,222,214,100,222,100,222,222,214,100,222,100,222,
-				 100,100,222,214,222,708,218,222,114,114,100,218,218,218,450,450,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
-				 100,100,500,222,222,708,709,222,114,114,100,218,218,218,450,450,214,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,500,500,222,708,708,114,114,113,100,400,668,218,711,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,100,100,222,222,222,114,113,100,100,400,710,401,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,100,100,100,100,112,113,100,100,100,219,710,222,714,714,402,100,100,100,100,100,100,100,100,100,100,100,100,100,
-				 100,100,100,100,100,100,100,100,219,100,100,222,222,222,301,301,222,100,214,214,214,214,214,214,214,214,214,214,214,214,
-				 100,100,100,162,160,160,160,161,222,219,100,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,160,160,160,160,160,222,222,100,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,160,160,160,160,160,100,100,100,100,222,222,100,100,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
-				 100,100,100,164,160,160,160,160,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
-				 100,171,100,105,164,160,160,160,219,100,100,222,222,222,710,222,101,100,214,214,214,214,214,214,214,214,214,214,214,214,
-				 100,171,170,105,105,100,214,166,222,219,100,222,222,222,710,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,171,171,100,105,105,214,166,167,222,214,222,222,222,100,218,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,100,105,222,166,166,160,160,161,222,222,100,100,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
-				 100,100,100,100,100,100,214,214,214,214,214,160,160,160,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
+		return  [102,102,102,102,102,102,102,102,102,102,102,102,102,102,102,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 100,100,350,102,102,100,102,100,100,100,100,290,290,105,102,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,100,222,100,102,100,114,114,114,100,290,290,290,105,105,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 503,100,214,214,102,100,270,114,114,114,290,105,105,100,105,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 102,214,222,222,222,114,270,114,114,114,290,214,214,100,100,222,100,222,100,100,100,100,100,100,100,100,100,100,100,100,
+				 102,222,222,100,100,114,270,214,114,114,102,214,214,214,102,102,100,100,214,214,214,214,214,214,214,214,214,214,214,214,
+				 102,102,100,100,214,100,100,214,114,114,102,222,222,222,222,102,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 102,102,214,214,222,452,222,451,451,114,102,232,232,232,107,108,100,100,222,214,100,222,100,222,222,214,100,222,100,222,
+				 102,102,222,214,222,452,220,451,451,114,102,218,218,218,450,450,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
+				 102,100,500,222,222,708,709,222,114,114,102,218,218,218,450,450,214,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 102,100,500,500,222,708,708,114,114,114,102,400,668,218,711,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,100,100,100,222,222,222,114,114,100,102,400,710,401,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,100,102,100,100,100,114,114,102,100,102,219,710,232,714,714,402,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 102,102,102,102,102,102,102,102,219,100,102,222,222,222,301,301,222,100,214,214,214,214,214,214,214,214,214,214,214,214,
+				 182,183,114,162,165,165,165,161,222,219,102,222,222,222,301,301,222,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 181,184,114,167,160,160,160,160,222,222,102,222,222,222,301,301,222,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 181,184,180,167,160,160,160,160,168,100,102,100,222,222,100,100,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
+				 181,184,180,167,160,160,160,160,168,100,102,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
+				 181,184,180,164,160,160,160,160,219,100,100,222,222,222,710,222,101,100,214,214,214,214,214,214,214,214,214,214,214,214,
+				 181,184,183,180,164,166,214,171,222,219,100,222,222,222,710,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
+				 181,184,184,183,214,105,214,170,169,222,214,222,222,222,100,218,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 181,184,184,184,222,105,222,170,172,160,160,161,222,222,100,100,100,100,214,222,214,222,214,222,214,222,214,222,214,222,
+				 114,114,114,114,222,100,214,214,214,214,214,160,160,168,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
 
 
 
@@ -310,13 +315,13 @@ function whatRoomMap(map){
 				 100,100,222,250,227,100,222,222,100,100,100,236,236,236,100,100,227,100,222,227,100,222,100,222,222,227,100,222,100,222,
 				 100,100,668,250,222,710,236,222,100,100,100,227,227,227,108,227,227,100,227,222,227,222,227,222,227,222,227,222,227,222,
 				 100,100,100,222,222,710,714,222,100,100,100,227,227,227,668,227,227,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,222,710,710,110,100,100,100,227,227,227,710,218,218,100,100,100,100,669,100,100,100,100,100,100,100,100,
+				 100,100,100,100,222,710,710,290,100,100,100,227,227,227,710,218,218,100,100,100,100,669,100,100,100,100,100,100,100,100,
 				 100,100,100,100,222,222,222,100,100,100,100,403,710,222,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,100,100,501,100,100,100,100,100,100,227,710,222,714,710,222,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,100,100,100,161,160,162,227,100,100,222,222,222,714,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
 				 100,100,100,100,160,160,160,160,222,227,100,222,222,222,100,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,160,166,160,160,222,222,100,222,222,222,222,222,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,163,166,160,162,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,100,100,160,170,160,160,222,222,100,222,222,222,222,222,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,163,170,160,162,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
 				 100,100,500,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
 				 100,100,100,100,100,100,100,100,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
 				 100,100,100,100,105,105,105,100,222,100,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
@@ -332,13 +337,13 @@ function whatRoomMap(map){
 				 100,100,222,250,227,100,222,222,100,100,100,236,236,236,100,100,227,100,222,227,100,222,100,222,222,227,100,222,100,222,
 				 100,100,668,250,222,710,236,222,100,668,100,227,227,227,108,227,227,100,227,222,227,222,227,222,227,222,227,222,227,222,
 				 100,100,500,222,222,710,714,222,100,100,100,227,227,227,450,227,227,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,500,500,222,710,710,110,100,100,100,227,227,227,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
+				 100,100,500,500,222,710,710,290,100,100,100,227,227,227,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,100,100,222,222,222,100,100,100,100,403,710,401,710,218,218,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,100,100,100,100,100,100,100,100,100,227,710,222,714,710,402,100,100,100,100,100,100,100,100,100,100,100,100,100,
 				 100,100,501,100,100,100,160,100,227,100,100,222,222,222,714,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
 				 100,100,100,100,160,160,160,100,222,227,100,222,222,222,714,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222,
-				 100,100,100,100,160,166,160,160,222,222,100,222,222,222,301,222,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
-				 100,100,100,100,100,166,160,100,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
+				 100,100,100,100,160,170,160,160,222,222,100,222,222,222,301,222,100,100,100,222,100,222,100,222,100,222,100,222,100,222,
+				 100,100,100,100,100,170,160,100,100,100,100,100,222,222,100,100,100,100,227,222,227,222,227,222,227,222,227,222,227,222,
 				 100,100,500,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,222,222,222,222,222,222,222,222,222,222,222,222, 
 				 100,100,100,100,100,100,100,100,227,100,100,222,222,222,720,222,101,100,227,227,227,227,227,227,227,227,227,227,227,227,
 				 100,100,100,100,105,105,105,100,222,227,100,222,222,222,720,222,100,100,222,222,222,222,222,222,222,222,222,222,222,222];
@@ -692,6 +697,8 @@ function checkKey(e, value, checkArrows) {
 
 			if(keysPressed[49]){
 
+				menuTrack=0;
+
 				if(player1.direction!="room-change"&&player1.items.length>1){
 					if(itemDecrementCount==0){
 						player1.usingItem=true;
@@ -778,7 +785,7 @@ var releaseCounter=false;
 
 function selecto(){
 	////  WHEN A GUNTYPE FIRSTPICK >> GOES AND SELECT IT AND DRAWS IT IN MENU AS CURRENT
-console.log("IT R "+itemRow);
+	//console.log("IT R "+itemRow);
 	if(menuTrack==0){
 
 		//if not true already..
@@ -789,7 +796,7 @@ console.log("IT R "+itemRow);
 			if(itemRow==i){
 				player1.itemSelected=player1.items[i+1].itemNumber;
 
-				console.log("ITEMS?" +player1.itemSelected);
+				//console.log("ITEMS?" +player1.itemSelected);
 				//console.log(player1.items[i+1].itemNumber);
 				menuH_items.rowSelec=i;
 			}
@@ -1697,7 +1704,7 @@ function pause(){
 
 
 ////                                                                                      O B S T A C L E S
-function Obstacle(x, y, w, h, type, id, active, timer, openClosed) {
+function Obstacle(x, y, w, h, type, id, active, timer, openClosed, tindex) {
 	this.drawX = x;
 	this.drawY = y;
 	this.width = w;
@@ -1712,6 +1719,7 @@ function Obstacle(x, y, w, h, type, id, active, timer, openClosed) {
 	this.isDoor = type;
 	this.doorID = id;
 	this.isActive = active;
+	this.Tindex = tindex;
 }
 
 
@@ -1783,6 +1791,9 @@ function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, 
 	doors = new Image();
 	doors.src = "images/door-over-sprites.png";
 
+	puertas = new Image();
+	puertas.src = "images/door-sprites.png";
+
 	doorFrames = new Image();
 	doorFrames.src = "images/door-over.png";
 
@@ -1853,7 +1864,7 @@ function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, 
 		/// areaTrigger: the inside-area they belong to (at which area they will show their second sprite-hook)
 		///	   those that say: "all" never show a "second sprite-hook" and simply go black when at any of these areas
 
-		 tilesOverlayDraw(shiftX, shiftY, img, area, {mapOverDraw}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX, {t:100, areaTrigger:"all"}, {t:101, areaTrigger:"all"}, {t:110, areaTrigger:"all"},{t:105, areaTrigger:"all"},{t:108, areaTrigger:"all"},{t:107, areaTrigger:"all"},{t:110, areaTrigger:"all"},{t:111, areaTrigger:"all"},{t:112, areaTrigger:"all"},{t:113, areaTrigger:"all"},{t:114, areaTrigger:"all"},{t:160, areaTrigger:"all"}, {t:161, areaTrigger:"all"},{t:162, areaTrigger:"all"},{t:166, areaTrigger:"all"} ,{t:167, areaTrigger:"all"} ,{t:163, areaTrigger:"all"},{t:164, areaTrigger:"all"},{t:165, areaTrigger:"all"},{t:170, areaTrigger:"all"}, {t:171, areaTrigger:"all"} ,{t:222, areaTrigger:"all"}, {t:214, areaTrigger:"all"}, {t:218, areaTrigger:"all"}, {t:219, areaTrigger:"uno"}, {t:227, areaTrigger:"uno"}, {t:232, areaTrigger:"uno"}, {t:250, areaTrigger:"uno"}, {t:710, areaTrigger:"uno"}, {t:708, areaTrigger:"dos"}, {t:711, areaTrigger:"uno"}, {t:714, areaTrigger:"uno"}, {t:709, areaTrigger:"dos"}, {t:400, areaTrigger:"uno"}, {t:401, areaTrigger:"uno"},{t:402, areaTrigger:"uno"},{t:500, areaTrigger:"uno"}, {t:502, areaTrigger:"uno"},{t:503, areaTrigger:"uno"}, { t:668, areaTrigger:"uno"}, {t:350, areaTrigger:"all"}, {t:301, areaTrigger:"uno"}, {t:310, areaTrigger:"uno"}, {t:450, areaTrigger:"uno"} ); 
+		 tilesOverlayDraw(shiftX, shiftY, img, area, {mapOverDraw}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX, {t:100, areaTrigger:"all"}, {t:101, areaTrigger:"all"},{t:102, areaTrigger:"all"}, {t:110, areaTrigger:"all"},{t:105, areaTrigger:"all"},{t:108, areaTrigger:"uno"},{t:107, areaTrigger:"uno"},{t:110, areaTrigger:"all"},{t:111, areaTrigger:"all"},{t:112, areaTrigger:"all"},{t:113, areaTrigger:"all"},{t:114, areaTrigger:"all"},{t:160, areaTrigger:"all"}, {t:161, areaTrigger:"all"},{t:162, areaTrigger:"all"}, {t:163, areaTrigger:"all"},{t:164, areaTrigger:"all"},{t:165, areaTrigger:"all"},{t:166, areaTrigger:"all"},{t:167, areaTrigger:"all"},{t:168, areaTrigger:"all"}, {t:170, areaTrigger:"all"} ,{t:169, areaTrigger:"all"}, {t:171, areaTrigger:"all"}, {t:172, areaTrigger:"all"}, {t:173, areaTrigger:"all"}, {t:174, areaTrigger:"all"} ,{t:180, areaTrigger:"all"}, {t:181, areaTrigger:"all"}, {t:182, areaTrigger:"all"}, {t:183, areaTrigger:"all"}, {t:184, areaTrigger:"all"}, {t:222, areaTrigger:"all"}, {t:214, areaTrigger:"all"}, {t:218, areaTrigger:"uno"}, {t:220, areaTrigger:"dos"}, {t:219, areaTrigger:"uno"}, {t:227, areaTrigger:"uno"}, {t:232, areaTrigger:"uno"}, {t:250, areaTrigger:"uno"}, {t:270, areaTrigger:"all"}, {t:271, areaTrigger:"all"}, {t:290, areaTrigger:"all"}, {t:710, areaTrigger:"uno"}, {t:708, areaTrigger:"dos"}, {t:711, areaTrigger:"uno"}, {t:714, areaTrigger:"uno"}, {t:709, areaTrigger:"dos"}, {t:400, areaTrigger:"uno"}, {t:401, areaTrigger:"uno"},{t:402, areaTrigger:"uno"},{t:403, areaTrigger:"uno"},{t:500, areaTrigger:"uno"}, {t:502, areaTrigger:"uno"},{t:503, areaTrigger:"uno"}, { t:668, areaTrigger:"uno"}, {t:350, areaTrigger:"all"}, {t:301, areaTrigger:"uno"}, {t:310, areaTrigger:"uno"}, {t:450, areaTrigger:"uno"} , {t:451, areaTrigger:"dos"}, {t:452, areaTrigger:"dos"}, {t:407, areaTrigger:"dos"}); 
 		 
 	}/// if first pass (define) or second+ (draw)
 	
@@ -1873,7 +1884,7 @@ function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, 
 				   ///    //    //////  ///////         /////    //////  //      ||  || \\   //////   
 
 
-
+var memberID;
 
 var inAct=false;
 
@@ -1895,18 +1906,20 @@ function tilesDefine(newShiftX, newShiftY, img, area, {mapObsL1}, roomNumberTile
 					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default", null, null, null, null, null, null, null, "water"));
 
 				/// end if tile 160
-				}else if(mapObsL1[tileMapIndex]==166){ /////////  doorTOout
+				}else if(mapObsL1[tileMapIndex]==169){ // & maybe many other >> diff types/colors of water
+					obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", mapObsL1[tileMapIndex], "active", tileMapIndex));
+
+				/// end if tile 160
+				}else if(mapObsL1[tileMapIndex]==170){ /////////  doorTOout
 
 					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default", null, null, null, null, null, null, null, "deep-water"));
 					
-					obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed"));
-
-				/// end if tile 166
-				}else if(mapObsL1[tileMapIndex]==170){ 
+				/// end if tile 170
+				}else if(mapObsL1[tileMapIndex]==180){ 
 					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default", null, null, null, null, null, null, null, "orange-lava"));
 
 				/// end if tile 160
-				}else if(mapObsL1[tileMapIndex]==171){ 
+				}else if(mapObsL1[tileMapIndex]==181){ 
 
 					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default", null, null, null, null, null, null, null, "red-lava"));
 
@@ -1916,14 +1929,65 @@ function tilesDefine(newShiftX, newShiftY, img, area, {mapObsL1}, roomNumberTile
 				}
 
 			/// if mapObsL1[tileMapIndex] ==1...	 
-			}else if(mapObsL1[tileMapIndex]>=200&&mapObsL1[tileMapIndex]<249){ ///////// obstacle out
+			}else if(mapObsL1[tileMapIndex]>=200&&mapObsL1[tileMapIndex]<250){ ///////// obstacle out
 
 				//NORMAL OBSACLES
-				obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", mapObsL1[tileMapIndex], "active"));
+				obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", mapObsL1[tileMapIndex], "active", tileMapIndex));
 
-			}else if(mapObsL1[tileMapIndex]>=250&&mapObsL1[tileMapIndex]<275){ ///////// obstacle in area
+			}else if(mapObsL1[tileMapIndex]>=250&&mapObsL1[tileMapIndex]<300){ ///////// obstacle in area
 					 
-				obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "wall", mapObsL1[tileMapIndex], "active"));			
+				inAct=false;
+
+				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight,"default"));
+					
+					if(inActive.length==0){
+						obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed", tileMapIndex));
+					}else{
+						///WHATS HAPPENING:
+						/// inAct keeps track of whether this Tile's number has had any match within the inactive Obstacles.
+						// if at any poin it did, then doesn't matter what happens, inAct is true and the obstacle is not (this way it waits for the whole inActive-obs Array to finish before deciding to draw or not)
+
+						
+
+						for (var a = 0; a < inActive.length; a++) {
+
+							//console.log("DALE  "+inActive[a].tindex);
+							if(inActive[a].ID==mapObsL1[tileMapIndex]){
+
+								if(mapObsL1[tileMapIndex]!=290&&inActive[a].tindex==tileMapIndex){
+									inAct=true;
+
+									memberID = mapObsL1[tileMapIndex];   /// HAS TO BE ARRAY FOR MULTIPLE
+									memberIndex = 	tileMapIndex;
+								}else if(mapObsL1[tileMapIndex]==290){
+									inAct=true;
+
+									memberID = mapObsL1[tileMapIndex];   /// HAS TO BE ARRAY FOR MULTIPLE
+									memberIndex = 	tileMapIndex;
+								}
+								
+
+
+							}else if(inActive[a].ID!=mapObsL1[tileMapIndex]){
+
+								
+								if(!inAct){
+									inAct=false;
+								}
+										 
+							}
+						}
+
+						if(inAct&&mapObsL1[tileMapIndex]==memberID&&tileMapIndex==memberIndex){
+
+							obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "inActive", 30, "closed", tileMapIndex));	
+						}else{
+							obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed", tileMapIndex));		
+						}
+					}// if 4 Active
+
+				/// end if tile 166
+				
 
 			//// AREAS	
 			}else if(mapObsL1[tileMapIndex].toString().substring(0,1)==7&&mapObsL1[tileMapIndex]!=708&&mapObsL1[tileMapIndex]!=709){ ///////// area 1
@@ -1941,23 +2005,30 @@ function tilesDefine(newShiftX, newShiftY, img, area, {mapObsL1}, roomNumberTile
 
 					//// INSIDE DOORS
 			}else if(mapObsL1[tileMapIndex].toString().substring(0,1)==4){ ///////// door in area
-				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno"));
+				if(mapObsL1[tileMapIndex]==400||mapObsL1[tileMapIndex]==401||mapObsL1[tileMapIndex]==402||mapObsL1[tileMapIndex]==403||mapObsL1[tileMapIndex]==450){
+					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "uno"));
+				}else{
+					areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "dos"));
+				}
+				inAct=false;
 						
 				if(inActive.length==0){
-					obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed"));
+					obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed", tileMapIndex));
 				}else{
 					///WHATS HAPPENING:
 					/// inAct keeps track of whether this Tile's number has had any match within the inactive Obstacles.
 					// if at any poin it did, then doesn't matter what happens, inAct is true and the obstacle is not (this way it waits for the whole inActive-obs Array to finish before deciding to draw or not)
 
 					// repeat same for breakableObstacles
-					console.log(inAct);
+					//console.log(inAct);
 
 					for (var a = 0; a < inActive.length; a++) {
-						if(inActive[a]==mapObsL1[tileMapIndex]){
+
+						if(inActive[a].ID==mapObsL1[tileMapIndex]){
+							
 							inAct=true;
 									
-						}else if(inActive[a]!=mapObsL1[tileMapIndex]){
+						}else if(inActive[a].ID!=mapObsL1[tileMapIndex]){
 							if(!inAct){
 								inAct=false;
 							}
@@ -1966,9 +2037,9 @@ function tilesDefine(newShiftX, newShiftY, img, area, {mapObsL1}, roomNumberTile
 					}
 
 					if(inAct){
-						obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "inActive", 30, "closed"));	
+						obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "inActive", 30, "closed", tileMapIndex));	
 					}else{
-						obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed"));		
+						obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed", tileMapIndex));		
 					}
 				}// if 4 Active
 
@@ -1977,19 +2048,19 @@ function tilesDefine(newShiftX, newShiftY, img, area, {mapObsL1}, roomNumberTile
 
 					//// OUTSIDE DOORS	
 			}else if(mapObsL1[tileMapIndex].toString().substring(0,1)==3){ ///////// door out
-
+				inAct=false;
 						/// has to also be an area >> when opened >> so changes from inside room to outside
 				areas.push(new Area(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "default"));
 					 
 					  if(inActive.length==0){
-							obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed"));
+							obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed", tileMapIndex));
 
 				}else{
 
 					for (var a = 0; a < inActive.length; a++) {
-						if(inActive[a]==mapObsL1[tileMapIndex]){
+						if(inActive[a].ID==mapObsL1[tileMapIndex]){
 							inAct=true;	
-						}else if(inActive[a]!=mapObsL1[tileMapIndex]){
+						}else if(inActive[a].ID!=mapObsL1[tileMapIndex]){
 							if(!inAct){
 								inAct=false;
 							} 
@@ -1997,11 +2068,11 @@ function tilesDefine(newShiftX, newShiftY, img, area, {mapObsL1}, roomNumberTile
 					}
 
 					if(inAct){
-						obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "inActive", 30, "closed")//// ID has to be = to the tileNumber
+						obstacles.push(new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "inActive", 30, "closed", tileMapIndex)//// ID has to be = to the tileNumber
 						);			
 					}else{
 						obstacles.push(
-						new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed"));	
+						new Obstacle(tileIndexX+shiftX, tileIndexY+shiftY, tileWidthHeight, tileWidthHeight, "door", mapObsL1[tileMapIndex], "active", 30, "closed", tileMapIndex));	
 					}
 				}// if 3  Active
 
@@ -2051,11 +2122,84 @@ function tilesDefine(newShiftX, newShiftY, img, area, {mapObsL1}, roomNumberTile
 
 
 
+var tileBgMap=[
+						{n:100, a:528, b:0}, 
+						{n:102, a:576, b:0}, 
+						{n:160, a:0, b:0},    ///anim sprites
+						{n:161, a:0, b:0},    ///anim sprites
+						{n:162, a:0, b:0},    ///anim sprites
+						{n:163, a:0, b:0},    ///anim sprites
+						{n:164, a:0, b:0},    ///anim sprites
+						{n:165, a:0, b:0},    ///anim sprites
+						{n:166, a:0, b:0},    ///anim sprites
+						{n:167, a:0, b:0},    ///anim sprites
+						{n:168, a:0, b:0}, 
+						{n:170, a:144, b:0},   ///anim sprites
+						{n:169, a:144, b:0},   ///anim sprites
+
+						{n:171, a:144, b:0}, 
+						{n:172, a:144, b:0}, 
+						{n:173, a:144, b:0}, 
+						{n:174, a:144, b:0}, 
+
+						{n:180, a:288, b:0},    ///anim sprites
+						{n:181, a:432, b:0},   ///anim sprites
+						{n:182, a:432, b:0},   ///anim sprites
+						{n:183, a:432, b:0},
+						{n:184, a:432, b:0},
+
+						{n:101, a:96, b:0},
+						{n:105, a:624, b:0}, 
+
+						
+						{n:114, a:672, b:0},
+					
+
+						{n:108, a:288, b:384, c:0},
+						{n:107, a:288, b:384, c:0},
+
+						{n:214, a:288, b:0},
+						{n:218, a:288, b:384, c:0 },
+						{n:220, a:288, b:384, c:0 },
+
+						{n:219, a:288, b:0, c:0},
+
+						{n:222, a:192, b:0},
+						{n:227, a:192, b:432, c:0},
+						{n:232, a:192, b:432, c:0},
+						{n:250, a:48, b:0},
+
+						{n:270, a:576, b:0},
+						{n:271, a:576, b:0},
+
+						{n:290, a:480, b:0},
+
+						{n:710, a:288, b:336, c:0},
+						{n:708, a:288, b:336, c:0},
+						{n:709, a:288, b:336, c:0},
+						{n:711, a:288, b:336, c:0},
+						{n:714, a:192, b:336, c:0},
+						{n:400, a:288, b:336, c:0},
+						{n:401, a:288, b:336, c:0},
+						{n:402, a:288, b:336, c:0},
+						{n:403, a:288, b:336, c:0},
+						{n:450, a:288, b:48, c:0, top:576, bottom:528},
+						{n:451, a:288, b:48, c:0, top:576, bottom:528},
+						{n:452, a:288, b:48, c:0, top:576, bottom:528},
+						{n:407, a:288, b:48, c:0, top:48, bottom:240},
+
+						{n:301, a:336, b:96, top:144, bottom:96},
+						{n:310, a:336, b:288, top:144, bottom:96},
+						{n:350, a:48, b:0, c:0}, 
+						{n:500, a:720, b:0, c:0}, 
+						{n:668, a:288, b:768, c:0},
+						{n:503, a:672, b:0, c:0}
+						]
 
 
 
-
-
+var puerta1 = false;
+var puerta2 = false;
 
 
 var areaEdgeX=0;
@@ -2076,7 +2220,7 @@ var closeIt;
 
 var doorAnimX = 0;
 
-var doorXanimClose= 0;
+
 
 var doorAnimCount = 0;
 
@@ -2088,6 +2232,9 @@ var doorOpenCounter=30;
 var doorClosingRememberIndex;
 
 var doorClosingRememberId;
+
+
+var FourDoorsOrder=[];
 
 
 var doorGroups=[];
@@ -2115,13 +2262,10 @@ var doorXAnim=0;
 var doorLaps =0;
 
 var manyDoors=0;
-var aver = false;
 
-
-
-
-
-														 //\               
+///little hacks for the door(grops) misbehaviour 
+// because they're all fucked and I should start the whole thing over...
+													 //\               
 														 ///\\				   //\ 
 			     ///////  //    //      ////|            //////     ///////   // \    |||||\
 				   ///    //    //      //               //   //   ///  //   //  \   |/   \\
@@ -2189,7 +2333,43 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 							doorsFound.push(doorGroupsTotal[u].id);
 
-							if(doorGroupsTotal[u].n==4||doorGroupsTotal[u].n==8){
+							if(doorGroupsTotal[u].n==2&&mapOverDraw[tileMapIndex]>=450){
+								columnsPerRow=doorGroupsTotal[u].n/2;
+
+								for (var b = 0; b < doorsFound.length; b++){
+
+									if(doorsFound[b]==doorGroupsTotal[u].id){
+										if(doorCounter<doorGroupsTotal[u].n){
+											doorCounter++;
+										}else{
+											doorCounter=0;
+										}
+											
+									}
+								}
+								//console.log(doorCounter);
+
+								if(inArea.inIt){
+									if(doorCounter<=columnsPerRow){
+										srcX=getTileX(defaultTiles[j].t, "door-top");
+										//console.log(doorCounter);
+									}else{
+										srcX=getTileX(defaultTiles[j].t, "door-bottom");
+										//console.log(doorCounter);
+									}
+								}else if(mapOverDraw[tileMapIndex]<450&&!inArea.inIt){
+
+									if(doorCounter<=columnsPerRow){
+										srcX=getTileX(defaultTiles[j].t, "door-top");
+											//console.log(doorCounter);
+									}else{
+										srcX=getTileX(defaultTiles[j].t, "door-bottom");
+											//console.log(doorCounter);
+									}
+								}
+									
+									/// IF doorGroupsTotal  4 ||8
+							}else if(doorGroupsTotal[u].n==4||doorGroupsTotal[u].n==8){
 								columnsPerRow=doorGroupsTotal[u].n/2;
 
 								for (var b = 0; b < doorsFound.length; b++){
@@ -2295,6 +2475,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 								/// tiles INside areas
 								srcX=getTileX(defaultTiles[j].t, "b");
 							}else{
+
+								/// C then is whatever area you are ON this tile is not
 								srcX=getTileX(defaultTiles[j].t, "c");
 							}
 
@@ -2305,6 +2487,10 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 					done=false; // goes back to false to check next Tile (maybe a door, maybe not)
 					
+
+
+					//// DO  C AREAS FOR IN-WALLS!!!
+
 
 
 					//     	   TILE  
@@ -2319,55 +2505,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 					//  TILE srcX >> Area-PAIR COMBINATIONS
 					function getTileX(tileID, tileArea){
 	
-						tileBgMap=[
-						{n:100, a:48, b:0}, 
-						{n:160, a:0, b:0},    ///anim sprites
-						{n:161, a:0, b:0},    ///anim sprites
-						{n:162, a:0, b:0},    ///anim sprites
-						{n:163, a:0, b:0},    ///anim sprites
-						{n:164, a:0, b:0},    ///anim sprites
-						{n:165, a:0, b:0},    ///anim sprites
-						{n:166, a:144, b:0},   ///anim sprites
-						{n:167, a:144, b:0},   ///anim sprites
-						{n:170, a:288, b:0},    ///anim sprites
-						{n:171, a:432, b:0},   ///anim sprites
-
-						{n:101, a:96, b:0},
-						{n:105, a:48, b:0}, 
-						{n:108, a:288, b:384},
-						{n:107, a:288, b:384},
-
-						{n:110, a:480, b:0},
-						{n:111, a:528, b:0},
-						{n:112, a:576, b:0},
-						{n:113, a:614, b:0},
-						{n:114, a:672, b:0},
-					
-
-						{n:214, a:288, b:432},
-						{n:218, a:288, b:384},
-						{n:219, a:288, b:0, c:0},
-						{n:222, a:192, b:864},
-						{n:227, a:192, b:432, c:0},
-						{n:232, a:192, b:432, c:0},
-						{n:250, a:48, b:0},
-						{n:710, a:288, b:336, c:0},
-						{n:708, a:288, b:336, c:0},
-						{n:709, a:288, b:336, c:0},
-						{n:711, a:288, b:336, c:0},
-						{n:714, a:192, b:336, c:0},
-						{n:400, a:288, b:336, c:0},
-						{n:401, a:288, b:336, c:0},
-						{n:402, a:288, b:336, c:0},
-						{n:403, a:288, b:336, c:0},
-						{n:450, a:288, b:48, c:0, top:48, bottom:240},
-						{n:301, a:336, b:288, top:144, bottom:96},
-						{n:310, a:336, b:288, top:144, bottom:96},
-						{n:350, a:48, b:0, c:0}, 
-						{n:500, a:720, b:0, c:0}, 
-						{n:668, a:288, b:768, c:0},
-						{n:503, a:672, b:0, c:0}
-						]
+						
 
 
 						for(var i = 0; i <tileBgMap.length; i++){
@@ -2521,6 +2659,11 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 							if(mapOverDraw[tileMapIndex].toString().substring(0,2)>=10&&mapOverDraw[tileMapIndex].toString().substring(0,2)<16){
 
+
+
+
+
+
 								ctxBg.drawImage(img, srcX, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
 
 								//ctxBg.drawImage(anim, srcX+xAnim, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
@@ -2549,13 +2692,115 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 												tallerDoor=20;
 
 												if(doorOpening[q].id==mapOverDraw[tileMapIndex+1]||doorOpening[q].id==mapOverDraw[tileMapIndex-1]){
-													  if(mapOverDraw[tileMapIndex-1]>=400&&mapOverDraw[tileMapIndex-1]<450){
-														ctxOverlay.drawImage(doors, 0+doorOpening[q].animX, 60, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-															// ctxOverlay.drawImage(doors, 0+doorOpening[q].animX, 60, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-													}else{
-														ctxOverlay.drawImage(doors, 0+doorOpening[q].animX, 0, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-															// ctxOverlay.drawImage(doors, 0+doorOpening[q].animX, 0, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-													}  
+													if(mapOverDraw[tileMapIndex-1]>=400&&mapOverDraw[tileMapIndex-1]<450){
+
+											///  NOT OVERLAY OVER PLAYER but needs to be OVER EDGES...
+											//// >>>>>> another Canvas >> Z-INDEX just in between
+											if(calculateDoors("howmany", false, true)==2){
+
+												/// NOW I CAN DISTINGUISH THEM!!!!
+										
+													twoDoors.push({id:mapOverDraw[tileMapIndex-1], index:tileMapIndex-1, topbot:undefined});
+												
+
+												var top;
+												var bottom;
+
+												var botMatch=false;
+
+												for(var p=0; p< twoDoors.length; p++){
+														
+															for(var r=0; r< twoDoors.length; r++){
+
+																if(p!=0){
+																	if(twoDoors[p].index-roomNumberTilesX==twoDoors[r].index){
+
+																		botMatch=true;
+																		twoDoors[p].topbot="bottom";
+																		//console.log("why TOP" +twoDoors[p].index);
+
+																	}else{
+																		if(!botMatch){
+																			twoDoors[p].topbot="top";
+																		}
+																	}
+																}else{
+																	twoDoors[p].topbot="top";
+																}
+															}
+															botMatch=false;
+													
+															if(twoDoors[p].topbot=="top"&&(tileMapIndex-1)==twoDoors[p].index){
+
+																ctxOverlay.drawImage(puertas, 0+doorOpening[q].animX, 228, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+															}else{
+																
+																ctxOverlay.drawImage(puertas, 0+doorOpening[q].animX, 288, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+															}
+														/// and the smaller number// or first one,  will be the Top..
+													}
+											
+
+
+											}else{
+												ctxOverlay.drawImage(puertas, 0+doorOpening[q].animX, 60, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+											}
+											
+										}else if(mapOverDraw[tileMapIndex+1]>=400&&mapOverDraw[tileMapIndex+1]<450){
+
+											if(calculateDoors("howmany", true, false)==2){
+
+												/// NOW I CAN DISTINGUISH THEM!!!!
+												
+													twoDoors.push({id:mapOverDraw[tileMapIndex+1], index:tileMapIndex+1, topbot:undefined});
+												
+
+												var top;
+												var bottom;
+
+												var botMatch=false;
+
+												for(var p=0; p< twoDoors.length; p++){
+														
+															for(var r=0; r< twoDoors.length; r++){
+
+																if(p!=0){
+																	if(twoDoors[p].index-roomNumberTilesX==twoDoors[r].index){
+
+																		botMatch=true;
+																		twoDoors[p].topbot="bottom";
+																		//console.log("why TOP" +twoDoors[p].index);
+
+																	}else{
+																		if(!botMatch){
+																			twoDoors[p].topbot="top";
+																		}
+																	}
+																}else{
+																	twoDoors[p].topbot="top";
+																}
+															}
+															botMatch=false;
+													
+															if(twoDoors[p].topbot=="top"&&(tileMapIndex+1)==twoDoors[p].index){
+
+																ctxOverlay.drawImage(puertas, 0+doorOpening[q].animX, 120, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+															}else{
+																
+																ctxOverlay.drawImage(puertas, 0+doorOpening[q].animX, 180, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+															}
+														/// and the smaller number// or first one,  will be the Top..
+													}
+
+												////if top (half of the) door, draw srcY here, else Y there
+
+											
+
+
+											}else{
+												ctxOverlay.drawImage(puertas, 0+doorOpening[q].animX, 60, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+											}
+										}   
 												}
 
 
@@ -2567,23 +2812,23 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 											}
 									   
 
-											if(!doorOpened){
+											// if(!doorOpened){
 
-										 		tallerDoor=20;
-												   ////  NOT THAT SAME SPRITE but a different one >> ROUNDED
-												if(doorOpening[q].id==mapOverDraw[tileMapIndex+1]||doorOpening[q].id==mapOverDraw[tileMapIndex-1]){
+										 // 		tallerDoor=20;
+											// 	   ////  NOT THAT SAME SPRITE but a different one >> ROUNDED
+											// 	if(doorOpening[q].id==mapOverDraw[tileMapIndex+1]||doorOpening[q].id==mapOverDraw[tileMapIndex-1]){
 													
-													if(mapOverDraw[tileMapIndex-1]>=400&&mapOverDraw[tileMapIndex-1]<450){
-														ctxOverlay.drawImage(doors, 0+doorOpening[q].animX, 60, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-													}else{
-														ctxOverlay.drawImage(doors, 0+doorOpening[q].animX, 0, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-													}  
-												}
+											// 		if(mapOverDraw[tileMapIndex-1]>=400&&mapOverDraw[tileMapIndex-1]<450){
+											// 			ctxOverlay.drawImage(doors, 0+doorOpening[q].animX, 60, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+											// 		}else{
+											// 			ctxOverlay.drawImage(doors, 0+doorOpening[q].animX, 0, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+											// 		}  
+											// 	}
 
-											}else{
-												/// without this it could never draw another door
-												doorOpened=false;    
-											}
+											// }else{
+											// 	/// without this it could never draw another door
+											// 	doorOpened=false;    
+											// }
 										}/// FOR doorOpening.length
 
 
@@ -2617,15 +2862,130 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 												tallerDoor=20;
 
-												if(doorClosing[q].id==mapOverDraw[tileMapIndex+1]||doorClosing[q].id==mapOverDraw[tileMapIndex-1]){
-													  if(mapOverDraw[tileMapIndex-1]>=400&&mapOverDraw[tileMapIndex-1]<450){
-														ctxOverlay.drawImage(doors, 0+doorXanimClose, 60, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-															// ctxOverlay.drawImage(doors, 0+doorOpening[q].animX, 60, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-													}else{
-														ctxOverlay.drawImage(doors, 0+doorXanimClose, 0, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-															// ctxOverlay.drawImage(doors, 0+doorOpening[q].animX, 0, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-													}  
-												}
+												
+
+													if(mapOverDraw[tileMapIndex-1]>=400&&mapOverDraw[tileMapIndex-1]<450){
+
+											///  NOT OVERLAY OVER PLAYER but needs to be OVER EDGES...
+											//// >>>>>> another Canvas >> Z-INDEX just in between
+											if(calculateDoors("howmany", false, true)==2){
+
+												/// NOW I CAN DISTINGUISH THEM!!!!
+												
+													twoDoors.push({id:mapOverDraw[tileMapIndex-1], index:tileMapIndex-1, topbot:undefined});
+												
+
+												var top;
+												var bottom;
+
+												var botMatch=false;
+
+												for(var p=0; p< twoDoors.length; p++){
+														
+															for(var r=0; r< twoDoors.length; r++){
+
+																if(p!=0){
+																	if(twoDoors[p].index-roomNumberTilesX==twoDoors[r].index){
+
+																		botMatch=true;
+																		twoDoors[p].topbot="bottom";
+																		//console.log("why TOP" +twoDoors[p].index);
+
+																	}else{
+																		if(!botMatch){
+																			twoDoors[p].topbot="top";
+																		}
+																	}
+																}else{
+																	twoDoors[p].topbot="top";
+																}
+															}
+															botMatch=false;
+													
+															if(twoDoors[p].topbot=="top"&&(tileMapIndex-1)==twoDoors[p].index){
+
+																ctxOverlay.drawImage(puertas, 0+doorClosing[q].animX, 228, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+															}else{
+																
+																ctxOverlay.drawImage(puertas, 0+doorClosing[q].animX, 288, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+															}
+														/// and the smaller number// or first one,  will be the Top..
+													}
+												////if top (half of the) door, draw srcY here, else Y there
+
+
+
+											}else{
+												ctxOverlay.drawImage(puertas, 0+doorClosing[q].animX, 60, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+											}
+											
+										}else if(mapOverDraw[tileMapIndex+1]>=400&&mapOverDraw[tileMapIndex+1]<450){
+
+											if(calculateDoors("howmany", true, false)==2){
+
+												/// NOW I CAN DISTINGUISH THEM!!!!
+												
+												twoDoors.push({id:mapOverDraw[tileMapIndex+1], index:tileMapIndex+1, topbot:undefined});
+
+												//console.log("QUE WEA" +twoDoors.length);
+
+												var top;
+												var bottom;
+
+											var botMatch=false;
+
+												for(var p=0; p< twoDoors.length; p++){
+														
+															for(var r=0; r< twoDoors.length; r++){
+
+																if(p!=0){
+																	if(twoDoors[p].index-roomNumberTilesX==twoDoors[r].index){
+
+																		botMatch=true;
+																		twoDoors[p].topbot="bottom";
+																		//console.log("why TOP" +twoDoors[p].index);
+
+																	}else{
+																		if(!botMatch){
+																			twoDoors[p].topbot="top";
+																		}
+																	}
+																}else{
+																	twoDoors[p].topbot="top";
+																}
+															}
+															botMatch=false;
+													
+															if(twoDoors[p].topbot=="top"&&(tileMapIndex+1)==twoDoors[p].index){
+
+																ctxOverlay.drawImage(puertas, 0+doorClosing[q].animX, 120, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+															}else{
+																
+																ctxOverlay.drawImage(puertas, 0+doorClosing[q].animX, 180, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+															}
+														/// and the smaller number// or first one,  will be the Top..
+													}
+
+												////if top (half of the) door, draw srcY here, else Y there
+
+												// for(var k=0; k< twoDoors.length; k++){
+															
+												// 			if(twoDoors[k].topbot=="top"&&(tileMapIndex+1)==twoDoors[k].index){
+
+												// 				ctxOverlay.drawImage(doors, 0+doorClosing[q].animX, 0, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+												// 			}else{
+																
+												// 				ctxOverlay.drawImage(doors, 0+doorClosing[q].animX, 0, 40, 60, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+												// 			}
+
+														
+												// 		}
+
+											}else{
+												ctxOverlay.drawImage(puertas, 0+doorClosing[q].animX, 0, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+											}
+										}   
+												
 
 
 														tallerDoor=0;
@@ -2657,7 +3017,6 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 										for (var q = 0; q< doorOpening.length; q++) {
 												
 											if(doorOpening[q].id==mapOverDraw[tileMapIndex+1]||doorOpening[q].id==mapOverDraw[tileMapIndex-1]){
-													   
 
 												opened=true; 
 														
@@ -2668,31 +3027,124 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 									/// if NO doors are currently opening
 									}else{
-
+										
 										///// WHEN NOTHING OPENED
+
+
+										////  so here would go the same as down there >>> 	if(!opened){
+									}
+
+									if(!opened){
+										tallerDoor=20;
 										if(mapOverDraw[tileMapIndex-1]>=400&&mapOverDraw[tileMapIndex-1]<450){
 
 											///  NOT OVERLAY OVER PLAYER but needs to be OVER EDGES...
 											//// >>>>>> another Canvas >> Z-INDEX just in between
-											ctxOverlay.drawImage(doors, 0, 60, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-											
-										}else{
-											ctxOverlay.drawImage(doors, 0, 0, 40, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
-											
-										}    
-									}
+											if(calculateDoors("howmany", false, true)==2){
 
-									///// AFTER SOMETHING HAS BEEN OPENED >>> opened  remembers a door was opened
-									if(!opened){
-										tallerDoor=20;
-										if(mapOverDraw[tileMapIndex-1]>=400&&mapOverDraw[tileMapIndex-1]<450){
-											ctxOverlay.drawImage(doors, 0, 60, 40, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
-											// THIS JUST SO AS TO HAVE A slight layer of Door OVER player..
-									//  ... diff point in sprite, like a force field player goes into (round door )
+												/// NOW I CAN DISTINGUISH THEM!!!!
+												
+													twoDoors.push({id:mapOverDraw[tileMapIndex-1], index:tileMapIndex-1, topbot:undefined});
+												
 
-										}else{
-											ctxBgTop.drawImage(doors, 0, 0, 40, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
-										}       
+												var top;
+												var bottom;
+
+											var botMatch=false;
+
+												for(var p=0; p< twoDoors.length; p++){
+														
+															for(var r=0; r< twoDoors.length; r++){
+
+																if(p!=0){
+																	if(twoDoors[p].index-roomNumberTilesX==twoDoors[r].index){
+
+																		botMatch=true;
+																		twoDoors[p].topbot="bottom";
+																		//console.log("why TOP" +twoDoors[p].index);
+
+																	}else{
+																		if(!botMatch){
+																			twoDoors[p].topbot="top";
+																		}
+																	}
+																}else{
+																	twoDoors[p].topbot="top";
+																}
+															}
+															botMatch=false;
+													
+															if(twoDoors[p].topbot=="top"&&(tileMapIndex-1)==twoDoors[p].index){
+
+																ctxOverlay.drawImage(puertas, 0, 228, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+															}else if(twoDoors[p].topbot=="bottom"&&(tileMapIndex-1)==twoDoors[p].index){
+																
+																ctxOverlay.drawImage(puertas, 0, 288, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+															}
+														/// and the smaller number// or first one,  will be the Top..
+													}
+
+											
+												
+
+
+											}else{
+												ctxOverlay.drawImage(puertas, 0, 60, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+											}
+											
+										}else if(mapOverDraw[tileMapIndex+1]>=400&&mapOverDraw[tileMapIndex+1]<450){
+
+											if(calculateDoors("howmany", true, false)==2){
+
+												/// NOW I CAN DISTINGUISH THEM!!!!
+												
+													twoDoors.push({id:mapOverDraw[tileMapIndex+1], index:tileMapIndex+1, topbot:undefined});
+												
+
+												var top;
+												var bottom;
+
+											var botMatch=false;
+
+													for(var p=0; p< twoDoors.length; p++){
+														
+															for(var r=0; r< twoDoors.length; r++){
+
+																if(p!=0){
+																	if(twoDoors[p].index-roomNumberTilesX==twoDoors[r].index){
+
+																		botMatch=true;
+																		twoDoors[p].topbot="bottom";
+																		//console.log("why TOP" +twoDoors[p].index);
+
+																	}else{
+																		if(!botMatch){
+																			twoDoors[p].topbot="top";
+																		}
+																	}
+																}else{
+																	twoDoors[p].topbot="top";
+																}
+															}
+															botMatch=false;
+													
+															if(twoDoors[p].topbot=="top"&&(tileMapIndex+1)==twoDoors[p].index){
+
+																ctxOverlay.drawImage(puertas, 0, 120, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+															}else if(twoDoors[p].topbot=="bottom"&&(tileMapIndex+1)==twoDoors[p].index){
+																
+																ctxOverlay.drawImage(puertas, 0, 180, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+															}
+														/// and the smaller number// or first one,  will be the Top..
+													}
+
+												
+
+
+											}else{
+												ctxOverlay.drawImage(puertas, 0, 0, 48, 60, tileIndexX, tileIndexY-20, tileWidthHeight, tileWidthHeight+20);
+											}
+										}   
 									}
 
 								}//If >400<450 
@@ -2700,6 +3152,9 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 							// END if >=10<15    
 							}else if(mapOverDraw[tileMapIndex].toString().substring(0,2)>=16&&mapOverDraw[tileMapIndex].toString().substring(0,2)<19){
+
+
+
 
 								if(mapOverDraw[tileMapIndex]==161){
 									srcY=48;
@@ -2709,8 +3164,38 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 									srcY=144;
 								}else if(mapOverDraw[tileMapIndex]==164){
 									srcY=192;
-								}else if(mapOverDraw[tileMapIndex]==167){
+								}else if(mapOverDraw[tileMapIndex]==165){
 									srcY=240;
+								}else if(mapOverDraw[tileMapIndex]==166){
+									srcY=288;
+								}else if(mapOverDraw[tileMapIndex]==167){
+									srcY=336;
+								}else if(mapOverDraw[tileMapIndex]==168){
+									srcY=384;
+								}else if(mapOverDraw[tileMapIndex]==169){
+									srcY=240;
+								}
+
+
+								if(mapOverDraw[tileMapIndex]==171){
+									srcY=96;
+								}else if(mapOverDraw[tileMapIndex]==172){
+									srcY=48;
+								}else if(mapOverDraw[tileMapIndex]==173){
+									srcY=144;
+								}else if(mapOverDraw[tileMapIndex]==174){
+									srcY=196;
+								}
+
+
+								if(mapOverDraw[tileMapIndex]==181){
+									srcY=144;
+								}else if(mapOverDraw[tileMapIndex]==182){
+									srcY=96;
+								}else if(mapOverDraw[tileMapIndex]==183){
+									srcY=48;
+								}else if(mapOverDraw[tileMapIndex]==184){
+									srcY=0;
 								}
 
 								ctxBg.drawImage(anim, srcX+xAnim, srcY+yyAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
@@ -2747,8 +3232,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 						// ctxBg.drawImage(img, srcX+xAnim, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 
 
-					/// how do I separate this so it draws the right srcX for each part of the door............
-					// ..............................................................................
+						/// how do I separate this so it draws the right srcX for each part of the door............
+						// ..............................................................................
 
 
 								
@@ -2791,20 +3276,37 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 
 
+						if(calculateDoors("howmany")==4){
+
+
+							if(FourDoorsOrder.length==0){
+								FourDoorsOrder.push({id:mapOverDraw[tileMapIndex], index:tileMapIndex});	
+													//console.log("YEAHH "+tileMapIndex);
+							}else {
+
+								for (var i =0; i<FourDoorsOrder.length; i++){
+									if(tileMapIndex >  FourDoorsOrder[i].index+roomNumberTilesX + 1&&(i+1)==FourDoorsOrder.length){
+															//console.log("YEAHH "+tileMapIndex);
+										FourDoorsOrder.push({id:mapOverDraw[tileMapIndex], index:tileMapIndex});
+									}
+								}
+
+							}
+											
+						}
 
 
 
 
-
-					 ///////   ||||||  ||||||  ||////   /////                ///////  |||  || || //|  ||
-					 //   ///  ||||||  ||||||  ||  //  ///                  ///    | |||| || || // | ||/
-					 //  ///   ||||||  ||||||  ||///   //////              ///     ||  |||| || //  |||//
-					 //////    ||||||  ||||||  ||  \\     ///             //       |          //   |  //
-					 ////                              /////             //                           //
+						///////   ||||||  ||||||  ||////   /////                ///////  |||  || || //|  ||
+					 	//   ///  ||||||  ||||||  ||  //  ///                  ///    | |||| || || // | ||/
+					 	//  ///   ||||||  ||||||  ||///   //////              ///     ||  |||| || //  |||//
+					 	//////    ||||||  ||||||  ||  \\     ///             //       |          //   |  //
+					 	////                              /////             //                           //
 
 							///  doorOpening needs to keep track of its own doorAnimC and X...
 							//                     so can open 2+ at the same time >> independent anim				
-
+							//console.log("OPPPP " +doorOpening.length);
 
 						if(doorOpening.length>0){
 
@@ -2821,14 +3323,21 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 									doorOpened=true;
 
-							
 
-									doorOpening[q].animC+=1; 
-
-										
+								///// This below here needed because:
+								//// when 2doors >> the one you touch triggers the anim, but then the next one triggers it again.. but separating only the one you are touching means the anim will run only on both doors when outside only (somehow).. and inArea.inIt only anims the doors you touched... and its complicated and this fixes it... so.
+									
+									if(calculateDoors("howmany")==2){
+										doorOpening[q].animC+=2; 
+									}else if(calculateDoors("howmany")!=2&&calculateDoors("howmany")!=4&&calculateDoors("howmany")!=8&&calculateDoors("howmany")!=6&&calculateDoors("howmany")!=9){
+										doorOpening[q].animC+=4; 
+									}else{
+										doorOpening[q].animC+=1; 
+									}
+									
 
 									if(doorOpening[q].timer==0&&doorOpening[q].closeDone==false){
-										doorClose(doorOpening[q].id, doorOpening[q].animC, doorOpening[q].animX);
+										doorClose(doorOpening[q].id, doorOpening[q].animC, doorOpening[q].animX,tileMapIndex );
 										doorClosingRememberId=doorOpening[q].id;
 											
 										doorOpening[q].closeDone=true;
@@ -2840,29 +3349,31 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 									//   vs
 									/// 3,6,9,11(12)
 
-						/////  MAKE VAR =0 >> that adds +2 or 3 depending if door multiples of 2 or 3 (6,4 vs 9,12)
-							///  and =var to put on this left-hand side
+									/////  MAKE VAR =0 >> that adds +2 or 3 depending if door multiples of 2 or 3 (6,4 vs 9,12)
+									///  and =var to put on this left-hand side
 
-						//otherwise looks weird as it either skips on square or jumps before doing all 3
+									//otherwise looks weird as it either skips on square or jumps before doing all 3
 									
-									if(doorOpening[q].animC>0&&doorOpening[q].animC<=2){
+							
+								
+									if(doorOpening[q].animC>0&&doorOpening[q].animC<=40){
 
 									
 										doorOpening[q].animX=0;
-									}else if(doorOpening[q].animC>2&&doorOpening[q].animC<=4){
+									}else if(doorOpening[q].animC>40&&doorOpening[q].animC<=80){
 										
-										doorOpening[q].animX=40;
-									}else if(doorOpening[q].animC>4&&doorOpening[q].animC<=6){
+										doorOpening[q].animX=48;
+									}else if(doorOpening[q].animC>80&&doorOpening[q].animC<=120){
 										
-										doorOpening[q].animX=80;
+										doorOpening[q].animX=96;
 											
-									}else if(doorOpening[q].animC>6&&doorOpening[q].animC<=7){
+									}else if(doorOpening[q].animC>120&&doorOpening[q].animC<=160){
 										
-										doorOpening[q].animX=120;
-											
-									}else if(doorOpening[q].animC>7){
+								
+											doorOpening[q].animX=144;
 
-										if(calculateDoors("howmany")==4||calculateDoors("howmany")==8){		
+
+										if(calculateDoors("howmany")==4||calculateDoors("howmany")==8||calculateDoors("howmany")==2&&mapOverDraw[tileMapIndex]>=300&&mapOverDraw[tileMapIndex]<350||calculateDoors("howmany")==2&&mapOverDraw[tileMapIndex]>=450&&mapOverDraw[tileMapIndex]<500){		
 											if(doorOpening[q].lap==0){
 
 												doorOpening[q].lap=1; 	
@@ -2870,8 +3381,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 											}else if(doorOpening[q].lap==1){
 												doorOpening[q].lap=2;
 													
-
 											}
+
 											doorOpening[q].animC=0;
 										}else if(calculateDoors("howmany")==6||calculateDoors("howmany")==9){
 											if(doorOpening[q].lap==0){
@@ -2892,7 +3403,10 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 											doorOpening[q].animC=0;
 
 										}
-									}   
+									}  
+										
+									
+									 
 									
 																	
 									
@@ -2901,80 +3415,194 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 									if(mapOverDraw[tileMapIndex]>=350&&mapOverDraw[tileMapIndex]<400){
 										//// first ever pass (no doorsOpen) /// or else already in doorOpening[0,1,2,3..
 										doorX=0;
-										doorY=120;
+										doorY=336;
 										tallerDoor=20;
 									
 										if(!inArea.inIt){
-											ctxOverlay.drawImage(doors, doorX+doorOpening[q].animX, doorY, 40,40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											ctxOverlay.drawImage(puertas, doorX+doorOpening[q].animX, doorY, 48,60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
 										}
 
 									} else if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<450){
 											
 
 											
-										doorX=200;
-										doorY=120;
+										doorX=0;
+										doorY=336;
 										tallerDoor=20;
 
 										if(inArea.inIt){
-											ctxOverlay.drawImage(doors, doorX+doorOpening[q].animX, doorY, 40,40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											if(calculateDoors("howmany", false, false)==2){
+
+													/// NOW I CAN DISTINGUISH THEM!!!!
+													
+														twoDoors.push({id:mapOverDraw[tileMapIndex], index:tileMapIndex, topbot:undefined});
+													
+
+													var top;
+													var bottom;
+
+												var botMatch=false;
+
+													for(var p=0; p< twoDoors.length; p++){
+														
+															for(var r=0; r< twoDoors.length; r++){
+
+																if(p!=0){
+																	if(twoDoors[p].index-roomNumberTilesX==twoDoors[r].index){
+
+																		botMatch=true;
+																		twoDoors[p].topbot="bottom";
+																		//console.log("why TOP" +twoDoors[p].index);
+																		//console.log("HO WMMNYA??" +twoDoors[p].index);
+																	}else{
+																		if(!botMatch){
+																			twoDoors[p].topbot="top";
+																		}
+																	}
+																}else{
+																	twoDoors[p].topbot="top";
+																}
+															}
+															botMatch=false;
+
+														if(mapOverDraw[tileMapIndex]==twoDoors[p].id){
+															if(twoDoors[p].topbot=="top"&&(tileMapIndex)==twoDoors[p].index){
+
+																if(defaultTiles[j].areaTrigger==currentArea){	
+																	ctxOverlay.drawImage(puertas, doorX+doorOpening[q].animX, doorY+60, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+																}
+															}else{
+																
+																	if(defaultTiles[j].areaTrigger==currentArea){	
+																		ctxOverlay.drawImage(puertas, doorX+doorOpening[q].animX, doorY+120, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+																	}
+
+															}
+														}
+														/// and the smaller number// or first one,  will be the Top..
+													}
+
+													for(var p=0; p< twoDoors.length; p++){
+													}
+
+
+												}else{
+													if(defaultTiles[j].areaTrigger==currentArea){	
+														ctxOverlay.drawImage(puertas, doorX+doorOpening[q].animX, doorY, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+													}
+												}
 										}
 
 									}else if(mapOverDraw[tileMapIndex]>=450&&mapOverDraw[tileMapIndex]<499){
 
-										doorY=180;
+										doorY=504;
 
 										tallerDoor=0;
 
 										calculateDoors("static");
 
 										
-										if(calculateDoors("howmany")==4||calculateDoors("howmany")==8){
+
+										
+										if(calculateDoors("howmany")==2||calculateDoors("howmany")==4||calculateDoors("howmany")==8){
 											//alert(calculateDoors("howmany"));
+
+
+
+
 
 											if(doorOpening[q].lap==0){
 												if(calculateDoors("opening")=="top"){ 
-													doorOpening[q].animX = 0;
+													// doorOpening[q].animX = 0;
+													 doorY+=48;
 												}
 											}else if(doorOpening[q].lap==1){
+												if(!doorOpening[q].aver){
+													doorOpening[q].animX = 0;
+													doorOpening[q].aver=true;
+												}
 												if(calculateDoors("opening")=="bottom"){ 
-													doorOpening[q].animX = 120;
+													doorOpening[q].animX = 144;
 												}
 											}else if(doorOpening[q].lap==2){
 											
-													doorOpening[q].animX = 120;
-													
+													doorOpening[q].animX = 144;
+													doorOpening[q].aver=false;
 											} 
 										}else if(calculateDoors("howmany")==9||calculateDoors("howmany")==6){
 											
 
 											if(doorOpening[q].lap==0){
 												if(calculateDoors("opening")=="top"||calculateDoors("opening")=="mid"){ 
-													doorOpening[q].animX = 0;
+													// doorOpening[q].animX = 0;
+													 doorY+=48;
 												}
 											}else if(doorOpening[q].lap==1){
 												if(calculateDoors("opening")=="top"){ 
-													doorOpening[q].animX = 0;
+													// doorOpening[q].animX = 0;
+													 doorY+=48;
 												}else if(calculateDoors("opening")=="bottom"){ 
-													doorOpening[q].animX = 120;
+													doorOpening[q].animX = 144;
 												}
 											}else if(doorOpening[q].lap==2){
 												if(calculateDoors("opening")=="bottom"||calculateDoors("opening")=="mid"){ 
 
-													doorOpening[q].animX = 120;
+													doorOpening[q].animX = 144;
 												}
 
 											}else if(doorOpening[q].lap==3){
 											
-													doorOpening[q].animX = 120;
+													doorOpening[q].animX = 144;
 											} 
 										}/// howmany == 9||6
 												
-										ctxOverlay.drawImage(doors, doorX+doorOpening[q].animX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+										if(defaultTiles[j].areaTrigger==currentArea){	
+											ctxOverlay.drawImage(puertas,0+doorOpening[q].animX, doorY, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+										}else{
+											ctxOverlay.drawImage(img, 0, 0, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+										}
+
+
+
+										if(defaultTiles[j].areaTrigger==currentArea){	
+											if(calculateDoors("howmany")==2){
+												//alert(calculateDoors("howmany"));
+
+												if(calculateDoors("opening")=="top"){ 
+													ctxOverlay.drawImage(edges, 80, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 
+
+													ctxOverlay.drawImage(edges, 120, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+												}
+
+											}
+
+
+											for (var i =0; i<FourDoorsOrder.length; i++){
+												
+												if(FourDoorsOrder[i].index==tileMapIndex){
+													if(calculateDoors("opening")=="top"){ 
+													
+														ctxOverlay.drawImage(edges, 80, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 
+
+														
+													}
+												}else if(FourDoorsOrder[i].index==(tileMapIndex-1)){
+													ctxOverlay.drawImage(edges, 120, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+												}
+
+											}
+
+										}	
+											
+
+											
+										
+
+
 
 									}else if(mapOverDraw[tileMapIndex]>=300&&mapOverDraw[tileMapIndex]<350){
 
-										doorY=180;
+										doorY=504;
 
 										tallerDoor=0;
 										// if doors on top, =+this, then those done, if middle =+this...
@@ -2983,57 +3611,73 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 										calculateDoors("static");
 
 										
-										if(calculateDoors("howmany")==4||calculateDoors("howmany")==8){
+										if(calculateDoors("howmany")==2||calculateDoors("howmany")==4||calculateDoors("howmany")==8){
 											//alert(calculateDoors("howmany"));
 
 											if(doorOpening[q].lap==0){
 												if(calculateDoors("opening")=="top"){ 
-													doorOpening[q].animX = 0;
+													// doorOpening[q].animX = 0;
+													 doorY+=48;
 												}
 											}else if(doorOpening[q].lap==1){
+												if(!doorOpening[q].aver){
+													doorOpening[q].animX = 0;
+													doorOpening[q].aver=true;
+												}
+
 												if(calculateDoors("opening")=="bottom"){ 
-													doorOpening[q].animX = 120;
+													doorOpening[q].animX = 144;
 												}
 											}else if(doorOpening[q].lap==2){
 											
-													doorOpening[q].animX = 120;
-													
+													doorOpening[q].animX = 144;
+													doorOpening[q].aver=false;
 											} 
 										}else if(calculateDoors("howmany")==9||calculateDoors("howmany")==6){
 											//console.log("nueve "+calculateDoors("howmany"));
 											if(doorOpening[q].lap==0){
 												if(calculateDoors("opening")=="top"||calculateDoors("opening")=="mid"){ 
-													doorY+=40;
+													doorY+=48;
 													calculateDoors("static");
 													/// AND ALSO CHANGE  Y   
 												}
 											}else if(doorOpening[q].lap==1){
 												if(calculateDoors("opening")=="top"){ 
-													doorY+=40;
+													doorY+=48;
 													calculateDoors("static");
 													/// AND ALSO CHANGE  Y   
 													/// so as to first repeat a slide, but not showing bg yet
 
 												}else if(calculateDoors("opening")=="bottom"){ 
-													doorOpening[q].animX = 120;
+													doorOpening[q].animX = 144;
 												}
 											}else if(doorOpening[q].lap==2){
+												if(!doorOpening[q].aver){
+													doorOpening[q].animX = 0;
+													doorOpening[q].aver=true;
+												}
 												if(calculateDoors("opening")=="bottom"||calculateDoors("opening")=="mid"){ 
-													doorOpening[q].animX = 120;
+													doorOpening[q].animX = 144;
 												}
 
 											}else if(doorOpening[q].lap==3){
 											
-													doorOpening[q].animX = 120;
-												
+												doorOpening[q].animX = 144;
+												doorOpening[q].aver=false;	
 											} 
 										}/// howmany == 9||6
 												
 										if(inArea.inIt){
-											ctxOverlay.drawImage(doors, doorX+doorOpening[q].animX+200, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											if(defaultTiles[j].areaTrigger==currentArea){	
+												ctxOverlay.drawImage(puertas, doorX+doorOpening[q].animX, doorY, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+
+												ctxOverlay.drawImage(puertas, 0, 600, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											}else{
+												ctxOverlay.drawImage(img, 0, 0, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											}
 										}else{
 
-											ctxOverlay.drawImage(doors, doorX+doorOpening[q].animX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											ctxOverlay.drawImage(puertas, doorX+doorOpening[q].animX, doorY, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
 											
 										}
 									}
@@ -3067,12 +3711,12 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 								if(mapOverDraw[tileMapIndex]>=350&&mapOverDraw[tileMapIndex]<400){
 										//// first ever pass (no doorsOpen) /// or else already in doorOpening[0,1,2,3..
 										doorX=0;
-										doorY=120;
+										doorY=336;
 										tallerDoor=20;
 										
 
 									if(!inArea.inIt){
-										ctxBg.drawImage(doors, doorX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+										ctxBg.drawImage(puertas, doorX, doorY, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
 									}
 
 
@@ -3080,19 +3724,110 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 											
 
 											
-										doorX=200;
-										doorY=120;
+										doorX=0;
+										doorY=336;
 										tallerDoor=20;
 
 										if(inArea.inIt){
-											ctxOverlay.drawImage(doors, doorX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											if(calculateDoors("howmany", false, false)==2){
+
+													/// NOW I CAN DISTINGUISH THEM!!!!
+											
+													twoDoors.push({id:mapOverDraw[tileMapIndex], index:tileMapIndex, topbot:undefined});
+													
+
+													var top;
+													var bottom;
+
+													var botMatch=false;
+
+
+
+													for(var p=0; p< twoDoors.length; p++){
+														
+															for(var r=0; r< twoDoors.length; r++){
+
+																if(p!=0){
+																	if(twoDoors[p].index-roomNumberTilesX==twoDoors[r].index){
+
+																		botMatch=true;
+																		twoDoors[p].topbot="bottom";
+																		//console.log("why TOP" +twoDoors[p].index);
+
+																	}else{
+																		if(!botMatch){
+																			twoDoors[p].topbot="top";
+																		}
+																	}
+																}else{
+																	twoDoors[p].topbot="top";
+																}
+															}
+															botMatch=false;
+													
+															if(twoDoors[p].topbot=="top"&&(tileMapIndex)==twoDoors[p].index){
+
+																if(defaultTiles[j].areaTrigger==currentArea){	
+															ctxOverlay.drawImage(puertas, doorX, doorY+60, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+														}
+															}else{
+																
+																if(defaultTiles[j].areaTrigger==currentArea){	
+															ctxOverlay.drawImage(puertas, doorX, doorY+120, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+														}
+															}
+														/// and the smaller number// or first one,  will be the Top..
+													}
+
+
+
+
+												}else{
+													if(defaultTiles[j].areaTrigger==currentArea){	
+														ctxOverlay.drawImage(puertas, doorX, doorY, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+													}
+												}
 										}
 
 									}else if(mapOverDraw[tileMapIndex]>=450&&mapOverDraw[tileMapIndex]<499){
-										doorX=200;
-										doorY=180;
+										doorX=0;
+										doorY=504;
 										tallerDoor=0;
-										ctxBg.drawImage(doors, doorX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+
+										if(defaultTiles[j].areaTrigger==currentArea){	
+											ctxBg.drawImage(puertas, doorX, doorY, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+										}else{
+											ctxBg.drawImage(img, 0, 0, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+										}
+
+										if(defaultTiles[j].areaTrigger==currentArea){	
+											if(calculateDoors("howmany")==2){
+												//alert(calculateDoors("howmany"));
+
+												if(calculateDoors("opening")=="top"){ 
+													ctxOverlay.drawImage(edges, 80, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 
+
+													ctxOverlay.drawImage(edges, 120, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+												}
+
+											}
+
+											for (var i =0; i<FourDoorsOrder.length; i++){
+												
+												if(FourDoorsOrder[i].index==tileMapIndex){
+													if(calculateDoors("opening")=="top"){ 
+													
+														ctxOverlay.drawImage(edges, 80, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 
+
+														
+													}
+												}else if(FourDoorsOrder[i].index==(tileMapIndex-1)){
+													ctxOverlay.drawImage(edges, 120, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+												}
+
+											}
+
+										}
 											
 									}else if(mapOverDraw[tileMapIndex]>=300&&mapOverDraw[tileMapIndex]<350){
 										//// first ever pass (no doorsOpen) /// or else already in doorOpening[
@@ -3101,11 +3836,18 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 										calculateDoors("static");
 
-										doorY=180;
+										doorY=504;
 										if(inArea.inIt){
-											ctxOverlay.drawImage(doors, doorX+200, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											if(defaultTiles[j].areaTrigger==currentArea){	
+												ctxOverlay.drawImage(puertas, doorX, doorY, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+
+												ctxOverlay.drawImage(puertas, 0, 600, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											}else{
+
+												ctxOverlay.drawImage(img, 0, 0, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											}
 										}else{
-											ctxBg.drawImage(doors, doorX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											ctxBg.drawImage(puertas, doorX, doorY, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
 										}
 									}
 
@@ -3131,30 +3873,122 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 							if(mapOverDraw[tileMapIndex]>=350&&mapOverDraw[tileMapIndex]<400){
 										//// first ever pass (no doorsOpen) /// or else already in doorOpening[0,1,2,3..
 								doorX=0;
-								doorY=120;
+								doorY=336;
 								tallerDoor=20;
 
 								if(!inArea.inIt){
-									ctxBg.drawImage(doors, doorX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+
+									ctxBg.drawImage(puertas, doorX, doorY, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
 								}
 								
 
 							} else if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<450){
 											
 										
-								doorX=200;
-								doorY=120;
+								doorX=0;
+								doorY=336;
 								tallerDoor=20;
 
 								if(inArea.inIt){
-									ctxOverlay.drawImage(doors, doorX, doorY, 40,40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+									if(calculateDoors("howmany", false, false)==2){
+
+													/// NOW I CAN DISTINGUISH THEM!!!!
+													
+														twoDoors.push({id:mapOverDraw[tileMapIndex], index:tileMapIndex, topbot:undefined});
+													
+
+													var top;
+													var bottom;
+
+													var botMatch=false;
+
+													for(var p=0; p< twoDoors.length; p++){
+														
+															for(var r=0; r< twoDoors.length; r++){
+
+																if(p!=0){
+																	if(twoDoors[p].index-roomNumberTilesX==twoDoors[r].index){
+
+																		botMatch=true;
+																		twoDoors[p].topbot="bottom";
+																		//console.log("why TOP" +twoDoors[p].index);
+
+																	}else{
+																		if(!botMatch){
+																			twoDoors[p].topbot="top";
+																		}
+																	}
+																}else{
+																	twoDoors[p].topbot="top";
+																}
+															}
+															botMatch=false;
+													
+															if(twoDoors[p].topbot=="top"&&(tileMapIndex)==twoDoors[p].index){
+
+																if(defaultTiles[j].areaTrigger==currentArea){	
+															ctxOverlay.drawImage(puertas, doorX, doorY+60, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+														}
+															}else{
+																
+																if(defaultTiles[j].areaTrigger==currentArea){	
+															ctxOverlay.drawImage(puertas, doorX, doorY+120, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+														}
+															}
+														/// and the smaller number// or first one,  will be the Top..
+													}
+
+
+												}else{
+													if(defaultTiles[j].areaTrigger==currentArea){	
+														ctxOverlay.drawImage(puertas, doorX, doorY, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+													}
+												}
 								}
 
 							}else if(mapOverDraw[tileMapIndex]>=450&&mapOverDraw[tileMapIndex]<499){
-								doorX=200;
-								doorY=180;
+								doorX=0;
+								doorY=504;
 								tallerDoor=0;
-								ctxBg.drawImage(doors, doorX, doorY, 40,40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+
+								//console.log("mmm "+ defaultTiles[j].areaTrigger);
+
+								//console.log("AREA ? "+ currentArea);
+
+								if(defaultTiles[j].areaTrigger==currentArea){
+									ctxBg.drawImage(puertas, doorX, doorY, 48,48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+								}else{
+									ctxBg.drawImage(img, 0, 0, 48,48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+								}
+
+								if(defaultTiles[j].areaTrigger==currentArea){	
+									if(calculateDoors("howmany")==2){
+												//alert(calculateDoors("howmany"));
+
+										if(calculateDoors("opening")=="top"){ 
+											ctxOverlay.drawImage(edges, 80, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 
+
+											ctxOverlay.drawImage(edges, 120, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+										}
+
+									}
+
+									for (var i =0; i<FourDoorsOrder.length; i++){
+											
+											if(FourDoorsOrder[i].index==tileMapIndex){
+												if(calculateDoors("opening")=="top"){ 
+												
+													ctxOverlay.drawImage(edges, 80, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 
+
+													
+												}
+											}else if(FourDoorsOrder[i].index==(tileMapIndex-1)){
+												ctxOverlay.drawImage(edges, 120, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+											}
+
+									}
+
+								}
 											
 							}else if(mapOverDraw[tileMapIndex]>=300&&mapOverDraw[tileMapIndex]<350){
 								
@@ -3162,11 +3996,17 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 								calculateDoors("static");				
 								//console.log("DD"+doorX);
-								doorY=180;
+								doorY=504;
 								if(inArea.inIt){
-									ctxOverlay.drawImage(doors, doorX+200, doorY, 40,40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+									if(defaultTiles[j].areaTrigger==currentArea){	
+										ctxOverlay.drawImage(puertas, doorX, doorY, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+
+										ctxOverlay.drawImage(puertas, 0, 600, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+									}else{
+										ctxOverlay.drawImage(img, 0, 0, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+									}
 								}else{
-									ctxBg.drawImage(doors, doorX, doorY, 40,40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+									ctxBg.drawImage(puertas, doorX, doorY, 48,48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
 								}
 							}
 
@@ -3178,68 +4018,393 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 				//// REMEMBER THIS IS ALL INSIDE 300 & 400 TILES >>> OGO BACK REPEAT ON 100 TILES >> Function Out
 		/////   and it is there.. so check it out proper <<< only openDoor implemented up there, not closeDoor
 
+					}else if(mapOverDraw[tileMapIndex]>=270&&mapOverDraw[tileMapIndex]<290){
+
+						var doorCount=0;
+
+						doorX=576;
+						doorY=0;
+
+						getDoor(mapOverDraw[tileMapIndex]);
+
+						if(!inArea.inIt){
+							ctxBg.drawImage(anim, doorX, doorY, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+						}else{
+							ctxBg.drawImage(img, 0, doorY, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+						}
+						
+
+
+						function getDoor(id){
+
+
+							var dontCheck=false;
+
+							for (var j = 0; j < doorsChecked.length; j++){
+								
+								if(id==doorsChecked[j]){
+									dontCheck=true;
+								}		
+							}
+							
+							if(!dontCheck){
+								for (var i = 0; i < obstacles.length; i++){
+
+									if(obstacles[i].doorID==id){
+
+										doorCount++;
+
+										doorGroups.push({id:obstacles[i].doorID, n:doorCount});	
+									}
+								}
+
+							}
+
+							doorsChecked.push(id);	
+
+						}/// getDoor FUNC
+
+
+						if(doorOpening.length>0){
+
+							for (var q = 0; q< doorOpening.length; q++) {
+									 
+								///first we check if one of the doorsCurrentlyOpening === the currentTile
+								if(doorOpening[q].id==mapOverDraw[tileMapIndex]){
+
+
+									
+
+
+									//console.log("ttindex" +doorOpening[q].tindex);
+
+									doorOpened=true;
+
+									if(calculateDoors("howmany")==2){
+											doorOpening[q].animC+=2; 
+										}else if(calculateDoors("howmany")!=2&&calculateDoors("howmany")!=4&&calculateDoors("howmany")!=8&&calculateDoors("howmany")!=6&&calculateDoors("howmany")!=9){
+											doorOpening[q].animC+=4; 
+										}else{
+											doorOpening[q].animC+=1; 
+										}
+									
+
+
+							
+									//dont close 270s
+									
+									if(doorOpening[q].timer==0&&doorOpening[q].closeDone==false&&doorOpening[q].tindex==tileMapIndex){
+										doorClose(doorOpening[q].id, doorOpening[q].animC, doorOpening[q].animX, tileMapIndex);
+										doorClosingRememberId=doorOpening[q].id;
+
+										doorClosingRememberTindex=doorOpening[q].tindex;
+
+										doorOpening[q].closeDone=true;
+
+									}	
+								
+									
+									if(doorOpening[q].animC>0&&doorOpening[q].animC<=20){
+
+										doorOpening[q].animX=0;
+									}else if(doorOpening[q].animC>20&&doorOpening[q].animC<=45){
+										
+										doorOpening[q].animX=48;
+											
+									}else if(doorOpening[q].animC>45&&doorOpening[q].animC<=70){
+										
+										doorOpening[q].animX=96;
+											
+									}else if(doorOpening[q].animC>70){
+
+										doorOpening[q].animX=96;	
+											
+									}   
+									
+									
+								if(!inArea.inIt){
+									if(doorOpening[q].tindex==tileMapIndex){
+										// ctxBg.drawImage(doors, 0+doorOpening[q].animX, doorY, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+
+
+										/// FIX BG SPRITE   >>>> 240+ doorOp.... 240?...
+
+										ctxBg.drawImage(anim, doorX+doorOpening[q].animX, doorY, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+									}else{
+										for (var a=0; a<breakOpen.length; a++) {
+											if(breakOpen[a]==tileMapIndex){
+												//ctxBg.drawImage(doors, 0, 180, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+
+												ctxBg.drawImage(anim, doorX+96, doorY, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+											}
+										}
+									}
+								}else{
+									///
+									//   280s  BREAK-OBSTACLES
+								}
+
+
+									breakOpen.push(doorOpening[q].tindex);
+
+									
+									
+									
+	
+								}else{
+									if(!doorOpened){
+										doorOpened=false;
+									}
+								}
+
+							}//FOR 
+
+
+							if(!doorOpened){
+
+								doorX=0;
+								doorY=336;
+								tallerDoor=20;
+
+								if(inArea.inIt){
+									if(defaultTiles[j].areaTrigger==currentArea){	
+										ctxOverlay.drawImage(puertas, doorX, doorY, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);		
+									}	
+								}
+
+							}else{
+
+								doorOpened=false;    
+							}
+
+						}else{// NO DoorOpening YET
+
+							doorX=0;
+							doorY=336;
+							tallerDoor=20;
+
+
+							if(inArea.inIt&&mapOverDraw[tileMapIndex]>=280){
+								
+								ctxOverlay.drawImage(puertas, doorX, doorY, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+								
+							}else if(!inArea.inIt&&mapOverDraw[tileMapIndex]<280){
+
+							}
+			
+						}/// if doorOpening
+
+
+
+						
+
+
+						if(doorClosing.length>0){
+								 
+
+							for (var q = 0; q< doorClosing.length; q++){
+
+								//console.log("DCI"+doorClosing[q].tindex);
+
+								if(doorClosing[q].id==mapOverDraw[tileMapIndex]){
+
+
+									for(var k=0; k<obstacles.length; k++){
+
+										if(obstacles[k].isDoor=="door"&&obstacles[k].doorID==doorClosing[q].id&&obstacles[k].isActive=="active"){
+
+
+											doorX=0;
+											doorY=336;
+											tallerDoor=20;
+
+												
+											// if(doorClosing[q].id!=270){
+
+
+											// 	ctxOverlay.drawImage(doors, doorX+doorClosing[q].animX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											// }
+
+
+									
+
+
+										breakClose.push(doorClosing[q].tindex);
+												
+
+											
+										}/// if door active
+									}/// for obstacles
+
+
+
+									if(doorClosing[q].id==mapOverDraw[tileMapIndex]&&doorClosing[q].isOpen=="open"&&tileMapIndex==doorOpening[q].tindex){
+														
+										if(doorClosing[q].animC>=0){
+
+											
+										if(calculateDoors("howmany")==2){
+											doorClosing[q].animC+=2; 
+										}else if(calculateDoors("howmany")!=2&&calculateDoors("howmany")!=4&&calculateDoors("howmany")!=8&&calculateDoors("howmany")!=6&&calculateDoors("howmany")!=9){
+											doorClosing[q].animC+=4; 
+										}else{
+											doorClosing[q].animC+=1; 
+										}
+											
+
+										}else{
+											
+											console.log("FUUUCK "+doorClosing[q].animC);
+
+											doorClosing[q].isOpen="closed";
+											//doorXAnim=120;
+					
+										}
+									}////////////
+									
+				
+								}/// if doorClosing[q].id==mapOverDraw[tileMapIndex]
+
+							}//FOR doorClosing
+		
+
+						}/// if doorClosing.length>0	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 					}else{ /// other tiles
 
 						ctxBg.drawImage(img, srcX+xAnim, srcY+yAnim, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 		  
 					}/// else... everything else
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 					if(doorClosing.length>0){
 							 
 
 						for (var q = 0; q< doorClosing.length; q++){
 
+
 							if(doorClosing[q].id==mapOverDraw[tileMapIndex]){
 
-									//console.log(doorClosing.length);
-									//alert(doorClosing[q].animC);
-							if(doorClosing[q].lap<=4){	
-								if(doorClosing[q].animC>0&&doorClosing[q].animC<=4){
-								
-									doorXanimClose=120;
 
-								}else if(doorClosing[q].animC>4&&doorClosing[q].animC<=8){
-									doorXanimClose=80;
-									//console.log("DOS" );
-								}else if(doorClosing[q].animC>8&&doorClosing[q].animC<=12){
-									doorXanimClose=40;
-									//console.log("TRES" +doorClosing[q].lap);
-								}else if(doorClosing[q].animC>12){
-									doorXanimClose=0;
+									if(doorClosing[q].tindex==tileMapIndex){
+
+								
+											if(doorClosing[q].animC>0&&doorClosing[q].animC<=40){
+											
+												doorClosing[q].animX=144;
+
+											}else if(doorClosing[q].animC>40&&doorClosing[q].animC<=80){
+												doorClosing[q].animX=96;
+												//console.log("DOS" );
+											}else if(doorClosing[q].animC>80&&doorClosing[q].animC<=120){
+												doorClosing[q].animX=48;
+												//console.log("TRES" +doorClosing[q].lap);
+											}else if(doorClosing[q].animC>120){
+												doorClosing[q].animX=0;
+											
+
+												if(calculateDoors("howmany")==4||calculateDoors("howmany")==8||calculateDoors("howmany")==2&&mapOverDraw[tileMapIndex]>=300&&mapOverDraw[tileMapIndex]<350||calculateDoors("howmany")==2&&mapOverDraw[tileMapIndex]>=450&&mapOverDraw[tileMapIndex]<500){		
+													if(doorClosing[q].lap==0){
+
+														doorClosing[q].lap=1; 	
+
+													}else if(doorClosing[q].lap==1){
+														doorClosing[q].lap=2;	
+													}
+
+													doorClosing[q].animC=0;
+
+												}else if(calculateDoors("howmany")==6||calculateDoors("howmany")==9){
+													if(doorClosing[q].lap==0){
+
+														doorClosing[q].lap=1; 	
+														//console.log("111" +doorClosing[q].lap);
+													}else if(doorClosing[q].lap==1){
+														doorClosing[q].lap=2;
+															//console.log("222" +doorClosing[q].lap);	
+
+													}else if(doorClosing[q].lap==2){
+														doorClosing[q].lap=3;
+															//console.log("333" +doorClosing[q].lap);	  											
+													}
+
+													doorClosing[q].animC=0;
+
+												}																		
+											}    
+
+										
+
+										}
+						
+									
+									if(doorClosing[q].animC>0&&doorClosing[q].animC<=40){
+									
+										doorClosing[q].animX=144;
+
+									}else if(doorClosing[q].animC>40&&doorClosing[q].animC<=80){
+										doorClosing[q].animX=96;
+										//console.log("DOS" );
+									}else if(doorClosing[q].animC>80&&doorClosing[q].animC<=120){
+										doorClosing[q].animX=48;
+										//console.log("TRES" +doorClosing[q].lap);
+									}else if(doorClosing[q].animC>120){
+										doorClosing[q].animX=0;
 									
 
-									if(calculateDoors("howmany")==4||calculateDoors("howmany")==8){		
-										if(doorClosing[q].lap==0){
+										if(calculateDoors("howmany")==4||calculateDoors("howmany")==8||calculateDoors("howmany")==2&&mapOverDraw[tileMapIndex]>=300&&mapOverDraw[tileMapIndex]<350||calculateDoors("howmany")==2&&mapOverDraw[tileMapIndex]>=450&&mapOverDraw[tileMapIndex]<500){		
+											if(doorClosing[q].lap==0){
 
-											doorClosing[q].lap=1; 	
+												doorClosing[q].lap=1; 	
 
-										}else if(doorClosing[q].lap==1){
-											doorClosing[q].lap=2;	
-										}
+											}else if(doorClosing[q].lap==1){
+												doorClosing[q].lap=2;	
+											}
 
-										doorClosing[q].animC=0;
+											doorClosing[q].animC=0;
 
-									}else if(calculateDoors("howmany")==6||calculateDoors("howmany")==9){
-										if(doorClosing[q].lap==0){
+										}else if(calculateDoors("howmany")==6||calculateDoors("howmany")==9){
+											if(doorClosing[q].lap==0){
 
-											doorClosing[q].lap=1; 	
-											//console.log("111" +doorClosing[q].lap);
-										}else if(doorClosing[q].lap==1){
-											doorClosing[q].lap=2;
-												//console.log("222" +doorClosing[q].lap);	
+												doorClosing[q].lap=1; 	
+												//console.log("111" +doorClosing[q].lap);
+											}else if(doorClosing[q].lap==1){
+												doorClosing[q].lap=2;
+													//console.log("222" +doorClosing[q].lap);	
 
-										}else if(doorClosing[q].lap==2){
-											doorClosing[q].lap=3;
-												//console.log("333" +doorClosing[q].lap);	  											
-										}
+											}else if(doorClosing[q].lap==2){
+												doorClosing[q].lap=3;
+													//console.log("333" +doorClosing[q].lap);	  											
+											}
 
-										doorClosing[q].animC=0;
+											doorClosing[q].animC=0;
 
-									}																		
-								}    
+										}																		
+									}    
 
-							}
+								
+
+								
+								
+
+
 
 
 								for(var k=0; k<obstacles.length; k++){
@@ -3251,48 +4416,121 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 										if(mapOverDraw[tileMapIndex]>=350&&mapOverDraw[tileMapIndex]<400){
 												//// first ever pass (no doorsOpen) /// or else already in doorOpening[0,1,2,3..
 											doorX=0;
-											doorY=120;
+											doorY=336;
 											tallerDoor=20;
 
 										if(!inArea.inIt){
-											ctxBg.drawImage(doors, doorX+doorXAnim, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											ctxBg.drawImage(puertas, doorX+doorClosing[q].animX, doorY, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
 											
 										}
 										tallerDoor=0;
 											
 										}else if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<450){
 
-											doorX=200;
-											doorY=120;
+											doorX=0;
+											doorY=336;
 											tallerDoor=20;
 
 											if(inArea.inIt){
-												ctxOverlay.drawImage(doors, doorX+doorXAnim, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+
+												if(calculateDoors("howmany", false, false)==2){
+
+													/// NOW I CAN DISTINGUISH THEM!!!!
+												
+														twoDoors.push({id:mapOverDraw[tileMapIndex], index:tileMapIndex, topbot:undefined});
+													
+
+													var top;
+													var bottom;
+
+													var botMatch=false;
+
+													for(var p=0; p< twoDoors.length; p++){
+														
+															for(var r=0; r< twoDoors.length; r++){
+
+																if(p!=0){
+																	if(twoDoors[p].index-roomNumberTilesX==twoDoors[r].index){
+
+																		botMatch=true;
+																		twoDoors[p].topbot="bottom";
+																		//console.log("why TOP" +twoDoors[p].index);
+
+																	}else{
+																		if(!botMatch){
+																			twoDoors[p].topbot="top";
+																		}
+																	}
+																}else{
+																	twoDoors[p].topbot="top";
+																}
+															}
+															botMatch=false;
+													
+														if(mapOverDraw[tileMapIndex]==twoDoors[p].id){
+															if(twoDoors[p].topbot=="top"&&(tileMapIndex)==twoDoors[p].index){
+
+
+																if(defaultTiles[j].areaTrigger==currentArea){	
+																	ctxOverlay.drawImage(puertas, doorX+doorClosing[q].animX, doorY+60, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+																}
+															}else{
+																
+																if(defaultTiles[j].areaTrigger==currentArea){	
+																	ctxOverlay.drawImage(puertas, doorX+doorClosing[q].animX, doorY+120, 48, 48, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+																}
+															}
+														}
+														/// and the smaller number// or first one,  will be the Top..
+													}
+
+													////if top (half of the) door, draw srcY here, else Y there
+
+													
+
+
+												}else{
+													if(defaultTiles[j].areaTrigger==currentArea){	
+														ctxOverlay.drawImage(puertas, doorX+doorClosing[q].animX, doorY, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+													}
+												}
+
+												
 												
 											}
 
 										}else if(mapOverDraw[tileMapIndex]>=450&&mapOverDraw[tileMapIndex]<499){
 											
-											doorY=180;
+											doorY=504;
 											tallerDoor=0;	
 
 											calculateDoors("static");
 
 									
-											if(calculateDoors("howmany")==4||calculateDoors("howmany")==8){
+											if(calculateDoors("howmany")==2||calculateDoors("howmany")==4||calculateDoors("howmany")==8){
 													//alert(calculateDoors("howmany"));
 
 												if(doorClosing[q].lap==0){
+
+													
 													if(calculateDoors("opening")=="bottom"){ 
-														doorXanimClose = 120;
+														doorClosing[q].animX = 144;
 													}
 												}else if(doorClosing[q].lap==1){
+													
+													if(!doorClosing[q].aver){
+														
+														doorClosing[q].animX = 144;
+														doorClosing[q].aver=true;
+													}
 													if(calculateDoors("opening")=="top"){ 
-														doorXanimClose = 0;
+														// doorClosing[q].animX = 0;
+														 doorY+=48;
 													}
 												}else if(doorClosing[q].lap==2){
 													
-													doorXanimClose = 0;					
+													doorClosing[q].animX = 0;	
+													doorClosing[q].aver=false;				
 												} 
 
 											}else if(calculateDoors("howmany")==9||calculateDoors("howmany")==6){
@@ -3301,26 +4539,23 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 												if(doorClosing[q].lap==0){
 
 													if(calculateDoors("opening")=="bottom"||calculateDoors("opening")=="mid"){ 
-														doorXanimClose = 120;
+														doorClosing[q].animX = 144;
 													}
 													//console.log("why 0");
 												}else if(doorClosing[q].lap==1){
 													if(calculateDoors("opening")=="top"){ 
-														doorY+=40;
+														doorY+=48;
 													calculateDoors("static");
 													}if(calculateDoors("opening")=="mid"){ 
-														if(!aver){
-															doorXanimClose = 120;
-															aver=true;
-														}
+														
 														
 													}else if(calculateDoors("opening")=="bottom"){ 
-														doorXanimClose = 120;
+														doorClosing[q].animX = 144;
 													}
 													//console.log("PUTAL LAWE");
 												}else if(doorClosing[q].lap==2){
 													if(calculateDoors("opening")=="top"||calculateDoors("opening")=="mid"){ 
-														doorY+=40;
+														doorY+=48;
 													calculateDoors("static");
 														//console.log("PUTAL LAWE");
 
@@ -3328,17 +4563,18 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 												}else if(doorClosing[q].lap==3){
 													
-													doorXanimClose = 0;
-														aver=false;
+													doorClosing[q].animX = 0;
+													
 												} 
 											}/// howmany == 9||6
 
-
-											ctxBg.drawImage(doors, doorX+doorXanimClose, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											
+											ctxBg.drawImage(puertas, doorX+doorClosing[q].animX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+										
 											
 										}else if(mapOverDraw[tileMapIndex]>=300&&mapOverDraw[tileMapIndex]<350){
 
-											doorY=180;
+											doorY=504;
 
 										   	tallerDoor=0;		
 
@@ -3346,21 +4582,29 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 											calculateDoors("static");
 
 									
-											if(calculateDoors("howmany")==4||calculateDoors("howmany")==8){
+											if(calculateDoors("howmany")==2||calculateDoors("howmany")==4||calculateDoors("howmany")==8){
 													//alert(calculateDoors("howmany"));
 
 												if(doorClosing[q].lap==0){
+													
+
 													if(calculateDoors("opening")=="bottom"){ 
-														doorXanimClose = 120;
+														doorClosing[q].animX = 144;
 													}
 												}else if(doorClosing[q].lap==1){
+
+													if(!doorClosing[q].aver){
+														doorClosing[q].animX = 0;
+														doorClosing[q].aver=true;
+													}
 													if(calculateDoors("opening")=="top"){ 
-														doorY+=40;
-													calculateDoors("static");
+														// doorClosing[q].animX = 0;
+														 doorY+=48;
 													}
 												}else if(doorClosing[q].lap==2){
 													
-													doorXanimClose = 0;					
+													doorClosing[q].animX = 0;	
+													doorClosing[q].aver=false;				
 												} 
 
 											}else if(calculateDoors("howmany")==9||calculateDoors("howmany")==6){
@@ -3369,26 +4613,23 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 												if(doorClosing[q].lap==0){
 
 													if(calculateDoors("opening")=="bottom"||calculateDoors("opening")=="mid"){ 
-														doorXanimClose = 120;
+														doorClosing[q].animX = 144;
 													}
 													//console.log("why 0");
 												}else if(doorClosing[q].lap==1){
 													if(calculateDoors("opening")=="top"){ 
-														doorY+=40;
+														doorY+=48;
 													calculateDoors("static");
 													}if(calculateDoors("opening")=="mid"){ 
-														if(!aver){
-															doorXanimClose = 120;
-															aver=true;
-														}
+														
 														
 													}else if(calculateDoors("opening")=="bottom"){ 
-														doorXanimClose = 120;
+														doorClosing[q].animX = 144;
 													}
 													//console.log("PUTAL LAWE");
 												}else if(doorClosing[q].lap==2){
 													if(calculateDoors("opening")=="top"||calculateDoors("opening")=="mid"){ 
-														doorY+=40;
+														doorY+=48;
 													calculateDoors("static");
 														//console.log("PUTAL LAWE");
 
@@ -3396,31 +4637,36 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 												}else if(doorClosing[q].lap==3){
 													
-													doorXanimClose = 0;
-													aver=false;
+													doorClosing[q].animX = 0;
+													
 												} 
 											}/// howmany == 9||6
 
-
-											ctxBg.drawImage(doors, doorX+doorXanimClose, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											
+												ctxBg.drawImage(puertas, doorX+doorClosing[q].animX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											
 
 										}/// 301 - tiles
 									}/// if door active
 								}/// for obstacles
 
-									
-								// if(doorClosing[q].isOpen!="closed"){
-								
-								// 	console.log("open id "+doorClosing[q].id);
-								// 	console.log("open MIERDA "+doorClosing[q].isOpen);
-								// }
 
 
-								if(doorClosing[q].id==doorClosingRememberId&&doorClosing[q].isOpen=="open"){
-													
+								if(doorClosing[q].id==mapOverDraw[tileMapIndex]&&doorClosing[q].isOpen=="open"){
+									//console.log("CLOSING"+doorClosing[q].animC);		
 									if(doorClosing[q].animC>=0){
 
-										doorClosing[q].animC+=1;
+										
+										if(calculateDoors("howmany")==2){
+											doorClosing[q].animC+=2; 
+										}else if(calculateDoors("howmany")!=2&&calculateDoors("howmany")!=4&&calculateDoors("howmany")!=8&&calculateDoors("howmany")!=6&&calculateDoors("howmany")!=9){
+											doorClosing[q].animC+=4; 
+										}else{
+											doorClosing[q].animC+=1; 
+										}
+										
+
+										
 
 									}else{
 										
@@ -3467,7 +4713,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 							if(!inArea.inIt){
 							/// 40 is the width of the portion to be drawn from the sprite (actual width in the sprite)
-							ctxOverlay.drawImage(img, srcX, srcY, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+								ctxOverlay.drawImage(img, srcX, srcY, 48, 48, tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
 							}
 								
 						}  
@@ -3500,17 +4746,11 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 						if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<499){  
 			  
-							if(inArea.inIt){
-							/// 40 is the width of the portion to be drawn from the sprite (actual width in the sprite)
-								if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<450){
-										doorX=40;
-										doorY=120;
-										tallerDoor=20;
-
-								}
+							
+							
 																									/// meaning IS out
 								if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<450&&mapOverDraw[tileMapIndex-1].toString().substring(0,1)==1){
-										doorX=40;
+										doorX=48;
 										doorY=0;
 										tallerDoor=20;
 								}
@@ -3518,19 +4758,23 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 								if(typeof mapOverDraw[tileMapIndex+1] != "undefined"){
 									
 									if(mapOverDraw[tileMapIndex]>=400&&mapOverDraw[tileMapIndex]<450&&mapOverDraw[tileMapIndex+1].toString().substring(0,1)==1){
-											doorX=40;
+											doorX=48;
 											doorY=60;
 											tallerDoor=20;
 
 									}
 								}
 
-							   
-
-
-									ctxOverlay.drawImage(doorFrames, doorX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+								
+								if(inArea.inIt){
+									if(defaultTiles[j].areaTrigger==currentArea){	
+											ctxOverlay.drawImage(doorFrames, doorX, doorY, 48, 60, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+										}
+									
+								}
+									
 									tallerDoor=0;
-							}
+
 								
 						}
 
@@ -3542,9 +4786,9 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 									
 									if(mapOverDraw[tileMapIndex+roomNumberTilesX].toString().substring(0,1)==4||mapOverDraw[tileMapIndex+roomNumberTilesX].toString().substring(0,1)==3){
 										//alert(tileIndexX);
-											doorX=40;
-											doorY=180;
-										ctxOverlay.drawImage(doorFrames, doorX, doorY, 40, 40, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
+											doorX=48;
+											doorY=120;
+										ctxOverlay.drawImage(doorFrames, doorX, doorY, 48, 48, tileIndexX, tileIndexY-tallerDoor, tileWidthHeight, tileWidthHeight+tallerDoor);
 									tallerDoor=0;
 									}
 								}
@@ -3598,9 +4842,10 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 					if(typeof mapOverDraw[tileMapIndex+roomNumberTilesX+1]!= "undefined"){
 
 
-						if(mapOverDraw[tileMapIndex].toString().substring(0,1)==1&&mapOverDraw[tileMapIndex+roomNumberTilesX].toString().substring(0,1)==2||mapOverDraw[tileMapIndex+roomNumberTilesX]==108||mapOverDraw[tileMapIndex].toString().substring(0,1)==3&&mapOverDraw[tileMapIndex+roomNumberTilesX].toString().substring(0,1)==2||mapOverDraw[tileMapIndex+roomNumberTilesX]==108){
+						if(mapOverDraw[tileMapIndex].toString().substring(0,1)==1&&mapOverDraw[tileMapIndex+roomNumberTilesX].toString().substring(0,1)==2&&mapOverDraw[tileMapIndex+roomNumberTilesX]<250||mapOverDraw[tileMapIndex+roomNumberTilesX]==108||mapOverDraw[tileMapIndex].toString().substring(0,1)==3&&mapOverDraw[tileMapIndex+roomNumberTilesX].toString().substring(0,1)==2&&mapOverDraw[tileMapIndex+roomNumberTilesX]<250||mapOverDraw[tileMapIndex+roomNumberTilesX]==108){
 							
-							tilesToCheck=[100, 101, 110, 111, 112, 113, 114,  105, 160, 166,167, 710, 711, 714];
+							tilesToCheck=[290, 100, 101, 102, 110, 111, 112, 113, 114,  105, 160, 161, 162, 163, 164, 165, 166, 167, 168, 170, 180, 181, 182, 183, 184, 169, 709, 708, 710, 711, 714, 451, 452];
+
 
 							if(addEdges("roof-lower-left")){
 								if(!inArea.inIt){
@@ -3641,37 +4886,40 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 							//// like, this kinda shit should be in tilesToEXCLUDE [array]
 			
 
-							tilesToCheck=[710, 714, 709,  400, 401, 402];
 
-							if(addEdges("roof-lower-left")){
-								if(inArea.inIt){
-									ctxOverlay.drawImage(edges, 0 ,80, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
-								}
-								
-							}
+							tilesToCheck=[710, 714, 400, 401, 402, 711];
 
-							if(addEdges("roof-left")){
-								if(inArea.inIt){
-									ctxOverlay.drawImage(edges, 240 ,80, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+							if(defaultTiles[j].areaTrigger==currentArea){	
+								if(addEdges("roof-lower-left")){
+									if(inArea.inIt){
+										ctxOverlay.drawImage(edges, 0 ,80, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+									}
+									
 								}
-								
-							}
 
-							if(addEdges("roof-lower-right")){
-								if(inArea.inIt){
-									ctxOverlay.drawImage(edges, 40 ,80, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+								if(addEdges("roof-left")){
+									if(inArea.inIt){
+										ctxOverlay.drawImage(edges, 240 ,80, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+									}
+									
 								}
-								
-							}
 
-							if(addEdges("roof-right")){
-								if(inArea.inIt){
-									ctxOverlay.drawImage(edges, 280 ,80, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+								if(addEdges("roof-lower-right")){
+									if(inArea.inIt){
+										ctxOverlay.drawImage(edges, 40 ,80, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+									}
+									
 								}
-								
+
+								if(addEdges("roof-right")){
+									if(inArea.inIt){
+										ctxOverlay.drawImage(edges, 280 ,80, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
+									}
+									
+								}
 							}
 				
-							tilesToCheck=[214, 219, 401, 668, 232, 101, 710];
+							tilesToCheck=[270, 290, 214, 218, 220, 219, 401, 668, 232, 101, 710,714, 708, 709, 711];
 							if(!inArea.inIt){
 								if(addEdges("floor-lower-right")){
 									
@@ -3687,11 +4935,33 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 						}
 
 
+						if(mapOverDraw[tileMapIndex]>=300 &&mapOverDraw[tileMapIndex]<350){
 
-
-						if(mapOverDraw[tileMapIndex].toString().substring(0,1)==2){
+							tilesToCheck=[714, 301];
 							if(!inArea.inIt){
-								tilesToCheck=[107, 167,222, 214, 218, 219, 227, 232, 710, 714, 709, 301, 400, 401, 402, 403];
+								if(addEdges("door-upper-left")){
+									
+									ctxOverlay.drawImage(edges, 80, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
+								}
+
+
+								if(addEdges("door-upper-right")){
+									
+									ctxOverlay.drawImage(edges, 120, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
+								}
+							}
+
+						
+
+						}
+
+						
+
+
+
+						if(mapOverDraw[tileMapIndex].toString().substring(0,1)==2&&mapOverDraw[tileMapIndex]<290){
+							if(!inArea.inIt){
+								tilesToCheck=[270, 290, 107, 169, 220, 222, 214, 218, 220, 219, 227, 232, 710, 714, 709, 301, 400, 401, 402, 403];
 
 								if(addEdges("floor-lower-left")){
 									
@@ -3704,24 +4974,8 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 										ctxBg.drawImage(edges, 40, 0, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
 								}
 
-								
-								
 
 
-
-
-							}else if(inArea.inIt&&mapOverDraw[tileMapIndex]!=222){
-								tilesToCheck=[222, 214, 218, 219, 227, 232, 301, 100, 101, 108];
-								if(addEdges("floor-lower-left")){
-									
-										ctxBg.drawImage(edges, 0, 120, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 									
-								} 
-
-								tilesToCheck=[222, 214, 218, 219, 227, 232, 301, 100, 101, 108];
-								if(addEdges("floor-lower-right")){
-									
-									ctxBg.drawImage(edges, 40, 120, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);	
-								}
 							}
 
 						}
@@ -3730,97 +4984,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 
 
-						if(mapOverDraw[tileMapIndex]==232){
-								//alert("HERE");
-							tilesToCheck=[232];
-							if(!inArea.inIt){
-								if(addEdges("floor-upper-right")){
-										
-									ctxOverlay.drawImage(edges, 40, 160, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
 
-								if(addEdges("floor-upper-left")){
-										
-									ctxOverlay.drawImage(edges, 0, 160, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-							}else{
-								if(addEdges("floor-upper-right")){
-										
-									ctxOverlay.drawImage(edges, 40, 160, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-
-								if(addEdges("floor-upper-left")){
-										
-									ctxOverlay.drawImage(edges, 0, 160, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-							}
-						}else if(mapOverDraw[tileMapIndex]==214){
-								
-							tilesToCheck=[214, 710, 714,709,  711];
-							if(!inArea.inIt){
-								if(addEdges("floor-lower-right")){
-										
-									ctxOverlay.drawImage(edges, 40, 40, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-
-								if(addEdges("floor-lower-left")){
-										
-									ctxOverlay.drawImage(edges, 0, 40, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-							}else{
-								tilesToCheck=[214];
-								if(addEdges("floor-lower-right")){
-										
-									ctxOverlay.drawImage(edges, 40, 160, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-
-								if(addEdges("floor-lower-left")){
-										
-									ctxOverlay.drawImage(edges, 0, 160, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-							}
-						}
-
-
-						
-						if(mapOverDraw[tileMapIndex]==219){
-
-							/// rather than &&mapOverDraw[tileMapIndex]!=400, should have:
-															//// tilesToCheck & tilesToExclude
-
-							tilesToCheck=[710, 714, 709, 214];
-
-							if(!inArea.inIt){
-								if(addEdges("floor-upper-right")){
-									
-										ctxOverlay.drawImage(edges, 40, 40, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-
-								if(addEdges("floor-upper-left")){
-									
-										ctxOverlay.drawImage(edges, 0, 40, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-							}
-						}
-						if(mapOverDraw[tileMapIndex]==668){
-
-							/// rather than &&mapOverDraw[tileMapIndex]!=400, should have:
-															//// tilesToCheck & tilesToExclude
-
-							tilesToCheck=[222, 214];
-
-							if(!inArea.inIt){
-								if(addEdges("floor-lower-right")){
-									
-										ctxOverlay.drawImage(edges, 40, 40, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-
-								if(addEdges("floor-lower-left")){
-									
-										ctxOverlay.drawImage(edges, 0, 40, 40, 40, tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight); 		
-								}
-							}
-						}
 
 					}
 					
@@ -3869,10 +5033,30 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 							}		
 						}
 
-						if(where=="anim-lower-left"){
+						if(where=="door-upper-left"){
 							edgeCheck=false;
 							for (var i = 0; i< tilesToCheck.length ; i++){
-								if(mapOverDraw[tileMapIndex+roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex-1]==tilesToCheck[i]&&mapOverDraw[tileMapIndex-roomNumberTilesX-1]==120||mapOverDraw[tileMapIndex+roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex-1]==tilesToCheck[i]){  
+
+								//console.log("WHAT THE FUCK!! "+tilesToCheck[i]);
+
+								if(mapOverDraw[tileMapIndex-roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex+1]!=tilesToCheck[i]&&mapOverDraw[tileMapIndex-roomNumberTilesX-1]!=tilesToCheck[i]){  
+									
+									//console.log("WHAT THE FUCK!! "+tilesToCheck[i]);
+										edgeCheck=true;
+
+								}
+
+							}		
+						}
+
+						if(where=="door-upper-right"){
+							edgeCheck=false;
+
+
+							for (var i = 0; i< tilesToCheck.length ; i++){
+							
+
+								if(mapOverDraw[tileMapIndex-roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex-1]!=tilesToCheck[i]&&mapOverDraw[tileMapIndex-roomNumberTilesX+1]!=tilesToCheck[i]){  
 									
 										edgeCheck=true;
 
@@ -3881,10 +5065,10 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 							}		
 						}
 
-						if(where=="anim-upper-left"){
+						if(where=="anim-lower-left"){
 							edgeCheck=false;
 							for (var i = 0; i< tilesToCheck.length ; i++){
-								if(mapOverDraw[tileMapIndex-roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex-1]==tilesToCheck[i]&&mapOverDraw[tileMapIndex-roomNumberTilesX-1]==tilesToCheck[i]){  
+								if(mapOverDraw[tileMapIndex+roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex-1]==tilesToCheck[i]&&mapOverDraw[tileMapIndex-roomNumberTilesX-1]==120||mapOverDraw[tileMapIndex+roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex-1]==tilesToCheck[i]){  
 									
 										edgeCheck=true;
 
@@ -3905,21 +5089,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 							}		
 						}
 
-						if(where=="anim-upper-right"){
-							edgeCheck=false;
-
-
-							for (var i = 0; i< tilesToCheck.length ; i++){
-							//console.log("CHECKING" +tilesToCheck[i]);
-
-								if(mapOverDraw[tileMapIndex-roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex+1]==tilesToCheck[i]||mapOverDraw[tileMapIndex-roomNumberTilesX]==tilesToCheck[i]&&mapOverDraw[tileMapIndex+1]==166){  
-									
-										edgeCheck=true;
-
-								}
-
-							}		
-						}
+						
 
 
 
@@ -4083,7 +5253,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 ////////////////////////////////////////////////////////////////////////////////////////
 
 	for (var q = 0; q< doorOpening.length; q++) {
-										
+						
 		doorOpening[q].timer--;
 		//console.log("SDSDSDSDSDDDSD "+doorOpening[q].timer);
 
@@ -4136,19 +5306,30 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 
 
-	function calculateDoors(state){
+	function calculateDoors(state, plus, minus){
 
 		var doorCounter2=0;
+		var tile;
+
+		if(plus==true){
+			tile =mapOverDraw[tileMapIndex+1];
+		}else if(minus==true){
+			tile =mapOverDraw[tileMapIndex-1];
+		}else{
+			tile =mapOverDraw[tileMapIndex];
+		}
+
+
 
 		for (var u = 0; u < doorGroupsTotal.length; u++){
 	
-			if(mapOverDraw[tileMapIndex]==doorGroupsTotal[u].id){
+			if(tile==doorGroupsTotal[u].id){
 
 				// doorsReFound.push(doorGroupsTotal[u].id);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				if(doorGroupsTotal[u].n==4||doorGroupsTotal[u].n==8){
+				if(doorGroupsTotal[u].n==2||doorGroupsTotal[u].n==4||doorGroupsTotal[u].n==8){
 					
 					columnsPerRow2=doorGroupsTotal[u].n/2;
 
@@ -4172,17 +5353,17 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 						if(inArea.inIt){
 							if(doorCounter2<=columnsPerRow2){
 																
-								doorX=200;
+								doorX=0;
 							}else{
-								doorX=200;
+								doorX=0;
 							}
 							//// 450< door lower wall |||| 450>  Door upper wall
 						}else if(!inArea.inIt){
 
 							if(doorCounter2<=columnsPerRow2){
-								doorX=200;
+								doorX=0;
 							}else{
-								doorX=200;
+								doorX=0;
 							}
 						}
 					}else if(state=="opening"){
@@ -4227,17 +5408,17 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 						if(inArea.inIt){
 							if(doorCounter2<=columnsPerRow2*2){
 																
-								doorX=200;
+								doorX=0;
 							}else{
-								doorX=200;
+								doorX=0;
 							}
 							//// 450< door lower wall |||| 450>  Door upper wall
 						}else if(mapOverDraw[tileMapIndex]<450&&!inArea.inIt){
 
 							if(doorCounter2<=columnsPerRow2*2){
-								doorX=200;
+								doorX=0;
 							}else{
-								doorX=200;
+								doorX=0;
 							}
 						}
 					}else if(state=="opening"){
@@ -4265,7 +5446,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 
 	/// has to be at the End... because.. 
 
-
+twoDoors=[];
 
 
 } /////   tilesOverDraw  
@@ -4312,14 +5493,13 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 					 //////    ||||||  ||||||  ||  \\              //       ////// //   ///
 																  //  
 
-
+var inactCheck;
 
 var doorOpeningExists=false;
 var memberII;
 
-function doorOpen(id, timer){
+function doorOpen(id, timer, tindex){
 
-	////>>>  Obstacle Breaking...
 
 	for (var i=0; i< doorKeys.length; i++) {
 		if(id==doorKeys[i].id){
@@ -4329,11 +5509,7 @@ function doorOpen(id, timer){
 				//return;
 				if(player1.nonSelectItems[h].itemNumber==doorKeys[i].key){
 					haveKey=true;
-					//ctxOverOverlay.drawImage(itemsMenu, 0, 0, 64, 64, 210, 214, 64, 64);
-				}
-
-
-				
+				}	
 			}
 
 			if(!haveKey){
@@ -4344,10 +5520,7 @@ function doorOpen(id, timer){
 		}
 	}
 
-
-	//doorLaps=0;
-
-	console.log("L now wwwwwwwwwwwwwwwwwwwwwwwwwwwww" +doorOpening.length);
+	//console.log("L now wwwwwwwwwwwwwwwwwwwwwwwwwwwww" +doorOpening.length);
 
 	for(var i=0; i <doorOpening.length; i++){
 
@@ -4355,62 +5528,93 @@ function doorOpen(id, timer){
 			
 			doorOpeningExists=true;
 			memberII=i;
-		}
-		
+		}	
 	}
 
 	if(doorOpeningExists){
 		doorOpening[memberII].closeDone=false;
+		/// this one here below is to fix a problem with the doors and their different groups
+		// which by the way are a fucking mess. Should start the whole thing over... .. .
+		doorOpening[memberII].aver=false;
 		doorOpening[memberII].animC=0;
 		doorOpening[memberII].animX=0;
-		doorOpening[memberII].timer=30;
+		doorOpening[memberII].timer=timer;
 		doorOpening[memberII].lap=0;
+		doorOpening[memberII].tindex=tindex;
 		doorOpening[memberII].isOpen="closed";
 
 		doorOpeningExists=false;
 
-		console.log("seocond+ "+id);///now thats right
+		//console.log("seocond+ "+id);///now thats right
 
 	}else{
-		console.log("first "+id);
-		doorOpening.push({id:id, animC:0, animX:0, timer:timer, lap: 0, closeDone:false, isOpen:"closed"}); 
+		//console.log("first "+id);
+		doorOpening.push({id:id, animC:0, animX:0, timer:timer, lap: 0, closeDone:false, isOpen:"closed", tindex:tindex}); 
 		doorOpeningExists=false;
 	}
 
-	inActive.push(id);
 
-   
+	if(inActive.length==0){
+		inActive.push({ID:id, tindex:tindex, act:"inActive"});
+	}else{
+		for (var a = 0; a < inActive.length; a++) {
+			if(inActive[a].ID == id&&id!=270){
+
+				
+				inactCheck=true;
+		
+			}else if(inActive[a].ID == id&&id==270&&inActive[a].tindex==tindex){
+
+				
+				inactCheck=true;
+		
+			}else{
+				if(!inactCheck){
+					inactCheck=false;
+				}
+			}
+		}
+
+		if(!inactCheck){
+			inActive.push({ID:id, tindex:tindex, act:"inActive"});
+		}
+
+	}
+
+   	
 	inDoorCrash.crash=false;
 
 
 	for(var i=0; i < obstacles.length; i++){
 		if(i>0){
 			/// id -> doorOpen(argument)
-			if(id==obstacles[i].doorID){
+			if(id<290&&id==obstacles[i].doorID&&obstacles[i].Tindex==tindex){        
 				 //// KEEP TRACK OF THE id >> bring obstacle back to "active"
 				//console.log(obstacles[i].doorID);		
 				obstacles[i].isActive="inActive"; ////animC:0, animX:0, timer:timer, closeDone:false, isOpen:"closed"}); 
-
-
+			}else if(id>=290&&id==obstacles[i].doorID){
+				obstacles[i].isActive="inActive"; ////animC:0, animX:0, timer:timer, closeDone:false, 
 			}
 		}///if i   
 	}// for obst length
 
 	player1.direction="nowhere";
 
-	// this feels a lot better>>  watch out though, sometimes you have to press direction again to go back
 
 }/// doorOpen
 
 
 
 
+var dosNueve=false;
 
 var doorClosingExists=false;
 var memberI;
 
 
-function doorClose(id, animC, animX){
+function doorClose(id, animC, animX, tindex){
+
+
 
 
 	// ok, so its getting the length right..
@@ -4418,17 +5622,18 @@ function doorClose(id, animC, animX){
 
 	for(var i=0; i < obstacles.length; i++){
 
-			/// id -> doorOpen(argument)
-			if(id==obstacles[i].doorID&&id!=401){////////////   ladies & gentlemen, an exception.
+
+			/// &&id!=270.. etc has to be done down there too, in the for-doorOpening-Closing comparison loop
+			//		take out to have closing breakable obstacles
+			if(id==obstacles[i].doorID&&id!=401&&id!=270&&id!=290){////////////   ladies & gentlemen, an exception.
 					////															        401 doesn't close
 				 //// KEEP TRACK OF THE id >> bring obstacle back to "active"	
 				obstacles[i].isActive="active"; 
-
 				for (var o=0; o< inActive.length; o++) {
 
 			/// now look for all doors that where marked "inActive", and release them
 	/// so when coming back from another room it doesn't remember them as opened (after they have been re-closed)
-					if(inActive[o]==id){
+					if(inActive[o].ID==id){
 						inActive.splice(o,1);/// it isn't inActive aymore if it closed again
 					}
 				}
@@ -4437,29 +5642,42 @@ function doorClose(id, animC, animX){
 
 	}// for obst i
 
+
 	//console.log("door l "+doorClosing.length);
 	for(var i=0; i <doorOpening.length; i++){
-		if(doorOpening[i].id==id){
-			doorClosingExists=true;
-		
-			memberI=i;
 
-			/// also only doing it first doorClose........
-			console.log("dddddddddddddddddddddddoor Closing "+ doorOpening[i].id);
-		}
+	
+			if(doorOpening[i].id==id){
+
+				
+				doorClosingExists=true;
+			
+				memberI=i;
+
+
+
+				/// also only doing it first doorClose........
+				//console.log("dddddddddddddddddddddddoor Closing "+ doorOpening[i].id);
+			}
+		
+
 	
 	}	
+
+
+	//console.log("WAWAW" +doorClosing.length);
+
 	if(!doorClosing[memberI]){
-		doorClosing.push({id:id, animC:animC, animX:animX, isOpen:"open"});
+		doorClosing.push({id:id, animC:animC, animX:animX, isOpen:"open", tindex:tindex});
 	}
 
 	if(doorClosingExists){
-		console.log("RER rrrrrrrrrrrrrrrrrrrrrERERER  "+ doorClosing[memberI].id);
-		doorClosing[memberI].animC=animC;
-		doorClosing[memberI].animX=animX;
+		//console.log("RER rrrrrrrrrrrrrrrrrrrrrERERER  "+ doorClosing[memberI].id);
+		doorClosing[memberI].animC=0;
+		doorClosing[memberI].animX=144;
 		doorClosing[memberI].lap=0;					
 		doorClosing[memberI].isOpen="open";
-
+		doorClosing[memberI].tindex=tindex;
 		doorClosingExists=false;
 
 	}
@@ -4642,7 +5860,7 @@ function roomChangeLoop() {
 					shiftX-=14;
 
 					for (var g=0; g<items.length; g++) {
-						console.log(items[g].drawX);
+						//console.log(items[g].drawX);
 						items[g].drawX-=14;
 						items[g].drawY-=10;
 						items[g].centerX-=14;
@@ -4920,15 +6138,15 @@ var releaseCounterCount=0;
 
 function Player(type) {
 	//where in sprite
-	this.srcX = 640;
-	this.srcY = 256;
+	this.srcX = 832;
+	this.srcY = 128;
 
-	this.upperSrcX = 1664;
-	this.upperSrcY=256;
+	this.upperSrcX = 320;
+	this.upperSrcY=128;
 
 
 	//where in tileMap
-	this.drawX = 220;
+	this.drawX = 360;
 	this.drawY = 200;
 
 	//in sprite with & height	
@@ -4989,15 +6207,21 @@ function Player(type) {
 
 }/// FUNC Player
 
-
+var dosSieteOpened=false;
 
 //Shit happens
 Player.prototype.update = function () {
 
-	if(currentSubArea=="water"){
+	if(currentSubArea=="water"||currentSubArea=="deep-water"||currentSubArea=="red-lava"){
 		if(!slowDown){
 			if(this.speed>0){
 				this.speed=4;
+			}
+		}
+	}else{
+		if(!slowDown){
+			if(this.speed>0){
+				this.speed=8;    ///////////// oR IF RUNNING!!
 			}
 		}
 	}
@@ -5018,12 +6242,31 @@ Player.prototype.update = function () {
 	ctxMenuOverOver.fillText(bullets[player1.weaponSelected].current,170,40);
 
 	for(var j=0; j<this.items.length; j++){
+
+		//console.log("TYPE? "+this.items[j].itemNumber);
+
 		if(this.items[j].itemNumber==this.itemSelected){
 			//console.log("ITEM SELECTED "+ this.itemSelected);
 			if(typeof this.items[j] !="undefined"&&player1.items.length>1){
 				ctxMenuOverOver.fillText(this.items[j].amount ,70,40);
 			}
 		}
+	}
+
+	///
+	//////   DOWN HERE    example of obstacle that dissapears after ITEM
+	///////     
+	for(var j=0; j<this.nonSelectItems.length; j++){
+
+		// console.log("TYPE? "+this.nonSelectItems[j].itemNumber);
+
+		if(this.nonSelectItems[j].itemNumber==3&&!dosSieteOpened){
+			doorOpen(290);
+			dosSieteOpened=true;
+
+			doorClose(290);
+		}
+
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -5302,7 +6545,16 @@ Player.prototype.update = function () {
 ///           
 
 
+var inDeepWater=0;
+var animRipple=0;
+var animRippleC=0;
+var damageCount=0;
+
 var lavaDamageCount=0;
+var lavaDamageCount2=0;
+var lavaOut=true;
+var lavaOnce=false;
+
 var damageCount=0;/// different as it blockes damage for longer
 
 //Shit is shown
@@ -5316,46 +6568,133 @@ Player.prototype.draw = function () {
 	/// WEAPON SELECTS!!!
 
 
-	if(currentSubArea == "red-lava"||currentSubArea == "orange-lava"){
-		if(lavaDamageCount==0){
-			player1.life--;
-			lavaDamageCount++;
-		}
+	if(currentSubArea == "red-lava"){
+		
+		lavaOnce=true;
+		
 
-		if(lavaDamageCount>0&&lavaDamageCount<4){// other DAMAGE can take longer (for flicker-invulnerability to go away)
+		if(lavaDamageCount>=0&&lavaDamageCount<4){// other DAMAGE can take longer (for flicker-invulnerability to go away)
 			lavaDamageCount++;
 		}else{
 			lavaDamageCount=0;	
+			player1.life--;
 		}
 	}
 
-	if(lavaDamageCount>0&&lavaDamageCount<20){// flicker takes longer to go away when coming out of lava
-		lavaDamageCount++;
+	if(currentSubArea == "deep-water"){
+				
+		inDeepWater++;
+
+		if(inDeepWater>20){
+			
+			player1.life=0;
+			inDeepWater=0;	
+		}	
 	}else{
-		lavaDamageCount=0;	
+		inDeepWater=0;
 	}
-	
+		
+	if(lavaOnce&&lavaOut){
+		lavaDamageCount=1;	
+		lavaOut=false;
+	}else if(lavaOnce&&!lavaOut){
+		if(lavaDamageCount>0&&lavaDamageCount<16){// flicker takes longer to go away when coming out of lava
+			lavaDamageCount++;
+		}else{
+			lavaDamageCount=0;	
+			lavaOut=true;
+			lavaOnce=false;
+		}
+	}
+		
+
 
 	if((lavaDamageCount*100)%40==0||lavaDamageCount==0){/// add || NORMALdamagCount
 		/// LEGS
-		if(currentSubArea != "water"&&currentSubArea != "deep-water"&&currentSubArea != "red-lava"&&currentSubArea != "orange-lava"){
-			ctxPlayer.drawImage(imgPlayer, this.srcX, this.srcY, 128, 128, this.drawX, this.drawY, this.width, this.height);
+		if(currentSubArea != "water"&&currentSubArea != "deep-water"&&currentSubArea != "red-lava"){
+			ctxPlayer.drawImage(imgPlayer, this.srcX, this.srcY, 64, 64, this.drawX, this.drawY, this.width, this.height);
 		}
 		//console.log(" L D C " +lavaDamageCount);
 	
 		/// BODY
+		if(currentSubArea == "water" || currentSubArea == "deep-water" && this.life>0){
+
+			animRippleC++;
+			if(animRippleC>0&&animRippleC<=6){
+				animRipple=0;
+			}else if(animRippleC>6&&animRippleC<=12){
+				animRipple=64;
+			}else if(animRippleC>12&&animRippleC<=18){
+				animRipple=128;
+			}else if(animRippleC>18){
+				animRippleC=0;
+			}
+
+			ctxPlayer.drawImage(imgPlayer, 0, animRipple, 64, 64, this.drawX, this.drawY, this.width, this.height);	
+		}
+
+
 		if(currentSubArea != "deep-water"){
 
 			if(this.shooting){      ///// changing upperSrc Anim according to shooting
-				ctxPlayer.drawImage(imgPlayer, this.upperSrcX, this.upperSrcY, 128, 128, this.drawX, this.drawY, this.width, this.height);
+				ctxPlayer.drawImage(imgPlayer, this.upperSrcX, this.upperSrcY, 64, 64, this.drawX, this.drawY, this.width, this.height);
 			}else{                     //// shifted sprite (srcX, Y) for upperBody parts
-				ctxPlayer.drawImage(imgPlayer, this.upperSrcX, this.srcY, 128, 128, this.drawX, this.drawY, this.width, this.height);                 //// take off +3, that just to show its been drawn on top
-										////            +3 actually + length of sprite (legs/upperbody)
+				ctxPlayer.drawImage(imgPlayer, this.upperSrcX, this.srcY, 64, 64, this.drawX, this.drawY, this.width, this.height);                 //// take off +3, that just to show its been drawn on top
+											////            +3 actually + length of sprite (legs/upperbody)
 			}
 
-		}/// if  != "deep-water"  << draw Body
+		}
 
 	}/// IF DAMAGE COUNTS
+
+
+// var imgData = ctxPlayer.getImageData(0, 0, canvasPlayer.width, canvasPlayer.height);
+//     // invert colors
+
+//    imgData.crossOrigin = "Anonymous";
+
+
+//     for (var i = 0; i < imgData.data.length; i += 4) {
+//         imgData.data[i] = 255 - imgData.data[i];
+//         imgData.data[i+1] = 255 - imgData.data[i+1];
+//         imgData.data[i+2] = 255 - imgData.data[i+2];
+//         imgData.data[i+3] = 255;
+//     }
+//     ctxPlayer.putImageData(imgData, 0, 0);
+
+
+
+	  //   var ctx = ctxPlayer;
+	    
+	  //   var imageData = ctx.getImageData(0,0,canvasPlayer.width, canvasPlayer.height);
+	  //   var pixels = imageData.data;
+	  //   var numPixels = pixels.length;
+	    
+	  //   ctx.clearRect(0, 0, canvasPlayer.width, canvasPlayer.height);
+	    
+	  //   for (var i = 0; i < numPixels; i++) {
+	  //       var average = (pixels[i*4] + pixels[i*4+1] + pixels[i*4+2]) /3;
+	  //       // set red green and blue pixels to the average value
+	  //       pixels[i*4] = average;
+			// pixels[i*4+1] = average+30;
+	  //       pixels[i*4+2] = average;
+	  //   }
+	  //   ctx.putImageData(imageData, 0, 0);
+	
+
+	// ctxPlayer.save();
+
+ //    // Draw mask to buffer
+ //    ctxPlayer.clearRect(0, 0, this.width, this.height);
+ //    ctxPlayer.drawImage(imgPlayer, 0, 0, 64, 64, 20, 30, this.width, this.height);
+
+ //    // Draw the color only where the mask exists (using source-in)
+ //    ctxPlayer.fillStyle = ["blue"]; // 
+ //    ctxPlayer.globalCompositeOperation = "source-in";
+ //    ctxPlayer.fillRect(0, 0, this.width, this.height);
+
+ //    ctxPlayer.restore();
+
 
 };
 
@@ -5390,17 +6729,17 @@ Player.prototype.animationState = function (dead, direction, animRatePlayer, ani
 		animCount += animRatePlayer; //// OTHER ANIM RATE@!!!!!! (not bound to weapon)
 
 		if(animCount>0&&animCount<1){
-			this.srcY=256;
-		}else if(animCount>=1&&animCount<2){
-			this.srcY=384;
-		}else if(animCount>=2&&animCount<3){
-			this.srcY=512;
-		}else if(animCount>=3&&animCount<4){
-			this.srcY=384;
-		}else if(animCount>=4&&animCount<5){
-			this.srcY=256;
-		}else if(animCount>=5&&animCount<6){
 			this.srcY=128;
+		}else if(animCount>=1&&animCount<2){
+			this.srcY=192;
+		}else if(animCount>=2&&animCount<3){
+			this.srcY=256;
+		}else if(animCount>=3&&animCount<4){
+			this.srcY=192;
+		}else if(animCount>=4&&animCount<5){
+			this.srcY=128;
+		}else if(animCount>=5&&animCount<6){
+			this.srcY=64;
 		}else if(animCount>=6&&animCount<7){
 			this.srcY=0;
 		}else{
@@ -5410,57 +6749,57 @@ Player.prototype.animationState = function (dead, direction, animRatePlayer, ani
 
 	/// just  W A L KI N G
 	if(this.direction=="up"&&!this.shooting){
-		this.upperSrcX = 128;
-		this.srcX = 1152;
+		this.upperSrcX = 64;
+		this.srcX = 576;
 	}else if(this.direction=="down"&&!this.shooting){
-		this.upperSrcX = 640;
-		this.srcX = 1664;						
+		this.upperSrcX = 320;
+		this.srcX = 832;						
 	}else if(this.direction=="right"&&!this.shooting){
-		this.upperSrcX = 384;
-		this.srcX = 1408;							
+		this.upperSrcX = 192;
+		this.srcX = 704;							
 	}else if(this.direction=="left"&&!this.shooting){
-		this.upperSrcX = 894;
-		this.srcX = 1920;							
+		this.upperSrcX = 448;
+		this.srcX = 960;							
 	}else if(this.direction=="right-up"&&!this.shooting){
-		this.upperSrcX = 256;
-		this.srcX = 1280;	
+		this.upperSrcX = 128;
+		this.srcX = 640;	
 	}else if(this.direction=="right-down"&&!this.shooting){
-		this.upperSrcX = 512;
-		this.srcX = 1536;								
+		this.upperSrcX = 256;
+		this.srcX = 768;								
 	}else if(this.direction=="left-up"&&!this.shooting){
-		this.upperSrcX = 1024;
-		this.srcX = 2048;								
+		this.upperSrcX = 512;
+		this.srcX = 1024;								
 	}else if(this.direction=="left-down"&&!this.shooting){
-		this.upperSrcX = 768;
-		this.srcX = 1792;								
+		this.upperSrcX = 384;
+		this.srcX = 896;								
 	}else if(this.direction=="nowhere"){
 
-		this.srcY=256;
+		this.srcY=128;
 
 		if(this.facing=="down"){
-			this.upperSrcX = 640;
-			this.srcX = 1664;	
+			this.upperSrcX = 320;
+			this.srcX = 832;	
 		}else if(this.facing=="up"){
-			this.upperSrcX = 128;	
-			this.srcX = 1152;	
+			this.upperSrcX = 64;	
+			this.srcX = 576;	
 		}else if(this.facing=="right"){
-			this.upperSrcX = 384;
-			this.srcX = 1408;							
+			this.upperSrcX = 192;
+			this.srcX = 704;							
 		}else if(this.facing=="left"){
-			this.upperSrcX = 894;
-			this.srcX = 1920;							
+			this.upperSrcX = 448;
+			this.srcX = 960;							
 		}else if(this.facing=="right-up"){
-			this.upperSrcX = 256;
-			this.srcX = 1280;
+			this.upperSrcX = 128;
+			this.srcX = 640;
 		}else if(this.facing=="right-down"){
-			this.upperSrcX = 512;
-			this.srcX = 1536;
+			this.upperSrcX = 256;
+			this.srcX = 768;
 		}else if(this.facing=="left-up"){
-			this.upperSrcX = 1024;	
-			this.srcX = 2048;					
+			this.upperSrcX = 512;	
+			this.srcX = 1024;					
 		}else if(this.facing=="left-down"){
-			this.upperSrcX = 768;
-			this.srcX = 1792;							
+			this.upperSrcX = 384;
+			this.srcX = 896;							
 		}	
 
 	}// else if not moving
@@ -5472,11 +6811,11 @@ Player.prototype.animationState = function (dead, direction, animRatePlayer, ani
 		animShootingCount += animRateShooting;
 		   
 		   if(animShootingCount>0&&animShootingCount<2){
-				  this.upperSrcY = 256;
+				  this.upperSrcY = 128;
 			}else if(animShootingCount>=2&&animShootingCount<4){
-				this.upperSrcY = 384;
+				this.upperSrcY = 192;
 			}else if(animShootingCount>=4&&animShootingCount<5){
-				this.upperSrcY = 512;
+				this.upperSrcY = 256;
 				
 			}else{
 				animShootingCount =0;
@@ -5488,56 +6827,56 @@ Player.prototype.animationState = function (dead, direction, animRatePlayer, ani
 
 
 			if(this.facing=="down"){
-				this.srcX = 3712;
-				this.upperSrcX = 2688;
+				this.srcX = 1856;
+				this.upperSrcX = 1344;
 			}else if(this.facing=="up"){
-				this.srcX = 3200;
-				this.upperSrcX = 2176;
+				this.srcX = 1600;
+				this.upperSrcX = 1088;
 			}else if(this.facing=="right"){
-				this.srcX = 3456;
-				this.upperSrcX = 2432;
+				this.srcX = 1728;
+				this.upperSrcX = 1216;
 			}else if(this.facing=="left"){
-				this.srcX = 3968;
-				this.upperSrcX = 2944;
+				this.srcX = 1984;
+				this.upperSrcX = 1472;
 			}else if(this.facing=="right-up"){
-				this.srcX = 3328;
-				this.upperSrcX = 2304;
+				this.srcX = 1664;
+				this.upperSrcX = 1152;
 			}else if(this.facing=="right-down"){
-				this.srcX = 3584;
-				this.upperSrcX = 2560;
+				this.srcX = 1792;
+				this.upperSrcX = 1280;
 			}else if(this.facing=="left-up"){
-				this.srcX = 4096;	
-				this.upperSrcX = 3072;					
+				this.srcX = 2048;	
+				this.upperSrcX = 1536;					
 			}else if(this.facing=="left-down"){
-				this.srcX = 3712;	
-				this.upperSrcX = 2816;						
+				this.srcX = 1856;	
+				this.upperSrcX = 1408;						
 			}
 
 		}else{
 			if(this.direction=="down"){
-				this.srcX = 1664;	
-				this.upperSrcX = 2688;
+				this.srcX = 832;	
+				this.upperSrcX = 1344;
 			}else if(this.direction=="up"){	
-				this.srcX = 1152;	
-				this.upperSrcX = 2176;
+				this.srcX = 576;	
+				this.upperSrcX = 1088;
 			}else if(this.direction=="right"){
-				this.srcX = 1408;	
-				this.upperSrcX = 2432;						
+				this.srcX = 704;	
+				this.upperSrcX = 1216;						
 			}else if(this.direction=="left"){
-				this.srcX = 1920;	
-				this.upperSrcX = 2944;						
+				this.srcX = 960;	
+				this.upperSrcX = 1472;						
 			}else if(this.direction=="right-up"){
-				this.srcX = 1280;
-				this.upperSrcX = 2304;
+				this.srcX = 640;
+				this.upperSrcX = 1152;
 			}else if(this.direction=="right-down"){
-				this.srcX = 1536;
-				this.upperSrcX = 2560;
+				this.srcX = 768;
+				this.upperSrcX = 1280;
 			}else if(this.direction=="left-up"){
-				this.srcX = 2048;	
-				this.upperSrcX = 3072;						
+				this.srcX = 1024;	
+				this.upperSrcX = 1536;						
 			}else if(this.direction=="left-down"){
-				this.srcX = 1792;	
-				this.upperSrcX = 2816;									
+				this.srcX =  896;	
+				this.upperSrcX = 1408;									
 			}
 		}
 	}
@@ -6441,23 +7780,36 @@ Player.prototype.checkCrash = function () {
 	var newCenterX = Math.round(newDrawX + (this.width / 2)),
 		newCenterY = Math.round(newDrawY + (this.height / 2));
 
+	
+	function doorCrash(obstacleIndex, source){
+									// source >> whether from PlayerCrash or Bullet
 
-	function doorCrash(obstacleIndex){
-		
+
+
 		if(obstacles[obstacleIndex].isDoor=="door"){        
 			doorBlock=true;
 		   //console.log(obstacles[obstacleIndex].doorID);
 		     /// if player's got Right KEY for THIS DOOR >> obstacles[obstacleIndex].key#
 /// add parameter on obstacles >>> "LOCKED" - "notLOCKED"  && "KEY#"  <<< if locked, only open when carrying that key
 										/////////////////   or when broken, if breakable
-
-			if(obstacles[obstacleIndex].doorID!=166){		
+	
 			///////
 			///    UNLESS    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>     you got Deep-water Item <<<<   snorkel or smthing
 			///													
 								///            id   |   timer
-		    	doorOpen(obstacles[obstacleIndex].doorID, obstacles[obstacleIndex].timeToClose);
-		    }	
+
+				if(obstacles[obstacleIndex].doorID==270&&source=="bullet"||obstacles[obstacleIndex].doorID==271&&source=="bullet"){
+
+					
+						doorOpen(obstacles[obstacleIndex].doorID, obstacles[obstacleIndex].timeToClose, obstacles[obstacleIndex].Tindex);
+					
+					
+				}else if(obstacles[obstacleIndex].doorID!=270&&obstacles[obstacleIndex].doorID!=271&&obstacles[obstacleIndex].doorID!=290&&source!="bullet"){
+					//console.log("FKFKFKKFF "+obstacles[obstacleIndex].doorID);
+					doorOpen(obstacles[obstacleIndex].doorID, obstacles[obstacleIndex].timeToClose, obstacles[obstacleIndex].Tindex);
+				}
+		    	
+		    	
 
 		}
 
@@ -7644,6 +8996,39 @@ activeBullet.prototype.checkcrash = function () {
 	var crashB= false;
 //  diff weapons have diff limits!!!!!!   >> flame thrower: crashB against air
 	var id;
+
+	function doorCrash(obstacleIndex, source){
+									// source >> whether from PlayerCrash or Bullet
+
+    
+
+		if(obstacles[obstacleIndex].isDoor=="door"){        
+			doorBlock=true;
+		   //console.log(obstacles[obstacleIndex].doorID);
+		     /// if player's got Right KEY for THIS DOOR >> obstacles[obstacleIndex].key#
+/// add parameter on obstacles >>> "LOCKED" - "notLOCKED"  && "KEY#"  <<< if locked, only open when carrying that key
+										/////////////////   or when broken, if breakable
+
+
+
+				if(obstacles[obstacleIndex].doorID==270&&source=="bullet"||obstacles[obstacleIndex].doorID==271&&source=="bullet"){
+
+					
+						doorOpen(obstacles[obstacleIndex].doorID, obstacles[obstacleIndex].timeToClose, obstacles[obstacleIndex].Tindex);
+					
+					
+				}else if(obstacles[obstacleIndex].doorID!=270&&obstacles[obstacleIndex].doorID!=271&&obstacles[obstacleIndex].doorID!=290&&source!="bullet"){
+					//console.log("FKFKFKKFF "+obstacles[obstacleIndex].doorID);
+					doorOpen(obstacles[obstacleIndex].doorID, obstacles[obstacleIndex].timeToClose, obstacles[obstacleIndex].Tindex);
+				}
+		    	
+		    	
+
+		}
+
+	}
+
+
 	for (var i = 0; i < obstacles.length; i++) {
 
 		if( obstacles[i].isActive=="active"){ 
@@ -7660,9 +9045,8 @@ activeBullet.prototype.checkcrash = function () {
 
 						crashB = true; 
 						id=this.id;
-						//console.log(this.id);
-						//if it's a door, you may open it   
-						//doorcrashB(i);  //////    REPLACE THIS FOR BREAKABLE OBSTACLE >>>  obstacleBreak(i)
+						
+						doorCrash(i, "bullet",  obstacles[i]);  // bullet == doorCrash-source
 					}
 				}
 			}  /// dir
@@ -7698,6 +9082,8 @@ activeBullet.prototype.checkcrash = function () {
 					if(this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
 							crashB = true;  
 							id=this.id;
+
+							
 					}
 				}
 			}   

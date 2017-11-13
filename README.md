@@ -1,7 +1,7 @@
 # gameJS
 html-canvas game  (pixel art!)
 
-So the game engine (environment) is complete. Now it's time for everything to flow into an actual story and a playable game.  
+So the game engine (environment) is ready. Now it's time for everything to flow into an actual story and a playable game.  
 
 Try it out: https://rawgit.com/ohlsenjero/gameJS/master/index.html
 

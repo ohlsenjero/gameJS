@@ -1,0 +1,458 @@
+   
+
+
++ "howmany" ==2 >> mapOverDraw[tileMapIndex+1] parts >>>  PUT INTO FUNCTION  (repeating 1000 times)
+            also bring to 350s.. 4, 6 doors to 300s
++ replicate vertical-2doors on 350s (outside)
+
++  clearRect when teleport item selected... (instead of clearCtx)
+
+
+* problem with damage count... doesn't work always right (specially fucked after teleport...or not even after that)
+												///    making player dissapear or not flicker.. or both!
+>>>>>  test properly in mini environment (teleport on press, lava pool right there...)
+
+
+-fix whatever lag and slowDown by optimizing the whole thing... (compact stuff into fewer functions and such)
+ \
+  I think the doors may be causing a bit of lag... (so much calculation going on multiplied N times...)
+
+
+* and the last BUG  >>> Player/Game considerably faster after teleport.... Then take stair and back to normal..
+															requestAnim being called twice?? or too much shit goin on and animation can't handle it...
+															(anyway, time to start over on Unity)
+
+
+- dash should work in slower areas (just a bit faster..) >>> area with deep-sand that can only be crossed with speed
+
+
+
+- diff deaths anims....  >>> PLAYER SPRITE!(2)
+
+
+***  finish sprites pixel art  -- map -- rooms        			
+                        			
+---------------------------------------------------------------------------
+
+
+- teleport to room 3  >>> END!!  (enemies.. bosss.. etc)
+
+
+
+--tilediameter  to  56
+-- player       to  116
+- items location  *tileDiameter...
+
+
+
+
+- and finish door transitions..
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+////				MENU   -  ITEMS  &  MAP
+/////
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????
+
+
+
+
+* map inMenu  >> first only a dot, then after grabbing Item(non-selec) >>> dot + surrounding obstacles(someColors)+
+  \			>>> also maybe a dot on where you need to go-doors (not always exactly, sometime some puzzle clues
+non-select				on that "fake/pre" dot to the real place..)
+
+
+-- radar-map a bit smaller.. so it shows more than you can see
+
+
+* FINISH MENU (looks, placement)
+
+
+____________________________
+START >> pause >>>   
+------------------
+
+B >> switch (arrows) to map 
+
+A >> brings up whatever.. 
+
+SELECT >> switch (betwen) orbs or nothing
+
+
+
+
+_______________________________
+							  ----------------------------------------
+
+* non-selectable item that dissapears after not needed (1 off teleport relic or something)
+																			\
+																	those you carry and give to other characters
+
+
+
+
+*hacer funcion mas alta (PRE JUEGO),  para definir desde antes de jugar donde va a empezar
+ (por ejemplo desde un save state) + que playerType + .. etc..   stages, different paths...
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////\\\\\\\
+//
+////				   PLAYER
+/////
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????
+
+
+
+
+* center|calibrate wallCrash hit detection
+
+
+
+* hit detection (from enemy bullets)
+
+
+
+> dilusidar por que player.speed no puede ser impar (no importa porque me acuerdo que era por algo)
+_____
+
+> maybe create VAR to remember this.facing before room-change (just like with pause), 
+																and bring it back (for the same reasons)
+
+
+
+
+
++++++++++++++++
+
+
+* when dies >>> type of death >>> playerSprite-2 (like when shooting, move along X axis, if death 1, 2, 3)
+
+	death types: quick sand (struggle)| deep-water (bubbles)| lava (gruesome desintegration)| 
+																		being hit (normal bloody death)
+							FALLING INTO PIT HOLES!
+								area: uses normal sprite, then when in it, anim sprite (if==181&&inIt)
+									player deathAnim: legs and body going down (chopped-bottom) till blood-spikes
+																							  prince of persia like 
+
+
+* more than one type of player >> player1, 2  .. define diff types, menu pre game launch +++  >> diff abilities
+
+
+
+
+
+
+
+* shallow water! >> add smaller ripple on playerSprite (and put under without taking legs off)
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+////				   BULLETS
+/////
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????
+
+
+* figure out diff weapon's BULLET behaviour <<< LOTS of implications for  how Anim is done
+
+ \
+  Other weapons >> flameThrower << doesn't clear the bullet (draws all length of its course and back)
+  \
+   maybe have its own bulletSprite, since it is a lot thicker than the other ones
+
+
+
+*placeable bomb/mines>> timer or input)
+ -explosions must be its own thing (like weapon 2)>> anim >> sprite needs to be bigger||duplicated (radius hit)
+ \ 
+  get item for remote command-explosion (yeah!, selectable but unlimited - only one)
+
+
+
++++++++++++++++
+
+
+* bullets  crash >>> debrisAnim >> over 
+
+* gun supercharge?? (after item... << some weapons << animRate 0 while charging)
+
+* shooting >>> some weapons don't work under water 
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+////				WORLD & AREAS
+/////
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????
+
+
+
+
+
+
+>> un-pickable  items || un-interactive enemies  as  decoration tiles >> special trees||statues 
+														  o los salpicados en una cascada!! por ejemplo
+
+>> other animTiles like "water" but full body, such as grass (a little 1 or 2 strands on same as 100 tiles)
+															 /   then other areas can hv full-grass..
+															 				and even fuller grass (no legs)
+															 		/ swamp >> forest quicksand trap 2
+
+
+* FOR CHOPPING GRASS >>> simply draw on top of it the same as doors, but with a different sprite...
+					(grass looking door that dissapear on "bullet", and then reappears when closing again 
+																					just like every other door
+
+					items in this area, and if door drawY|X == tileY|X >> when doors closed, are invisible 
+															|| visible when open (if door drawY|X == tileY|X)
+
+
+* finish transitions >> add dots sprite over teleportTransition (hide player & items) +wavy fx
+
+*SHAKE FX
+
+
+
+-- other Fhash states >> same mechanism but different trigger <<< light FX (when certain weapon flare or explosion)
+																	\
+														    say using weapon 2 on certain dark-rooms, or inArea
+
+
+** FINISH SPRITE 
+\
+ *soft edges on 108 have to be hardcoded... (like 111, 112.. )
+\
+ [animated waterfall] >> like 161 << an obstacle
+
+
+
+* door crashes that aren't doors (interruptores, remote door opening)
+											>>> if doorOpen(X) id X(from array) >> opens X:opensIDXX
+
+								basically same as 250<>299  but with an attached-otherDoor which opens too (remotely)
+ \ 
+  not all doors work with keys >> switch on the wall for seamingly blocked doors
+											
+		>> same as key array, another array with other doors >> situation o interuptor que puede abrirla)
+    /
+* FIGURE OUT tiles that animate SOMETIMES  >> same as animationTiles (160,170), but xAnimSmTmsCount activated on EVENT
+	(just lije the doorAnims)
+
+
+_________________________________________--------------------------------------------------------------------
+
+
+
+
+SET 
+-other areas     >> transition can also NOT be default (para ghacer transition dentro de area)
+ \ 
+   figure out other areas >> and their walls (7... & 2..., that have to be paired..)
+   														
+
+				240-740 >>>> 245-790 >>>>> 250- 830  <<<< algo asi, menos paredes por cada monton de pisos-area
+
+
+
+* elevator like rooms >> animated walls (perspective illusion) << blocked door until animDone
+
+
+* black area room (its an area) >> goggles on  >> shiftSrcX (getTilesX)  now red... 
+									(one of flash states)
+							>>>>  FORCES currentArea TO BE  DarkLIT-AREA <<<< Tiles know where to go...
+
+				
+
+
+* DO NOT CLOSE door if player is still standing there........
+
+
+
+
+
++++++++++++++++
+
+
+
+<>  secret of mana Clouds effect (affects some tiles more than others... scrolls different
+
+<> <> parallax effect!!  (need a background!)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+////				     ENEMIES
+/////
+?????????????????????????????????????????????????????????????????????????????????????????????????????????????
+
+
+
+* enemies + Sprites
+
+* enemy AI - path finding
+
+* sprites ? weapons
+
+* player & (some) enemy knock back
+
+
+* new Enemy("BOSS");
+
+
+
+*last item >> radar(overMap) >> invisible enemies  >> dark zone (not completely dark but enemies invisible)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_______________________________________________________________________________________________________
+__________________________________________________________________________________________________________
+
+__________________________________________________________________________________________________________
+
+
+
+
+
+-- there was this bug with the doors, opening a 6Door right after a single door would crash the game
+						but putting the closeDoor-timer from 30 to 40... (giving it a bit more time) prevents it....
+																									FUCK
+										Now if running, it can still happen on 40... weird thing is it won't happen on 30 anymore.... what the fuck.. (50 seems safe anyway)
+
+										so theres something aobut 30 that is just the right speed to fuck things up
+
+										ALSO CAN"T GRAB 290 ITEM as long as there is a door about to close....
+
+
+
+
+
+______________
+
+
+--- 270 DOORS have to be 3 seconds AWAY from stairs!!!!
+  -- it doesnt even always happen.. its like "go stairs and back, then break a wall AND THEN 
+  																	hurry to the stairs again...---> crash!"
+  					\
+  			Exactly  10 tiles away (or maybe 8.. still heaps)!! (on normal speed... )
+  						then again considering BIG landscapes.. shouldnt be a problem
+Solution:: (if seen to happen again or if really want one around a door... or if too much speed)  
+SEPARATE THE FUCKING BREAKABLE DOORS >>> breakDoorOpen(bla, bla, bla)....... fuck
+												breakDoorOpening[q].id, tindex.... breakDoorOpening =[];
+
+
+
+... (earlier notes)
+
+
+breakable doorsReClose tendrian que funcionar distinto. 
+    	No abrirse en bloque (como las demas puertas), pero individualmente 
+    									
+    						 // por ahora se pueden usar solos los breakable (y limitando severamente su numero)
+    						 				>> aunque puede ser el unico modo
+
+    						 						se podria dejar asi para estos dos, 
+    						 						y los obstacles que se vuelven a cerrar, para que tengan el mismo ID podrian entonces ser "enemies" que actuan como bloques
+    						 						or maybe check their IDs against their index in the map[]
+    /
+
+    eso que hice en inActive[ID] vs .Tindex >>> hacer con  DoorOpening >> cosa que distinga y abra solo ese tile
+    																			a las 250<>275
+
+  .. y yo digo, breakable door tendrian qu irse a la mierda (refundarse... y hacerse bien desde 0, con todo lo demas)
+
+
+
+
+
+----------------------------------
+
+
+
+NOW THAT i SEPARATED TILEDEFINE FROM WHAT pixel X to point at in Sprite
+							\
+		can do unique drawings for each edge, easy...!!! (same as now basically but diff tile/edge per number)
+														just more numbers, but look at secret of mana or...
+														....no rounded edge in any of those games
+									[and they look amazing, but heaps of diff tile numbers then: plan out right]
+
+	also, smaller tiles means less use of double floor wall-switch (transition area)		
+	
+			in this sense, edges could be left on as a pre-game hack, so it looks decent quickly, 
+				but then when final map decided upon >> take off and doo all of those edges manually/individually
+																						(with their own tile number)					
+
+

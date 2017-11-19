@@ -5,7 +5,7 @@ So the game engine (environment) is ready. Now it's time for everything to flow 
 
 Try it out: https://rawgit.com/ohlsenjero/gameJS/master/index.html
 
-Arrow Keys : move around/
+Arrow Keys : move around/n
 2          : fire/
 1          : use items/
 space      : pause (then use arrows to change weapon||items)/

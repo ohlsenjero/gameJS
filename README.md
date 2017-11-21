@@ -9,7 +9,7 @@ Try it out: https://rawgit.com/ohlsenjero/gameJS/master/index.html
 [Arrow Keys : move around  -  when paused: select weapon or items to use]
 [2          : fire weapon]
 [1          : use items]
-[shift      : swamp between items]
+[shift      : swap between items]
 [space      : pause - menu]
 [alt        : when paused: select teleport-item (it will only work when standing on teleportPad)]
 

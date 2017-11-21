@@ -8,10 +8,6 @@
 +  clearRect when teleport item selected... (instead of clearCtx)
 
 
-* problem with damage count... doesn't work always right (specially fucked after teleport...or not even after that)
-												///    making player dissapear or not flicker.. or both!
->>>>>  test properly in mini environment (teleport on press, lava pool right there...)
-
 
 -fix whatever lag and slowDown by optimizing the whole thing... (compact stuff into fewer functions and such)
  \

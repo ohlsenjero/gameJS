@@ -12,3 +12,6 @@ Try it out: https://rawgit.com/ohlsenjero/gameJS/master/index.html
 [shift      : swamp between items]
 [space      : pause - menu]
 [alt        : when paused: select teleport-item (it will only work when standing on teleportPad)]
+
+
+Can you find the key to the other side? Follow the safe path around the quicksand..

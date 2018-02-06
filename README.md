@@ -14,4 +14,4 @@ Try it out: https://rawgit.com/ohlsenjero/gameJS/master/index.html
 [alt        : when paused: select teleport-item (it will only work when standing on the right place)]    
 
 
-Can you get to the teleportation pad? There's two different items you can get to find your way. One will open the big door, whereas the other one will instead allow you to go over deep-water without drowning... 
+Can you get to the teleportation pad? There's two different items you can get to find your way. One will open the big door, whereas the other one will instead allow you to go over deep-water without drowning... (careful with the quicksand too!).

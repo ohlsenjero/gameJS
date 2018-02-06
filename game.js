@@ -182,7 +182,7 @@ var inDoorCrash={crash:false, id:0};
 
 var inArea={inIt:false, whatArea:currentArea};
 
-var doorKeys = [{id:301, key:0}, {id:401, key:0}];
+var doorKeys = [{id:301, key:0}];
 
 var key1;
 

@@ -5,38 +5,90 @@
         <link rel="stylesheet" href="style.css">
 
         <style>
-        html{
-          
+        html, body {
+            margin:0;
+            padding: 0;
         }
+  
         body{
             /*filter:blur(0.5px);*/
             position: relative;
             left: 0;
             top:0;
-           
-          
             overflow: hidden;
+            background-color: #000;
         }
-        #container {
+
+
+ 
+        canvas {
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            margin:0 auto;
+            margin-top:80px;
+        }
+
+
+
+        #divleft{
+            position: absolute;
+            top:0;
+            left: 0;
+            background-color: #000;
+            z-index: 100000;
+        }
+
+        #divright{
+            position: absolute;
+            top:0;
+            right: 0;
+            background-color: #000;
+            z-index: 100000;
+        }
+
+        #divbottom{
+            position: absolute;
+            bottom:40px;
+            left: 0;
+            background-color: #000;
+            height: 40px;
+            width:100%;
+            z-index: 100000;
+        }
+
+ /*       #container{
+           
+            transform: scale(1.5);
+            transform-origin: bottom center;
+        }*/
+
+        #container, #containermenu, #containerbody {
             position: relative;
             display: block;
             margin: 0;
+            
         }
 
-        #canvasBg, #canvasPlayer, #canvasBgTop, #canvasEntities, #canvasMenu ,  #canvasMenuOver,  #canvasMenuOverOver, #canvasOverlay, #canvasOverOverlay, #canvasPause, #menu,  #canvasMapOverMenu{
+
+        #canvasBg, #canvasDoors, #canvasPlayer, #canvasEntities, #canvasMenu ,  #canvasMenuOver,  #canvasMenuOverOver, #canvasOverlay, #canvasOverOverlay, #canvasPause, #menu,  #canvasMapOverMenu{
             position: absolute;
             left: 0;
             top:0;
             
         }
-        #canvasBg{
+
+
+        #canvasBg {
             margin-left: 0 auto;
             z-index: 10;
             background-color: black;
         }
-        #canvasBgTop{
-            z-index: 20;
+        #canvasDoors{
+            margin-left: 0 auto;
+            z-index: 11;
         }
+
         #canvasEntities{
             z-index: 25;
         }
@@ -47,16 +99,13 @@
         #canvasPause {
             z-index: 4200;
            
-            margin-top: -60px;
         }
         #canvasMenu {
             z-index: 4500;
-          
             margin-top: 0;
-
-            background-image: url('images/menu-bg.png');
-
+            background-color: #000;
         }
+
         #canvasMenuOver{
             z-index: 4600;
             margin-top: 0;
@@ -65,19 +114,20 @@
         #canvasMenuOverOver{
             z-index: 6000;
             margin-top: 0;
-
-            
         }
+
         #canvasMapOverMenu{
             z-index: 7000;
-            margin-top: 0;
-            left: 740px;
+            margin-top: 0px;
+            padding: 8px;
+            left: 832px;
+            background-color: #000;
+            background-image: url('images/menu-bg.png');
+            background-size: 1900px 1000px;
         }
 
         #menu {
             z-index: 4;
-            color: 000;   
-
             display: none;
         }
 
@@ -90,16 +140,9 @@
          #canvasOverOverlay{
 
             z-index: 10000;
-            margin-top: -60px;
-        }       
- 
-        canvas {
-            position: relative;
-            z-index: 1;
-            display: inline-block;
-            margin:0 auto;
-            margin-top:60px;
-        }
+            margin-top: 0;
+        }     
+
 
 
 
@@ -107,33 +150,43 @@
             z-index: 50;
         }
 
-        html, body {
-            margin:0;
-            padding: 0;
-        }
+        
+        
 
         </style>
     </head>
     <body>
 
+        <div id="divleft"></div>
+        <div id="divright"></div>
+        <div id="divbottom"></div>
 
-        <div id="menu"> <p>fgfdgfdgfdg</p> </div>
         <div id="container">
-        <canvas id="canvasMapOverMenu" ></canvas> 
-        <canvas id="canvasMenuOverOver" ></canvas> 
-        <canvas id="canvasMenuOver" width="600" height="900" ></canvas> 
-        <canvas id="canvasMenu"  width="600" height="900"  ></canvas> 
-        <canvas id="canvasPause" ></canvas>    
-        <canvas id="canvasEntities" ></canvas>     
-        <canvas id="canvasOverOverlay" ></canvas>   
-        <canvas id="canvasOverlay" ></canvas>
-        <canvas id="canvasBullets" ></canvas>
-        <canvas id="canvasPlayer" ></canvas>
-        <canvas id="canvasBgTop" ></canvas>
-        <canvas id="canvasBg" ></canvas>
+        
+            <div id="containermenu">
+                <canvas id="canvasMenu"  width="600" height="900"  ></canvas> 
+
+                <canvas id="canvasMapOverMenu" ></canvas> 
+                <canvas id="canvasMenuOverOver" ></canvas> 
+                <canvas id="canvasMenuOver" width="600" height="900" ></canvas> 
+                
+                <canvas id="canvasPause" ></canvas>  
+
+            </div>
+            <div id="containerbody">
+                  
+                <canvas id="canvasEntities" ></canvas>     
+                 
+                <canvas id="canvasOverlay" ></canvas>
+                <canvas id="canvasBullets" ></canvas>
+                <canvas id="canvasPlayer" ></canvas>
+                <canvas id="canvasDoors" ></canvas>
+                <canvas id="canvasBg" ></canvas>
+            </div>
+
+            <canvas id="canvasOverOverlay" ></canvas> 
+
         </div>
-
-
 
     </body>
 </html>        <script src="game.js"></script>

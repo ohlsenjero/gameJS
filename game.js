@@ -4677,7 +4677,7 @@ Enemy.prototype.draw = function () {
 
 	// Red rectangle
 ctxPlayer.beginPath();
-ctxPlayer.lineWidth = "6";
+ctxPlayer.lineWidth = "2";
 ctxPlayer.strokeStyle = "red";
 
 	ctxPlayer.rect(this.leftX, this.topY, this.width, this.height);

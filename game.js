@@ -27,6 +27,8 @@ var canvasBg = document.getElementById("canvasBg"),
 	ctxOverOverlay = canvasOverOverlay.getContext("2d");
 /////////////////////////////////////////////////////////////////////////
 
+
+
 function clearCtx(ctx) {
 	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 }
@@ -37,7 +39,7 @@ function clearCtx(ctx) {
 
 //// FIXES game speed across different computers and processors 
 var startTime = Date.now();
-var gameSpeed=40;  ////  + == slower game 
+var gameSpeed=80;  ////  + == slower game 
 /////  KEEP IN MIND whatever that may SLOW GAME DOWN >>> keep game at slowest is seen performing
 // so then it doesn't suddenly speed up (when in an Area were Edges almost don't take place)
 
@@ -50,11 +52,16 @@ var then = startTime;
 // PLAYER
 var players=[1,2];
 
+var enemies = [];
+
+
   /// dependent on controller input
 var playerChoosing="player1";////////
 
 ///  upon choosing from the list at introScreen, VAR [#] is set, to later create new Player
 var playerTypes = ["warrior", "warlock"]
+
+var enemyTypes = ["blob"];
 
 
 var playerFirstX=0;
@@ -1190,13 +1197,13 @@ function getCanvasSize(){
 	// CSS margin won't work
 	document.getElementById("container").style.top= 15+"px";
 
-	document.getElementById("divleft").style.width= (window.innerWidth-canvasBg.clientWidth)/2+10+"px";
-	document.getElementById("divleft").style.height= window.innerHeight+"px";
+	document.getElementById("divleft").style.width= (window.outerWidth-canvasBg.clientWidth)/2+10+"px";
+	document.getElementById("divleft").style.height= window.outerHeight+"px";
 
-	document.getElementById("divright").style.width= (window.innerWidth-canvasBg.clientWidth)/2+10+"px";
-	document.getElementById("divright").style.height= window.innerHeight+"px";
+	document.getElementById("divright").style.width= (window.outerWidth-canvasBg.clientWidth)/2+10+"px";
+	document.getElementById("divright").style.height= window.outerHeight+"px";
 
-	document.getElementById("divbottom").style.top= window.innerHeight-15+"px";
+	document.getElementById("divbottom").style.top= window.outerHeight+"px";
 
 	screenHeight = canvasBg.height+canvasMenu.height;
 
@@ -1389,6 +1396,20 @@ function begin() {
 
 
 	if(playerChoosing=="player1"){
+
+		/// ///// INSTEAD PUSH INTO Players Array (limited amount of diff players at any one time)
+
+		/// and then in Player.prototype. functions use a foor loop... checking for each.
+
+
+		///DO SAME WITH ENEMIES.. and items
+
+		///replace the whole player1 for 
+
+			// players.push(
+
+			// 	new Enemy(enemyTypes[0])
+			// );
 		
 		player1 = new Player(playerTypes[0]); /////// [0] <<<< VAR depending on playerType chosen at introScreen
 	}
@@ -1397,6 +1418,12 @@ function begin() {
 
 	requestAnimFrame(loop);
 
+
+
+	enemies.push(
+
+		new Enemy(5*tileDiameter, 3*tileDiameter, enemyTypes[0])
+	);
 
 
 	///// Initial GAME ITEMS  (unlike enemy drops which appear as the game goes)
@@ -1527,6 +1554,10 @@ function update() {
 	//DONDE SEA QUE HALLA player1 >>> CAMBIAR POR 
 	//for (var i = 0; i < players.length; i++) {
 	  
+	for (var i = 0; i < enemies.length; i++) {
+		enemies[0].update();
+	}
+
 	 //   if(players[i][0 == 1
 	for (var i = 0; i < players.length; i++) {
 		if(players[i]== 1){
@@ -1642,6 +1673,11 @@ function update() {
 
 // & Re-DRAW
 function draw() {
+
+	for (var i = 0; i < enemies.length; i++) {
+		enemies[0].draw();
+	}
+
 	for (var i = 0; i < players.length; i++) {
 		if(players[i] == 1){
 			player1.draw();
@@ -1649,6 +1685,8 @@ function draw() {
 			//player2.draw();
 		}
 	}
+
+	
 	for(var i=0; i< items.length; i++){
 		items[i].draw();
 	}
@@ -2234,6 +2272,9 @@ var imgPlayer = new Image();
 
 var imgPlayer2 = new Image();
 	imgPlayer2.src = "images/playerSpriteBig2.png";
+
+var imgMonster= new Image();
+	imgMonster.src = "images/monsterSprite.png";
 
 var imgBullets = new Image();
 	imgBullets.src = "images/bullets.png";   
@@ -4570,6 +4611,278 @@ function roomChangeLoop() {
 
 
 
+
+//ENEMIES:
+
+
+//just like obstacles, must have top, bottom X,Y ...  and run through the same function << bullet & player obstacle/enemy detect
+
+
+function Enemy(xx, yy, type) {
+
+	this.drawX = xx;
+	this.drawY = yy;
+	//where in sprite
+	this.enemyType = type;
+
+
+	this.centerX = this.drawX + (this.width / 2);
+	this.centerY = this.drawY + (this.height / 2);
+
+	if(this.enemyType =='blob'){
+		//blob
+
+		//where in sprite
+		this.srcX = 0;
+		this.srcY = 0;
+
+
+
+		//in sprite with & height	
+		this.width = 128;  
+		this.height = 128; 
+
+
+		//starting moving values & speed
+		this.speed = 0;
+		this.moving = true; //can it move?
+
+		this.animRate =0.6; 
+
+
+		this.direction = "nowhere";  // for moving mechanics purposes
+		this.facing="nowhere";  /// diff from direction, for shooting Animation/sprite-purposes
+
+		//animation
+		this.isDead = false;
+		this.deathType = "none";
+
+		this.life=10;
+	}
+
+
+}/// FUNC Enemy
+
+
+
+
+
+
+
+
+
+Enemy.prototype.draw = function () {
+
+	ctxPlayer.drawImage(imgMonster, this.srcX, this.srcY, 128, 128, this.drawX+shiftX, this.drawY+shiftY, this.width, this.height);
+
+	// Red rectangle
+ctxPlayer.beginPath();
+ctxPlayer.lineWidth = "6";
+ctxPlayer.strokeStyle = "red";
+
+	ctxPlayer.rect(this.leftX, this.topY, this.width, this.height);
+	ctxPlayer.stroke();
+
+		this.leftX = this.drawX+shiftX;
+	this.rightX = this.leftX + this.width;
+	this.topY = this.drawY+shiftY;
+	this.bottomY = this.topY + this.height;
+}; // END Player-Draw
+
+
+
+Enemy.prototype.update = function () {
+
+
+	if(this.life<=0){
+		this.isDead=true;
+	}
+
+	this.checkMoving(this.direction, this.moving);
+	this.animationState(this.dead, this.direction, this.animRate, this.moving);
+
+};// END Enemy UPDATE
+
+
+blobCounter=0;
+oldBlobCounter=0;
+
+Enemy.prototype.checkMoving = function (direction, moving) {
+
+	//console.log(blobCounter);
+
+	if(this.enemyType=="blob"){
+
+		blobCounter++;
+
+		if(this.moving==true&&blobCounter>15){
+			
+			var randomBlobMovement = Math.floor(Math.random() * (1000 - 100) + 100) / 100;
+			
+						
+			if(randomBlobMovement>7.25){
+				//console.log(randomBlobMovement);
+				this.direction="right";
+				
+			}else if(randomBlobMovement>5&&randomBlobMovement<=7.25){
+				//console.log(randomBlobMovement);
+				this.direction="left";
+				
+			}else if(randomBlobMovement>2.5&&randomBlobMovement<=5){
+				//console.log(randomBlobMovement);
+				this.direction="up";
+				
+			}else if(randomBlobMovement>0&&randomBlobMovement<=2.5){
+				//console.log(randomBlobMovement);
+				this.direction="down";
+				
+			}
+
+
+			//console.log(this.direction);
+			blobCounter=0;
+			
+		}
+
+		if(this.direction=="right"){
+			this.drawX+=4;
+		}else if(this.direction=="left"){
+			this.drawX-=4;
+		}else if(this.direction=="up"){
+			this.drawY+=4;
+		}else if(this.direction=="down"){
+			this.drawY-=4;
+		}
+
+
+	}///end of BLOB
+
+
+
+
+
+
+
+
+};
+
+
+var animEnemyCount=0;
+
+Enemy.prototype.animationState  = function (dead, direction, animRate, moving) {
+
+	if(this.direction!="room-change"){
+		animEnemyCount += animRate; //// OTHER ANIM RATE@!!!!!! (not bound to weapon)
+
+		if(animEnemyCount>0&&animEnemyCount<1){
+			this.srcX=0;
+		}else if(animEnemyCount>=1&&animEnemyCount<2){
+			this.srcX=128;
+		}else if(animEnemyCount>=2){
+			this.srcX=256;
+			animEnemyCount=0;
+		}
+
+	}
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ////////////\\	    [] 				 	 []]   []          		[]	    ////
 ////|\\\||///\\\ 	[] 					[[]]   []         	    []    //
 ////|\\\|||////\\ 	[]				   [[[]]   []       /|||  	[]  //
@@ -6557,6 +6870,213 @@ Player.prototype.checkCrash = function () {
 
 		player.shootingDirection=player.facing;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	///Loop through enemies
+	for (var i = 0; i < enemies.length; i++) {
+
+		// console.log(enemies[i].topY);
+		// console.log(enemies[i].bottomY);
+		// console.log(enemies[i].rightX);
+
+			if(this.direction=="right"){
+			
+
+				///in other words: as long as you are standing in the block before the one you would be at if going right
+				if(newCenterY>=enemies[i].topY&&newCenterY<enemies[i].bottomY&&newCenterX<=enemies[i].leftX&&newCenterX>enemies[i].leftX-tileDiameter) {
+
+					//but don't stop me just yet, only if not doing so would put me on the other side 
+					if(newCenterX+this.speed>=enemies[i].leftX-(this.speed+1)){
+
+						console.log("crahsed");
+						crash = true; 
+						
+					}
+				}
+			}  
+			if(this.direction=="left"){
+
+				if(newCenterY<=enemies[i].bottomY&&newCenterY>enemies[i].topY&&newCenterX>=enemies[i].rightX&&newCenterX<enemies[i].rightX+tileDiameter) {
+					
+					if(newCenterX-this.speed<=enemies[i].rightX+(this.speed+1)){
+
+						    crash = true;
+							
+							console.log("crahsed");
+					}
+				}
+			}   
+			if(this.direction=="up"){
+
+				if(newCenterX>=enemies[i].leftX&&newCenterX<enemies[i].rightX&&newCenterY>=enemies[i].bottomY&&newCenterY<enemies[i].bottomY+tileDiameter) {
+
+					if(newCenterY-this.speed<=enemies[i].bottomY+(this.speed+1)){
+							crash = true; 
+							console.log("crahsed");
+					}         
+				}
+			}   
+			if(this.direction=="down"){
+
+				if(newCenterX>enemies[i].leftX&&newCenterX<=enemies[i].rightX&&newCenterY<=enemies[i].topY&&newCenterY>enemies[i].topY-tileDiameter) {
+
+					if(newCenterY+this.speed>=enemies[i].topY-(this.speed+1)){
+							crash = true;  
+							console.log("crahsed");
+					}
+				}
+			}   
+
+
+////////////////////////////////////////
+//////////////////////////////	         d   I   A   G   O   N   A   L    S
+//////////////////////////////////
+
+
+			if(this.direction=="right-down"){ 
+
+
+				if(newCenterY>=enemies[i].topY&&newCenterY<enemies[i].bottomY&&newCenterX<=enemies[i].leftX&&newCenterX>enemies[i].leftX-tileDiameter) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					if(newCenterX+this.speed>=enemies[i].leftX-(this.speed+1)){
+						// crash = true;  
+						// doorCrash(i);
+						if(crashDir!="down"){
+							crashDir="right";
+						}else{
+							crash = true;
+							console.log("crahsed");
+						}
+					}
+				}
+
+
+				if(newCenterX>enemies[i].leftX&&newCenterX<=enemies[i].rightX&&newCenterY<=enemies[i].topY&&newCenterY>enemies[i].topY-tileDiameter) {
+
+					if(newCenterY+this.speed>=enemies[i].topY-(this.speed+1)){
+						// crash = true;
+						// doorCrash(i);
+						if(crashDir!="right"){
+							crashDir="down";
+						}else{
+							crash = true;
+							console.log("crahsed");
+						}
+						
+					}
+				}
+				//////   ADD AN EXPLICITELY diagonal check.....
+				////  AND only on this one >>> 
+						// crash = true;
+						// doorCrash(i);
+
+				if(newCenterY<=enemies[i].topY&&newCenterX<=enemies[i].leftX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log("WHAT"+player1.direction);
+					if(newCenterX+this.speed>=enemies[i].leftX-(this.speed+1)&&newCenterY+this.speed>=enemies[i].topY-(this.speed+1)){
+						if(crashDir!="right"&&crashDir!="down"){
+							crash = true;
+							console.log("crahsed");
+						}
+
+					}
+				}
+
+			} /////  if(this.direction=="right-down"){  
+
+
+
+/////
+///////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			if(this.direction=="left-down"){ 
+
+				 if(newCenterY<=enemies[i].bottomY&&newCenterY>enemies[i].topY&&newCenterX>=enemies[i].rightX&&newCenterX<enemies[i].rightX+tileDiameter) {
+					
+					if(newCenterX-this.speed<=enemies[i].rightX+(this.speed+1)){
+						if(crashDir!="down"){
+							crashDir="left";
+						}else{
+							crash = true;
+							console.log("crahsed");
+						}
+					}
+				}
+
+				if(newCenterX>enemies[i].leftX&&newCenterX<=enemies[i].rightX&&newCenterY<=enemies[i].topY&&newCenterY>enemies[i].topY-tileDiameter) {
+
+					if(newCenterY+this.speed>=enemies[i].topY-(this.speed+1)){
+						if(crashDir!="left"){
+							crashDir="down";
+						}else{
+							crash = true;
+							console.log("crahsed");
+						}
+					}
+				}
+
+
+
+				if(newCenterY<=enemies[i].topY&&newCenterX>=enemies[i].rightX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log(crashDir);
+					if(newCenterX-this.speed<=enemies[i].rightX+(this.speed+1)&&newCenterY+this.speed>=enemies[i].topY-(this.speed+1)){
+						if(crashDir!="left"&&crashDir!="down"){
+							crash = true;
+							console.log("crahsed");
+							//crashDir="right-down";
+						}
+
+						// crashDir="right";
+					}
+				}
+
+			}
+
+	}/// for loop enemies
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	///Loop through Obstacles

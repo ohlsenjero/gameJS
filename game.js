@@ -1480,7 +1480,7 @@ function begin() {
 	////// hmmmm   draw once.. then do this)
  	ctxOverOverlay.fillRect(0, 0, canvasWidth-50, Math.round(screenHeight));
 
- 	//alert("[Arrow Keys : move around -> when paused: select weapon or items to use]\n[2 : fire weapon]\n[1 : use item]\n[shift : swap between items or weapons]\n[space : pause -> menu]\n[alt : when paused -> activate teleport-item]");
+ 	alert("[Arrow Keys : move around -> when paused: select weapon or items to use]\n[2 : fire weapon]\n[1 : use item]\n[shift : swap between items or weapons]\n[space : pause -> menu]\n[alt : when paused -> activate teleport-item]");
 
 
 }

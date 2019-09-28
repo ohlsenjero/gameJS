@@ -37,9 +37,10 @@ function clearCtx(ctx) {
 // }
 
 
+
 //// FIXES game speed across different computers and processors 
 var startTime = Date.now();
-var gameSpeed=80;  ////  + == slower game 
+var gameSpeed=46;  ////  + == slower game 
 /////  KEEP IN MIND whatever that may SLOW GAME DOWN >>> keep game at slowest is seen performing
 // so then it doesn't suddenly speed up (when in an Area were Edges almost don't take place)
 
@@ -190,11 +191,12 @@ var blockedDoorIndex =[];
 
 var inActiveObstacle = [];
 
-var inDoorCrash={crash:false, id:0};
+var inobstacleCrash={crash:false, id:0};
 
 var inArea={inIt:false, whatArea:currentArea};
 
-var doorKeys = [{id:403, key:100}, {id:428, key:101}];
+var doorKeys = [{id:403, key:100}];
+//, {id:428, key:101}
 
 var key1;
 
@@ -281,7 +283,7 @@ function whatRoomMap(map){
 				 333,100,100,100,100,100,100,100,100,100,333,300,300,335,333,100,100,100,100,100,100,333,333,333,333,333,333,333,333,391,391,391,102,100,100,100,100,333,333,333,391,391,391,391,391,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,338,333,333,333,333,333,333,333,333,333,333,333,333,100,102,100,102,102,102,391,391,391,102,100,100,100,100,100,333,333,391,391,391,391,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,338,333,333,333,333,333,333,333,100,100,100,100,100,100,100,102,102,391,391,102,102,102,100,100,100,100,100,100,100,391,391,391,391,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,390,100,100,100,100,100,100,100,333,333,333,333,333,333,333,100,100,100,100,100,100,100,102,104,391,102,102,100,100,100,100,100,100,100,100,100,391,391,391,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
+				 333,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,100,100,100,100,100,100,100,102,104,391,102,102,100,100,100,100,100,100,100,100,100,391,391,391,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,338,333,333,333,333,333,333,100,100,100,100,100,102,100,102,102,102,391,391,391,102,100,100,100,102,102,104,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,100,100,100,100,100,100,102,100,102,102,102,391,391,391,102,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,102,100,100,100,100,100,100,100,100,100,100,100,102,100,102,102,102,391,391,391,102,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
@@ -335,13 +337,7 @@ function whatRoomMap(map){
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,960,960,960,960,960,960,306,306,306,306,306,960,960,968,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,960,960,960,960,306,306,333,333,306,333,333,306,964,968,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,100,960,960,306,306,306,306,333,333,333,333,333,333,306,306,960,961,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,960,306,306,333,333,333,333,333,333,333,333,333,333,306,960,968,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,333,333,333,333,333,333,333,333,333,333,333,333,333,964,963,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,306,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,100,150,150,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,100,150,150,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333];
+				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,960,306,306,333,333,333,333,333,333,333,333,333,333,306,960,968,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333];
 
 
 	/// second floor >>> swap after hitting "transition" area
@@ -407,13 +403,7 @@ function whatRoomMap(map){
 				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,104,104,104,104,104,104,306,306,306,306,306,960,960,968,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,104,104,104,104,306,306,333,333,306,333,333,306,964,968,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,306,306,306,306,306,333,333,333,333,333,333,306,306,960,961,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,306,306,333,333,333,333,333,333,333,333,333,333,306,960,968,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,964,963,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,306,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,100,150,150,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,100,150,150,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333];
+				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,306,306,333,333,333,333,333,333,333,333,333,333,306,960,968,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333];
 
 
  	/// then: what the tiles look like (independent of what they might be)
@@ -425,7 +415,7 @@ function whatRoomMap(map){
 				 333,100,100,100,100,100,100,100,100,100,333,300,300,335,333,100,100,100,100,100,100,333,333,333,333,333,333,333,333,391,391,391,102,100,100,100,100,333,333,333,391,391,391,391,391,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,338,333,333,333,333,333,333,333,333,333,333,333,337,100,102,100,102,102,102,391,391,391,102,100,100,100,100,100,333,333,391,391,391,391,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,338,333,333,333,333,333,333,333,355,100,100,100,100,100,100,102,102,391,391,102,102,102,100,100,100,100,100,100,100,391,391,391,391,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,390,100,100,100,100,100,100,100,333,333,333,333,333,333,333,100,100,100,100,100,100,100,102,104,391,102,102,100,100,100,100,100,100,100,100,100,391,391,391,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
+				 333,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,100,100,100,100,100,100,100,102,104,391,102,102,100,100,100,100,100,100,100,100,100,391,391,391,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,338,333,333,333,333,333,339,100,100,100,100,100,102,100,102,102,102,391,391,391,102,100,100,100,102,102,104,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,355,337,339,100,100,100,100,100,100,102,100,102,102,102,391,391,391,102,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,102,100,100,100,102,100,100,100,100,100,100,100,102,100,102,102,102,391,391,391,102,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
@@ -461,12 +451,12 @@ function whatRoomMap(map){
 				 333,333,333,333,100,100,333,333,333,333,333,333,333,333,333,100,100,102,333,220,321,320,320,320,306,333,104,100,104,341,306,306,333,102,100,341,306,306,340,100,100,333,335,306,306,333,333,333,333,333,333,333,333,333,333,247,333,333,247,333,333,
 				 333,333,100,100,100,100,333,333,333,333,100,100,391,391,391,391,391,102,333,227,220,220,220,220,306,104,104,102,104,306,306,306,339,102,100,306,306,306,306,306,306,306,306,306,306,306,306,333,333,333,333,333,333,333,333,247,334,334,247,333,333,
 				 333,100,100,100,100,100,100,100,333,100,100,100,333,333,333,333,391,333,333,227,227,220,333,230,306,107,107,102,102,343,306,306,107,107,100,333,333,333,306,306,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,247,247,247,247,333,333,
-				 333,100,100,100,100,100,100,100,333,100,100,100,333,100,100,333,391,333,333,114,227,333,333,456,320,578,578,306,306,306,306,306,109,109,306,306,333,306,333,333,333,333,333,306,100,100,986,987,987,987,987,987,987,987,987,333,247,247,247,333,333,
-				 333,100,100,100,100,100,100,100,333,333,100,100,333,100,100,333,391,333,333,113,114,333,333,456,320,578,578,333,306,306,306,306,572,572,306,306,306,333,333,333,333,333,306,333,100,987,986,987,987,987,987,987,987,986,986,333,247,247,247,333,333,
-				 333,100,100,100,100,100,100,100,100,333,333,333,333,100,100,333,391,333,333,391,113,334,320,220,220,227,227,333,333,300,300,300,572,572,306,306,306,333,333,333,333,333,333,100,986,986,986,987,987,987,987,987,987,986,987,333,247,247,247,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,333,100,100,333,391,333,333,391,391,100,512,220,220,227,113,333,334,306,300,302,200,200,306,306,333,986,986,986,100,100,100,986,986,987,986,986,986,986,987,986,986,986,987,333,247,247,247,333,333,
+				 333,100,100,100,100,100,100,100,333,100,100,100,333,100,100,333,391,333,333,114,227,333,333,456,320,578,578,306,306,306,306,306,109,109,300,306,333,306,333,333,333,333,333,306,100,100,986,987,987,987,987,987,987,987,987,333,247,247,247,333,333,
+				 333,100,100,100,100,100,100,100,333,333,100,100,333,100,100,333,391,333,333,113,114,333,333,456,320,578,578,333,306,306,306,306,572,572,300,306,306,333,333,333,333,333,306,333,100,987,986,987,987,987,987,987,987,986,986,333,247,247,247,333,333,
+				 333,100,100,100,100,100,100,100,100,333,333,333,333,100,100,333,391,333,333,391,113,334,320,220,220,227,227,333,333,300,300,300,572,572,300,306,306,333,333,333,333,333,333,100,986,986,986,987,987,987,987,987,987,986,987,333,247,247,247,333,333,
+				 333,100,100,100,100,100,100,100,100,100,100,100,333,100,100,333,391,333,333,391,391,100,512,220,220,227,113,333,334,306,300,302,200,200,300,300,333,986,986,986,100,100,100,986,986,987,986,986,986,986,987,986,986,986,987,333,247,247,247,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,391,391,391,391,391,100,512,220,227,113,102,100,102,401,200,200,200,200,301,300,334,986,987,987,986,100,100,986,986,987,987,986,987,986,986,986,986,987,987,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,336,336,336,391,391,102,333,333,333,102,102,100,102,306,306,334,207,207,207,402,100,986,986,986,986,986,986,986,986,987,987,986,987,987,987,987,986,986,986,987,987,987,333,333,333,
+				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,336,336,336,391,391,102,333,333,333,102,102,100,102,306,306,334,207,207,200,402,100,986,986,986,986,986,986,986,986,987,987,986,987,987,987,987,986,986,986,987,987,987,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,391,391,102,100,102,100,102,100,100,102,333,333,333,210,210,344,344,306,306,306,306,306,306,306,987,987,987,987,986,987,333,333,333,986,986,986,987,987,987,987,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,967,960,960,965,965,965,961,306,100,102,333,333,333,573,573,333,333,333,333,333,333,333,306,306,987,987,987,987,986,987,333,333,333,986,306,306,987,987,987,987,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,967,960,960,960,960,960,960,333,306,102,333,333,333,573,573,333,333,350,350,350,333,333,333,333,306,987,987,987,986,986,333,987,987,986,306,306,987,987,987,987,333,333,
@@ -479,13 +469,7 @@ function whatRoomMap(map){
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,960,960,960,960,960,960,306,306,306,306,306,960,960,968,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,960,960,960,960,306,306,333,333,306,333,333,306,964,968,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
 				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,100,960,960,306,306,306,306,333,333,333,333,333,333,306,306,960,961,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,960,306,306,333,333,333,333,333,333,333,333,333,333,306,960,968,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,333,333,333,333,333,333,333,333,333,333,333,333,333,964,963,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,306,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,100,150,150,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,100,150,150,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,
-				 333,100,100,100,100,100,333,100,100,100,100,100,333,100,100,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333];
+				 333,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,960,960,306,306,333,333,333,333,333,333,333,333,333,333,306,960,968,100,100,100,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333,333];
 
 
 
@@ -591,7 +575,7 @@ function whatRoomMap(map){
 function checkTileNumbers(room){
 
 	if(room=="room-1"){
-		roomNumberTilesY = 68;
+		roomNumberTilesY = 62;
 		roomNumberTilesX = 61;
 	}else if(room=="room-2"){
 		roomNumberTilesY = 20;
@@ -1184,6 +1168,9 @@ function getCanvasSize(){
 
 	canvasMapOverMenu.width =canvasBg.width/7;
 	canvasMapOverMenu.height = canvasBg.height/7;
+	/// display block here, or else in view when loading page
+	canvasMapOverMenu.style.display="block";
+	canvasMenu.style.display="block";
 
 
 	canvasMenuOverOver.width =WW;
@@ -1422,7 +1409,11 @@ function begin() {
 
 	enemies.push(
 
-		new Enemy(5*tileDiameter, 3*tileDiameter, enemyTypes[0])
+		new Enemy(4*tileDiameter, 6*tileDiameter, enemyTypes[0], "room-1"), 
+		new Enemy(6*tileDiameter, 6*tileDiameter, enemyTypes[0], "room-1"), 
+		new Enemy(7*tileDiameter, 5*tileDiameter, enemyTypes[0], "room-1"), 
+		new Enemy(4*tileDiameter, 3*tileDiameter, enemyTypes[0], "room-1")
+		
 	);
 
 
@@ -1489,7 +1480,9 @@ function begin() {
 	////// hmmmm   draw once.. then do this)
  	ctxOverOverlay.fillRect(0, 0, canvasWidth-50, Math.round(screenHeight));
 
- 	alert("[Arrow Keys : move around -> when paused: select weapon or items to use]\n[2 : fire weapon]\n[1 : use item]\n[shift : swap between items or weapons]\n[space : pause -> menu]\n[alt : when paused -> activate teleport-item]")
+ 	//alert("[Arrow Keys : move around -> when paused: select weapon or items to use]\n[2 : fire weapon]\n[1 : use item]\n[shift : swap between items or weapons]\n[space : pause -> menu]\n[alt : when paused -> activate teleport-item]");
+
+
 }
 
 var gameBeginsRoomChange=false;
@@ -1555,7 +1548,7 @@ function update() {
 	//for (var i = 0; i < players.length; i++) {
 	  
 	for (var i = 0; i < enemies.length; i++) {
-		enemies[0].update();
+		enemies[i].update();
 	}
 
 	 //   if(players[i][0 == 1
@@ -1654,6 +1647,8 @@ function update() {
 		}
 		
 	}
+
+	console.log(player1.tile);
 }/// END UPDATE
 
 
@@ -1675,7 +1670,7 @@ function update() {
 function draw() {
 
 	for (var i = 0; i < enemies.length; i++) {
-		enemies[0].draw();
+		enemies[i].draw();
 	}
 
 	for (var i = 0; i < players.length; i++) {
@@ -1695,6 +1690,9 @@ function draw() {
 		bulletsFired[i].draw();
 	}
 	
+	// if(gameCounter<10){
+
+	// }
 	roomDraw(currentRoom, currentArea, 0, tileDiameter, shiftX, shiftY, "not-first");
 
 }/// END DRAW
@@ -2383,6 +2381,7 @@ function roomDraw(currentRoom, area, tileMapIndex, tileWidthHeight, tileIndexX, 
 		///	   those that say: "all" never show a "second sprite-hook" and simply go black when at any of these areas
 
 		/// Re-use areas# after rooms are far enough that they won't both be visible at once  (you probably can't fit more than 5 any way)
+
 
 		 tilesOverlayDraw(shiftX, shiftY, img, area, {mapOverDraw}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX, 
 
@@ -3217,6 +3216,8 @@ var doorCollection="not-done";
 
 function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNumberTilesY, roomNumberTilesX, tileMapIndex, tileWidthHeight, tileIndexX, tileIndexY, newTileIndexX){
 
+
+
 	if(!paused){
 		xAnimCounter++;  /// moves ANIM-frames for the animated tiles
 		xAnimSandCounter++;
@@ -3248,7 +3249,7 @@ function tilesOverlayDraw(newShiftX, newShiftY, img, area, {mapOverDraw}, roomNu
 	
 	/// menuMap back-ground >> drawn only once, underneath  >> and probably make some for items/guns
 	ctxMapOverMenu.fillStyle = "#000";					
-ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height);
+	ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height);
 
 
 	for(var i=0; i<roomNumberTilesY; i++){
@@ -3259,8 +3260,17 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 			for(var j=0; j < defaultTiles.length; j++){	
 
 
-				if(mapOverDraw[tileMapIndex]==defaultTiles[j].t){ 
+				///ONLY DRAW TILES CLOSE TO THE PLAYER VIEW
+				/// make view smaller for a cool shadow FX
+				
 
+
+				if(typeof mapOverDraw[tileMapIndex] != "undefined"&&mapOverDraw[tileMapIndex]==defaultTiles[j].t){ 
+
+
+					if(player1.drawX+400<tileIndexX||player1.drawX-400>tileIndexX||player1.drawY+300<tileIndexY||player1.drawY-300>tileIndexY){
+							//console.log(tileIndexX + " ," + tileIndexY);
+					}else{
 
 						if(!done){
 							// IF tiles != DOORS:
@@ -3371,7 +3381,7 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 						xxAnim=384;
 					}
 
-
+				}
 					//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\	 \\\\\	\\\\	 \\\\\	\\\\	 \\\\\	\\\\	 \\\\\	\\\\	 \\\\\	\\\\	 \\\\\	\\  ////
 					//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -3394,7 +3404,7 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 
 							ctxMapOverMenu.fillStyle = "#83ff00";
 							if(!player1.isDead){  ///divided by has to do with aspect ratio
-								ctxMapOverMenu.fillRect(15+player1.drawX/16+5, 13+player1.drawY/16+2.4, 6, 6);
+								ctxMapOverMenu.fillRect(35+player1.drawX/16+5, 23+player1.drawY/16+2.4, 6, 6);
 							}
 
 						}else if(gameCounter>=22&&gameCounter<30){
@@ -3406,6 +3416,23 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 
 
 						if(radar){
+
+
+							if(player1.drawX+1000<tileIndexX||player1.drawX-1000>tileIndexX||player1.drawY+700<tileIndexY||player1.drawY-700>tileIndexY){
+							//console.log(tileIndexX + " ," + tileIndexY);
+							}else{
+
+							if(gameCounter>=10&&gameCounter<30){
+
+								ctxMapOverMenu.fillStyle = "#83ccff";
+								for(var uu=0;uu<enemies.length; uu++){
+									if(!enemies[uu].isDead){
+										ctxMapOverMenu.fillRect(35+(enemies[uu].drawX+shiftX)/16+5, 23+(enemies[uu].drawY+shiftY)/16+2.4, 4, 4);
+									}
+									
+								}
+							}
+							
 						
 							/// 1
 							if(defaultTiles[j].t.toString().substring(0,2)>=92){
@@ -3424,9 +3451,9 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 								}else{
 									ctxMapOverMenu.fillStyle = "#000";
 								}
-								ctxMapOverMenu.fillRect(18+e*4+(shiftX/16), 16+i*4+(shiftY/16), 4.5, 4.5);
+								ctxMapOverMenu.fillRect(40+e*4+(shiftX/16), 26+i*4+(shiftY/16), 4.5, 4.5);
 							}
-
+ 
 							/// 2
 							if(defaultTiles[j].t.toString().substring(0,1)==3){
 
@@ -3445,7 +3472,7 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 									ctxMapOverMenu.fillStyle = "#b20000";
 								}
 								
-								ctxMapOverMenu.fillRect(18+e*4+(shiftX/16), 16+i*4+(shiftY/16), 4.5, 4.5);
+								ctxMapOverMenu.fillRect(40+e*4+(shiftX/16), 26+i*4+(shiftY/16), 4.5, 4.5);
 							}
 
 							/// 3 -> 5
@@ -3455,13 +3482,13 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 
 								ctxMapOverMenu.fillStyle = "#773388";
 								
-								ctxMapOverMenu.fillRect(18+e*4+(shiftX/16), 16+i*4+(shiftY/16), 4.5, 4.5);
+								ctxMapOverMenu.fillRect(40+e*4+(shiftX/16), 26+i*4+(shiftY/16), 4.5, 4.5);
 							}
 							/// 7
 							if(defaultTiles[j].t.toString().substring(0,1)==2){
 
 								ctxMapOverMenu.fillStyle = "#111";							
-								ctxMapOverMenu.fillRect(18+e*4+(shiftX/16), 16+i*4+(shiftY/16), 4.5, 4.5);
+								ctxMapOverMenu.fillRect(40+e*4+(shiftX/16), 26+i*4+(shiftY/16), 4.5, 4.5);
 
 							}
 
@@ -3470,11 +3497,15 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 
 						}// id radar
 
+					}
+
 					}// IF PAUSED
 
 
 
-
+				if(player1.drawX+400<tileIndexX||player1.drawX-400>tileIndexX||player1.drawY+300<tileIndexY||player1.drawY-300>tileIndexY){
+							//console.log(tileIndexX + " ," + tileIndexY);
+				}else{
 
 					    ///////   ||||  |||  ||  //|    ||     ///   /////////  ///////  ///////  
 					   ///    |  ||||| |||  ||  // |   ||/    // //     ///    //       //   ///    
@@ -3482,7 +3513,7 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 					 /// ANIM tiles       ||  //   ||||///  //   //   ///    //////   //////       
 				    /// 
 
-
+				
 					if(defaultTiles[j].t>=960&&defaultTiles[j].t<=986){
 
 						if(xAnimCounter>=0&&xAnimCounter<5){
@@ -3528,6 +3559,7 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 					}else{
 						xAnim=0; ///// back to ZERO so the other tiles, which aren't this animated one, don't shift
 					}
+
 
 					/// wrap all this in a function, and call with parameter(CURRENTAREA) to which it loads x or xx...
 
@@ -3715,7 +3747,9 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 
 					}else if(mapOverDraw[tileMapIndex]==349){
 
-						
+						if(player1.drawX+600<tileIndexX||player1.drawX-600>tileIndexX||player1.drawY+400<tileIndexY||player1.drawY-400>tileIndexY){
+							//console.log(tileIndexX + " ," + tileIndexY);
+						}else{
 							if(inArea.inIt){
 								if(!poweroff){
 									ctxBg.drawImage(img, srcX, srcY, 64, 64,  tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
@@ -3726,10 +3760,16 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 							}else{
 								ctxBg.drawImage(img, srcX, srcY, 64, 64,  tileIndexX, tileIndexY, tileWidthHeight, tileWidthHeight);
 							}	
-						
+						}
 					}else{ /// OTHER TILES
 
-						ctxBg.drawImage(img, srcX+xAnim, srcY+yAnim, 64, 64,  tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+						//console.log("player "+player1.drawX);
+						//console.log("tile "+tileIndexX);
+
+						
+							ctxBg.drawImage(img, srcX+xAnim, srcY+yAnim, 64, 64,  tileIndexX, tileIndexY, tileWidthHeight/*+variance*/, tileWidthHeight/*+variance*/);
+						
+						
 		  
 					}/// else... everything else
 
@@ -3751,6 +3791,9 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 			   /// have to leave == 250, ,  fixed, or else there's no way to add && <3 in this multiple if/else
 
 				//img, srcX, srcY  and get 250 right in sprite 
+
+			
+
 
 						if(mapOverDraw[tileMapIndex]==230||mapOverDraw[tileMapIndex]==210){
 							if(inArea.inIt){
@@ -3834,7 +3877,7 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 						}
 
 
-
+					
 
 
 			                    ////////  ||||||  ||||||  ||////     /////   
@@ -3992,14 +4035,14 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 								if(doors[f].area==currentArea||currentArea=="default"||currentArea=="transition"){
 
 									///doors[f].c==2   ////////////////////////////////////////////////////   ELSE
-									ctxDoors.drawImage(doorsSprite, 0+doors[f].anim, 0, 128, 128, tileIndexX-32, tileIndexY-64, 128, 128);
+									ctxDoors.drawImage(doorsSprite, 0+doors[f].anim, 0, 128, 128, tileIndexX-(tileDiameter/2), tileIndexY-tileDiameter, 128, 128);
 
 									
 								}
 
 								if(doors[f].area==currentArea){
 
-									ctxOverlay.drawImage(doorsSprite, 640, 0, 128, 128, tileIndexX-32, tileIndexY-64, 128, 128);
+									ctxOverlay.drawImage(doorsSprite, 640, 0, 128, 128, tileIndexX-(tileDiameter/2), tileIndexY-tileDiameter, 128, 128);
 								}
 
 							/// OUTSIDE :1 (side)
@@ -4035,6 +4078,9 @@ ctxMapOverMenu.fillRect(0, 0, canvasMapOverMenu.width, canvasMapOverMenu.height)
 						}/// FOR  doors
 
 					}///if map 3 or 4 (doors-range)
+
+
+				}////  DRAW ONLY TILES AROUND PLAYER!!!!!!!!!!!!!!!
 
 					////////////////////////////////////////////////////////
 					/////////////////////////////////						E N D   D O O R S
@@ -4618,7 +4664,7 @@ function roomChangeLoop() {
 //just like obstacles, must have top, bottom X,Y ...  and run through the same function << bullet & player obstacle/enemy detect
 
 
-function Enemy(xx, yy, type) {
+function Enemy(xx, yy, type, room) {
 
 	this.drawX = xx;
 	this.drawY = yy;
@@ -4626,8 +4672,13 @@ function Enemy(xx, yy, type) {
 	this.enemyType = type;
 
 
+	this.inRoom = room;
+
 	this.centerX = this.drawX + (this.width / 2);
 	this.centerY = this.drawY + (this.height / 2);
+
+
+
 
 	if(this.enemyType =='blob'){
 		//blob
@@ -4636,29 +4687,46 @@ function Enemy(xx, yy, type) {
 		this.srcX = 0;
 		this.srcY = 0;
 
-
+		///moving rate
+		this.blobCounter=0;
 
 		//in sprite with & height	
-		this.width = 128;  
-		this.height = 128; 
+		this.width = 96;  
+		this.height = 96; 
 
 
 		//starting moving values & speed
-		this.speed = 0;
+		this.speed = 6;
+		this.randomBlobMovement;
 		this.moving = true; //can it move?
 
+		this.animEnemyCount=0;
 		this.animRate =0.6; 
 
 
 		this.direction = "nowhere";  // for moving mechanics purposes
 		this.facing="nowhere";  /// diff from direction, for shooting Animation/sprite-purposes
 
-		//animation
-		this.isDead = false;
-		this.deathType = "none";
+
 
 		this.life=10;
+
+		this.damage;
 	}
+
+	//animation
+	this.isDead = false;
+	this.deathType = "none";
+	this.deathCounter=0;
+
+
+
+	this.leftX = this.drawX;
+	this.rightX = this.leftX + this.width;
+	this.topY = this.drawY;
+	this.bottomY = this.topY + this.height;
+
+	
 
 
 }/// FUNC Enemy
@@ -4668,71 +4736,134 @@ function Enemy(xx, yy, type) {
 
 
 
-
-
-
 Enemy.prototype.draw = function () {
 
-	ctxPlayer.drawImage(imgMonster, this.srcX, this.srcY, 128, 128, this.drawX+shiftX, this.drawY+shiftY, this.width, this.height);
+	this.centerX = (this.drawX+shiftX + (this.width / 2));
+	this.centerY = (this.drawY+shiftY + (this.height / 2));
 
-	// Red rectangle
-ctxPlayer.beginPath();
-ctxPlayer.lineWidth = "2";
-ctxPlayer.strokeStyle = "red";
+	if(currentRoom==this.inRoom){
 
-	ctxPlayer.rect(this.leftX, this.topY, this.width, this.height);
-	ctxPlayer.stroke();
+		if(player1.drawX+400<this.drawX+shiftX||player1.drawX-400>this.drawX+shiftX||player1.drawY+300<this.drawY+shiftY||player1.drawY-300>this.drawY+shiftY){
+								//console.log(tileIndexX + " ," + tileIndexY);
+		}else{
 
-		this.leftX = this.drawX+shiftX;
-	this.rightX = this.leftX + this.width;
-	this.topY = this.drawY+shiftY;
-	this.bottomY = this.topY + this.height;
+			if(this.deathCounter<10){
+				ctxPlayer.drawImage(imgMonster, this.srcX, this.srcY, 128, 128, this.drawX+shiftX, this.drawY+shiftY, this.width, this.height);
+
+			}else{
+				ctxEntities.drawImage(imgMonster, this.srcX, this.srcY, 128, 128, this.drawX+shiftX, this.drawY+shiftY, this.width, this.height);
+
+			}
+			
+		}///ONLY DRAW close AROUND PLAYER
+	}
+		////console.log("wherearewe" + this.drawX);
+		////rectangle
+		// ctxPlayer.beginPath();
+		// ctxPlayer.lineWidth = "2";
+		// ctxPlayer.strokeStyle = "purple";
+
+		// ctxPlayer.rect(this.leftX, this.topY, this.width, this.height);
+
+		// ctxPlayer.rect(this.centerX, this.centerY, 4, 4);
+		// ctxPlayer.stroke();
+
 }; // END Player-Draw
 
 
 
 Enemy.prototype.update = function () {
 
+if(currentRoom==this.inRoom){	
+		this.leftX = this.drawX+shiftX;
+		this.rightX = this.leftX + this.width;
+		this.topY = this.drawY+shiftY;
+		this.bottomY = this.topY + this.height;
 
-	if(this.life<=0){
-		this.isDead=true;
-	}
 
-	this.checkMoving(this.direction, this.moving);
-	this.animationState(this.dead, this.direction, this.animRate, this.moving);
+		this.checkMoving(this.direction, this.moving);
+		this.animationState(this.dead, this.direction, this.animRate, this.moving);
+
+
+		if(typeof this.damage != "undefined" && this.damage.on==true){
+			
+			//console.log(this.life);
+			if(this.damage.dmgCounter==1){
+				//alert(this.damage.source + " , " + this.enemyType);
+
+				this.life -=10;
+				
+			}
+			this.damage.dmgCounter++;
+
+
+			
+			if(this.damage.dmgCounter>10){
+				this.damage.dmgCounter=0;
+				this.damage.on=false;
+			}
+
+			///if this en-type & this.damge.src .. this.life  <>
+		}
+
+
+		if(this.life<=0){
+			this.isDead=true;
+			this.deathCounter++;
+			this.moving=false;
+			this.direction="nowhere";
+		}
+
+		if(this.deathCounter>10){
+			this.topY=-9999;
+			this.bottomY=-9999;
+			this.rightX=-9999;
+			this.leftX=-9999;
+		}
+}
+
+
 
 };// END Enemy UPDATE
 
 
-blobCounter=0;
-oldBlobCounter=0;
 
 Enemy.prototype.checkMoving = function (direction, moving) {
 
 	//console.log(blobCounter);
 
+	if(!this.checkCrash()&&!this.isDead){
+		this.moving=true;
+	}else{
+		this.moving=false;
+		
+		//crash=false;
+	}
+	//console.log(this.moving);
+
+
 	if(this.enemyType=="blob"){
 
-		blobCounter++;
+		this.blobCounter++;
 
-		if(this.moving==true&&blobCounter>15){
+		if(this.moving==true&&this.blobCounter>10){
 			
-			var randomBlobMovement = Math.floor(Math.random() * (1000 - 100) + 100) / 100;
+			this.randomBlobMovement = Math.floor(Math.random() * (1000 - 100) + 100) / 100;
 			
 						
-			if(randomBlobMovement>7.25){
+			if(this.randomBlobMovement>7.25){
 				//console.log(randomBlobMovement);
 				this.direction="right";
 				
-			}else if(randomBlobMovement>5&&randomBlobMovement<=7.25){
+			}else if(this.randomBlobMovement>5&&this.randomBlobMovement<=7.25){
 				//console.log(randomBlobMovement);
 				this.direction="left";
 				
-			}else if(randomBlobMovement>2.5&&randomBlobMovement<=5){
+			}else if(this.randomBlobMovement>2.5&&this.randomBlobMovement<=5){
 				//console.log(randomBlobMovement);
 				this.direction="up";
 				
-			}else if(randomBlobMovement>0&&randomBlobMovement<=2.5){
+			}else if(this.randomBlobMovement>0&&this.randomBlobMovement<=2.5){
 				//console.log(randomBlobMovement);
 				this.direction="down";
 				
@@ -4740,49 +4871,196 @@ Enemy.prototype.checkMoving = function (direction, moving) {
 
 
 			//console.log(this.direction);
-			blobCounter=0;
+			this.blobCounter=0;
 			
 		}
 
-		if(this.direction=="right"){
-			this.drawX+=4;
-		}else if(this.direction=="left"){
-			this.drawX-=4;
-		}else if(this.direction=="up"){
-			this.drawY+=4;
+
+		if(!this.checkCrash()){
+
+		//console.log(this.moving);
+	
+		if(this.direction=="up"){
+
+			
+				this.drawY = this.drawY-this.speed;
+			
+
 		}else if(this.direction=="down"){
-			this.drawY-=4;
+
+
+				this.drawY = this.drawY+this.speed;
+			
+
+
+		}else if(this.direction=="right"){
+
+
+				this.drawX = this.drawX+this.speed;
+
+			            
+
+		}else if(this.direction=="left"){
+
+		
+				this.drawX = this.drawX-this.speed;
+
+
+		}else if(this.direction=="right-down"){
+
+
+			if(crashDir=="right"){
+				
+					this.drawY = this.drawY+this.speed;
+				
+			}else if(crashDir=="down"){
+			
+					this.drawX = this.drawX+this.speed;
+
+				// FINALLY>> GOING RIGHT-DOWN
+			}else {
+			
+
+					this.drawX = this.drawX+this.speed;
+
+					this.drawY = this.drawY+this.speed;		
+
+			}
+
+		}else if(this.direction=="left-down"){
+
+
+			if(crashDir=="left"){
+				/// GOING DOWN!!
+				
+					this.drawY = this.drawY+this.speed;
+				
+			}else if(crashDir=="down"){
+				/// GOING RIGHT!!
+
+				
+					this.drawX = this.drawX-this.speed;
+				
+
+				// FINALLY>> GOING RIGHT-DOWN
+			}else {
+				
+					this.drawX = this.drawX-this.speed;
+					this.drawY = this.drawY+this.speed;
+
+			}
+
+		}else if(this.direction=="left-up"){
+
+
+			this.drawY = this.drawY-this.speed;
+				
+			if(crashDir=="up"){
+				/// GOING RIGHT!!
+
+					this.drawX = this.drawX-this.speed;
+				
+
+
+				// FINALLY>> GOING RIGHT-DOWN
+			}else {
+				
+					this.drawX = this.drawX-this.speed;
+				
+
+
+			
+					this.drawY = this.drawY-this.speed;
+				
+
+			}
+
+
+		}else if(this.direction=="right-up"){
+
+
+
+
+			if(crashDir=="right"){
+				/// GOING DOWN!!
+				
+					this.drawY = this.drawY-this.speed;
+				
+			}else if(crashDir=="up"){
+				/// GOING RIGHT!!
+
+					this.drawX = this.drawX+this.speed;
+
+
+				// FINALLY>> GOING RIGHT-DOWN
+			}else {
+				
+					this.drawX = this.drawX+this.speed;
+
+				  
+					this.drawY = this.drawY-this.speed;
+				
+			}
+
+
 		}
 
-
-	}///end of BLOB
-
-
-
-
-
-
+	}else{
+		this.direction="nowhere";
+	}
+	
+}
+	
+	///end of BLOB
 
 
 };
 
 
-var animEnemyCount=0;
+
 
 Enemy.prototype.animationState  = function (dead, direction, animRate, moving) {
 
 	if(this.direction!="room-change"){
-		animEnemyCount += animRate; //// OTHER ANIM RATE@!!!!!! (not bound to weapon)
+		if(this.isDead!=true){
 
-		if(animEnemyCount>0&&animEnemyCount<1){
-			this.srcX=0;
-		}else if(animEnemyCount>=1&&animEnemyCount<2){
-			this.srcX=128;
-		}else if(animEnemyCount>=2){
-			this.srcX=256;
-			animEnemyCount=0;
+
+		this.animEnemyCount += this.animRate; //// OTHER ANIM RATE@!!!!!! (not bound to weapon)
 		}
 
+		if(!this.isDead){
+			if(this.animEnemyCount>0&&this.animEnemyCount<1){
+				this.srcX=0;
+			}else if(this.animEnemyCount>=1&&this.animEnemyCount<2){
+				this.srcX=128;
+			}else if(this.animEnemyCount>=2){
+				this.srcX=256;
+
+
+				this.animEnemyCount=0;
+			}
+		}
+	}
+
+	if(this.direction=="up"||this.direction=="down"){
+		this.srcY=128;
+	}else if(this.direction=="left"||this.direction=="right"){
+		this.srcY=0;
+	}
+
+	if(this.isDead){
+		this.srcY=256;
+	}
+
+	//console.log("DC =" +this.deathCounter);
+	if(this.deathCounter>0&&this.deathCounter<=1){
+		this.srcX=0;
+	}else if(this.deathCounter>1&&this.deathCounter<=2){
+		this.srcX=128;
+	}else if(this.deathCounter>2&&this.deathCounter<=4){
+		this.srcX=256;
+	}else if(this.deathCounter>4){
+		this.srcX=384;
 	}
 
 };
@@ -4792,6 +5070,654 @@ Enemy.prototype.animationState  = function (dead, direction, animRate, moving) {
 
 
 
+
+
+
+
+Enemy.prototype.checkCrash = function () {   
+
+	this.centerX = Math.round(this.drawX + (this.width / 2));
+		this.centerY = Math.round(this.drawY + (this.height / 2));
+
+
+
+	function obstacleCrash(angle, player){
+
+		var angle2;
+
+		if(angle=="right"){
+			angle2="left"
+		}else if(angle=="left"){
+			angle2="right"
+		}else if(angle=="up"){
+			angle2="down"
+		}else if(angle=="down"){
+			angle2="up"
+		}
+		
+		if(player==true){
+			if(player1.damageCount==0){
+
+				function getAngle(dir){
+					var angle = dir;
+					return angle;
+				}
+
+				player1.damageAngle = getAngle(angle2);
+
+				///player1.damageCount set...
+				player1.damageCount++;
+				player1.damageType="electrical";
+
+				player1.life-=2; 
+				
+				player1.facing="nowhere";
+				player1.direction="nowhere";
+				player1.moving=false;
+
+				blockInput=true;
+
+
+				//console.log(player1.direction);
+
+				elecDamageSFX.play();
+				
+			}
+
+		}
+
+
+	}
+
+
+
+
+	///Loop through Obstacles
+	for (var i = 0; i < obstacles.length; i++) {
+
+		if( obstacles[i].obstacleStatus=="closed"){ 
+
+			if(this.direction=="right"){
+			
+				//alert("CRASH1");
+				///in other words: as long as you are standing in the block before the one you would be at if going right
+				if(this.centerY>=obstacles[i].topY&&this.centerY<obstacles[i].bottomY&&this.centerX<=obstacles[i].leftX&&this.centerX>obstacles[i].leftX-tileDiameter) {
+
+					//but don't stop me just yet, only if not doing so would put me on the other side 
+					if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)){
+
+						crash = true; 
+
+						//alert("CRASH2");
+						//if it's a door, you may open it   
+						
+					}
+				}
+			}  
+			if(this.direction=="left"){
+
+				if(this.centerY<=obstacles[i].bottomY&&this.centerY>obstacles[i].topY&&this.centerX>=obstacles[i].rightX&&this.centerX<obstacles[i].rightX+tileDiameter) {
+					
+					if(this.centerX-this.speed<=obstacles[i].rightX+(this.speed+1)){
+
+						    crash = true;
+							
+					}
+				}
+			}   
+			if(this.direction=="up"){
+
+				if(this.centerX>=obstacles[i].leftX&&this.centerX<obstacles[i].rightX&&this.centerY>=obstacles[i].bottomY&&this.centerY<obstacles[i].bottomY+tileDiameter) {
+
+					if(this.centerY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
+							crash = true; 
+						
+					}         
+				}
+			}   
+			if(this.direction=="down"){
+
+				if(this.centerX>obstacles[i].leftX&&this.centerX<=obstacles[i].rightX&&this.centerY<=obstacles[i].topY&&this.centerY>obstacles[i].topY-tileDiameter) {
+
+					if(this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
+							crash = true;  
+							
+					}
+				}
+			}   
+
+
+////////////////////////////////////////
+//////////////////////////////	         d   I   A   G   O   N   A   L    S
+//////////////////////////////////
+
+
+			if(this.direction=="right-down"){ 
+
+
+				if(this.centerY>=obstacles[i].topY&&this.centerY<obstacles[i].bottomY&&this.centerX<=obstacles[i].leftX&&this.centerX>obstacles[i].leftX-tileDiameter) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)){
+						// crash = true;  
+						// obstacleCrash(i);
+						if(crashDir!="down"){
+							crashDir="right";
+						}else{
+							crash = true;
+							
+						}
+					}
+				}
+
+
+				if(this.centerX>obstacles[i].leftX&&this.centerX<=obstacles[i].rightX&&this.centerY<=obstacles[i].topY&&this.centerY>obstacles[i].topY-tileDiameter) {
+
+					if(this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
+						// crash = true;
+						// obstacleCrash(i);
+						if(crashDir!="right"){
+							crashDir="down";
+						}else{
+							crash = true;
+							
+						}
+						
+					}
+				}
+				//////   ADD AN EXPLICITELY diagonal check.....
+				////  AND only on this one >>> 
+						// crash = true;
+						// obstacleCrash(i);
+
+				if(this.centerY<=obstacles[i].topY&&this.centerX<=obstacles[i].leftX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log("WHAT"+player1.direction);
+					if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)&&this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
+						if(crashDir!="right"&&crashDir!="down"){
+							crash = true;
+							
+						}
+
+					}
+				}
+
+			} /////  if(this.direction=="right-down"){  
+
+
+
+/////
+///////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			if(this.direction=="left-down"){ 
+
+				 if(this.centerY<=obstacles[i].bottomY&&this.centerY>obstacles[i].topY&&this.centerX>=obstacles[i].rightX&&this.centerX<obstacles[i].rightX+tileDiameter) {
+					
+					if(this.centerX-this.speed<=obstacles[i].rightX+(this.speed+1)){
+						if(crashDir!="down"){
+							crashDir="left";
+						}else{
+							crash = true;
+							
+						}
+					}
+				}
+
+				if(this.centerX>obstacles[i].leftX&&this.centerX<=obstacles[i].rightX&&this.centerY<=obstacles[i].topY&&this.centerY>obstacles[i].topY-tileDiameter) {
+
+					if(this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
+						if(crashDir!="left"){
+							crashDir="down";
+						}else{
+							crash = true;
+							
+						}
+					}
+				}
+
+
+
+				if(this.centerY<=obstacles[i].topY&&this.centerX>=obstacles[i].rightX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log(crashDir);
+					if(this.centerX-this.speed<=obstacles[i].rightX+(this.speed+1)&&this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
+						if(crashDir!="left"&&crashDir!="down"){
+							crash = true;
+							
+							//crashDir="right-down";
+						}
+
+						// crashDir="right";
+					}
+				}
+
+			}
+
+
+/////
+///////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+			if(this.direction=="left-up"){ 
+
+				if(this.centerY<=obstacles[i].bottomY&&this.centerY>obstacles[i].topY&&this.centerX>=obstacles[i].rightX&&this.centerX<obstacles[i].rightX+tileDiameter) {
+					
+					if(this.centerX-this.speed<=obstacles[i].rightX+(this.speed+1)){
+						if(crashDir!="up"){
+							crashDir="left";
+						}else{
+							crash = true;
+							
+						}
+					}
+				}
+
+				if(this.centerX>=obstacles[i].leftX&&this.centerX<obstacles[i].rightX&&this.centerY>=obstacles[i].bottomY&&this.centerY<obstacles[i].bottomY+tileDiameter) {
+
+					if(this.centerY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
+						if(crashDir!="left"){
+							crashDir="up";
+						}else{
+							crash = true;
+							
+						}
+					}         
+				}
+
+
+				if(this.centerY>=obstacles[i].bottomY&&this.centerX>=obstacles[i].rightX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log(crashDir);
+					if(this.centerX-this.speed<=obstacles[i].rightX+(this.speed+1)&&this.centerY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
+						if(crashDir!="left"&&crashDir!="up"){
+							crash = true;
+							
+							//crashDir="right-down";
+						}
+
+						// crashDir="right";
+					}
+				}
+
+
+			}
+
+
+
+/////
+///////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+			if(this.direction=="right-up"){ 
+
+				if(this.centerX>=obstacles[i].leftX&&this.centerX<obstacles[i].rightX&&this.centerY>=obstacles[i].bottomY&&this.centerY<obstacles[i].bottomY+tileDiameter) {
+
+					if(this.centerY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
+						if(crashDir!="right"){
+							crashDir="up";
+						}else{
+							crash = true;
+							
+						}
+					}         
+				}
+
+					///in other words: as long as you are standing in the block before what would be the next one when going right
+					if(this.centerY>=obstacles[i].topY&&this.centerY<obstacles[i].bottomY&&this.centerX<=obstacles[i].leftX&&this.centerX>obstacles[i].leftX-tileDiameter) {
+
+						//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+						if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)){
+							if(crashDir!="up"){
+								crashDir="right";
+							}else{
+								crash = true;
+								
+							}
+						
+						}
+					}
+				
+
+				if(this.centerY>=obstacles[i].bottomY&&this.centerX<=obstacles[i].leftX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log(crashDir);
+					if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)&&this.centerY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
+						if(crashDir!="right"&&crashDir!="up"){
+							crash = true;
+							
+							//crashDir="right-down";
+						}
+
+						// crashDir="right";
+					}
+				}
+
+			}/// END this.direction->right-up
+/////
+///////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		}/// IF OBSTACLE ACTIVE
+
+	}/// for loop Obstacles
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//console.log(this.centerY);
+	
+			if(this.direction=="right"){
+			
+				//alert("CRASH1");
+				///in other words: as long as you are standing in the block before the one you would be at if going right
+				if(this.centerY>=player1.topY&&this.centerY<player1.bottomY&&this.centerX<=player1.leftX&&this.centerX>player1.leftX-tileDiameter) {
+
+					//but don't stop me just yet, only if not doing so would put me on the other side 
+					if(this.centerX+this.speed>=player1.leftX-(this.speed+1)){
+
+						crash = true; 
+						//("alerta");
+
+						obstacleCrash("right", true);
+						//alert("CRASH2");
+						//if it's a door, you may open it   
+						
+					}
+				}
+			}  
+			if(this.direction=="left"){
+
+				if(this.centerY<=player1.bottomY&&this.centerY>player1.topY&&this.centerX>=player1.rightX&&this.centerX<player1.rightX+tileDiameter) {
+					
+					if(this.centerX-this.speed<=player1.rightX+(this.speed+1)){
+
+						    crash = true;
+						    //alert("alerta");
+							obstacleCrash("left", true);
+					}
+				}
+			}   
+			if(this.direction=="up"){
+
+				if(this.centerX>=player1.leftX&&this.centerX<player1.rightX&&this.centerY>=player1.bottomY&&this.centerY<player1.bottomY+tileDiameter) {
+
+					if(this.centerY-this.speed<=player1.bottomY+(this.speed+1)){
+							crash = true; 
+
+							obstacleCrash("up", true);
+						
+					}         
+				}
+			}   
+			if(this.direction=="down"){
+
+				if(this.centerX>player1.leftX&&this.centerX<=player1.rightX&&this.centerY<=player1.topY&&this.centerY>player1.topY-tileDiameter) {
+
+					if(this.centerY+this.speed>=player1.topY-(this.speed+1)){
+							crash = true; 
+
+							obstacleCrash("down", true); 
+							
+					}
+				}
+			}   
+
+
+////////////////////////////////////////
+//////////////////////////////	         d   I   A   G   O   N   A   L    S
+//////////////////////////////////
+
+
+			if(this.direction=="right-down"){ 
+
+
+				if(this.centerY>=player1.topY&&this.centerY<player1.bottomY&&this.centerX<=player1.leftX&&this.centerX>player1.leftX-tileDiameter) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					if(this.centerX+this.speed>=player1.leftX-(this.speed+1)){
+						// crash = true;  
+						// obstacleCrash(i);
+						if(crashDir!="down"){
+							crashDir="right";
+						}else{
+							crash = true;
+							
+						}
+					}
+				}
+
+
+				if(this.centerX>player1.leftX&&this.centerX<=player1.rightX&&this.centerY<=player1.topY&&this.centerY>player1.topY-tileDiameter) {
+
+					if(this.centerY+this.speed>=player1.topY-(this.speed+1)){
+						// crash = true;
+						// obstacleCrash(i);
+						if(crashDir!="right"){
+							crashDir="down";
+						}else{
+							crash = true;
+							
+						}
+						
+					}
+				}
+				//////   ADD AN EXPLICITELY diagonal check.....
+				////  AND only on this one >>> 
+						// crash = true;
+						// obstacleCrash(i);
+
+				if(this.centerY<=player1.topY&&this.centerX<=player1.leftX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log("WHAT"+player1.direction);
+					if(this.centerX+this.speed>=player1.leftX-(this.speed+1)&&this.centerY+this.speed>=player1.topY-(this.speed+1)){
+						if(crashDir!="right"&&crashDir!="down"){
+							crash = true;
+							
+						}
+
+					}
+				}
+
+			} /////  if(this.direction=="right-down"){  
+
+
+
+/////
+///////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			if(this.direction=="left-down"){ 
+
+				 if(this.centerY<=player1.bottomY&&this.centerY>player1.topY&&this.centerX>=player1.rightX&&this.centerX<player1.rightX+tileDiameter) {
+					
+					if(this.centerX-this.speed<=player1.rightX+(this.speed+1)){
+						if(crashDir!="down"){
+							crashDir="left";
+						}else{
+							crash = true;
+							
+						}
+					}
+				}
+
+				if(this.centerX>player1.leftX&&this.centerX<=player1.rightX&&this.centerY<=player1.topY&&this.centerY>player1.topY-tileDiameter) {
+
+					if(this.centerY+this.speed>=player1.topY-(this.speed+1)){
+						if(crashDir!="left"){
+							crashDir="down";
+						}else{
+							crash = true;
+							
+						}
+					}
+				}
+
+
+
+				if(this.centerY<=player1.topY&&this.centerX>=player1.rightX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log(crashDir);
+					if(this.centerX-this.speed<=player1.rightX+(this.speed+1)&&this.centerY+this.speed>=player1.topY-(this.speed+1)){
+						if(crashDir!="left"&&crashDir!="down"){
+							crash = true;
+							
+							//crashDir="right-down";
+						}
+
+						// crashDir="right";
+					}
+				}
+
+			}
+
+
+/////
+///////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+			if(this.direction=="left-up"){ 
+
+				if(this.centerY<=player1.bottomY&&this.centerY>player1.topY&&this.centerX>=player1.rightX&&this.centerX<player1.rightX+tileDiameter) {
+					
+					if(this.centerX-this.speed<=player1.rightX+(this.speed+1)){
+						if(crashDir!="up"){
+							crashDir="left";
+						}else{
+							crash = true;
+							
+						}
+					}
+				}
+
+				if(this.centerX>=player1.leftX&&this.centerX<player1.rightX&&this.centerY>=player1.bottomY&&this.centerY<player1.bottomY+tileDiameter) {
+
+					if(this.centerY-this.speed<=player1.bottomY+(this.speed+1)){
+						if(crashDir!="left"){
+							crashDir="up";
+						}else{
+							crash = true;
+							
+						}
+					}         
+				}
+
+
+				if(this.centerY>=player1.bottomY&&this.centerX>=player1.rightX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log(crashDir);
+					if(this.centerX-this.speed<=player1.rightX+(this.speed+1)&&this.centerY-this.speed<=player1.bottomY+(this.speed+1)){
+						if(crashDir!="left"&&crashDir!="up"){
+							crash = true;
+							
+							//crashDir="right-down";
+						}
+
+						// crashDir="right";
+					}
+				}
+
+
+			}
+
+
+
+/////
+///////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+			if(this.direction=="right-up"){ 
+
+				if(this.centerX>=player1.leftX&&this.centerX<player1.rightX&&this.centerY>=player1.bottomY&&this.centerY<player1.bottomY+tileDiameter) {
+
+					if(this.centerY-this.speed<=player1.bottomY+(this.speed+1)){
+						if(crashDir!="right"){
+							crashDir="up";
+						}else{
+							crash = true;
+							
+						}
+					}         
+				}
+
+					///in other words: as long as you are standing in the block before what would be the next one when going right
+					if(this.centerY>=player1.topY&&this.centerY<player1.bottomY&&this.centerX<=player1.leftX&&this.centerX>player1.leftX-tileDiameter) {
+
+						//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+						if(this.centerX+this.speed>=player1.leftX-(this.speed+1)){
+							if(crashDir!="up"){
+								crashDir="right";
+							}else{
+								crash = true;
+								
+							}
+						
+						}
+					}
+				
+
+				if(this.centerY>=player1.bottomY&&this.centerX<=player1.leftX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log(crashDir);
+					if(this.centerX+this.speed>=player1.leftX-(this.speed+1)&&this.centerY-this.speed<=player1.bottomY+(this.speed+1)){
+						if(crashDir!="right"&&crashDir!="up"){
+							crash = true;
+							
+							//crashDir="right-down";
+						}
+
+						// crashDir="right";
+					}
+				}
+
+			}/// END this.direction->right-up
+/////
+///////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+	if (crash) {
+		return true;
+	} else {
+		return false;
+	}
+
+};/// END Player-check-Crash
 
 
 
@@ -4918,15 +5844,15 @@ function Player(type) {
 	this.drawY = 200;
 
 	//in sprite with & height	
-	this.width = 128;  
-	this.height = 128; 
+	this.width = 96;  
+	this.height = 96; 
 
 
 	//starting moving values & speed
 	this.speed = 0;
 	this.moving = true; //can it move?
 
-	this.animRatePlayer =0.6; 
+	this.animRatePlayer =0.4; 
 
 
 	this.direction = "nowhere";  // for moving mechanics purposes
@@ -4981,6 +5907,12 @@ function Player(type) {
 	this.damageType = "none";
 	this.damageAngle = "none";
 
+	this.leftX = this.drawX;
+	this.rightX = this.leftX + this.width;
+	this.topY = this.drawY;
+	this.bottomY = this.topY + this.height;
+
+
 }/// FUNC Player
 
 
@@ -5008,10 +5940,20 @@ var poweroffCheck=false;
 Player.prototype.update = function () {
 
 
+// ctxPlayer.beginPath();
+// 		ctxPlayer.lineWidth = "2";
+// 		ctxPlayer.strokeStyle = "blue";
+
+// 		ctxPlayer.rect(this.centerX, this.centerY, 8,  8);
+// 		ctxPlayer.stroke();
+
+this.leftX = this.drawX;
+	this.rightX = this.leftX + this.width;
+	this.topY = this.drawY;
+	this.bottomY = this.topY + this.height;
+
 	if(this.life<=0){
 		this.isDead=true;
-
-
 	}
 
 	if(this.filling){
@@ -5080,16 +6022,16 @@ if(!paused){
 			if(this.speed>0){
 				if(!dash){
 					this.speed=6; 
-					this.animRatePlayer=0.4;
+					this.animRatePlayer=0.6;
 				}else if(dash&&dashCount<100){
 						
 					this.speed=12;	
-					this.animRatePlayer=0.6;		   	
+					this.animRatePlayer=1;		   	
 				}else if(dash&&dashCount>100){
 					dash=false;
 						//console.log(dashCount+ " over 14");
 					this.speed=6; 
-					this.animRatePlayer=0.4;	
+					this.animRatePlayer=0.6;	
 				}
 			}
 		}
@@ -5228,8 +6170,8 @@ if(!paused){
 	//console.log("STILL DASH?? " +dash);
 	if(!dash){
 		if(this.weaponSelected==1){
-			this.animRateShooting = 0.6;
-			this.weaponSpeedRate=10;
+			this.animRateShooting = 1.2;
+			this.weaponSpeedRate=5;
 		}else if(this.weaponSelected==2){
 			this.animRateShooting = 0.18;
 			this.weaponSpeedRate=30;
@@ -5237,7 +6179,7 @@ if(!paused){
 
 	}else{
 		if(this.weaponSelected==1){
-			this.animRateShooting = 0.8;
+			this.animRateShooting = 1.6;
 			this.weaponSpeedRate=5;
 		}else if(this.weaponSelected==2){
 			this.animRateShooting = 0.5;
@@ -5836,28 +6778,29 @@ Player.prototype.animationState = function (dead, direction, animRatePlayer, ani
 																	//  ERROR :::::::::         PUSHING PLAYER THROUGH WALL !!!!!!!!!!!!!!!!!!!!!!
 
 																	/// calculate surrounding walls before pushing!
-	if(this.damageType=="electrical"&&this.damageCount<18){
-				
-		if(this.damageAngle=="down"){
-			this.drawY-=16;
-		}else if(this.damageAngle=="up"){
-			this.drawY+=16;
-		}else if(this.damageAngle=="right"){
-			this.drawX-=16;
-		}else if(this.damageAngle=="left"){
-			this.drawX+=16;
-		}else if(this.damageAngle=="left-down"){
-			this.drawX+=16;
-			this.drawY-=16;
-		}else if(this.damageAngle=="left-up"){
-			this.drawX+=16;
-			this.drawY+=16;
-		}else if(this.damageAngle=="right-down"){
-			this.drawX-=16;
-			this.drawY-=16;
-		}else if(this.damageAngle=="right-up"){
-			this.drawX-=16;
-			this.drawY+=16;
+	if(this.damageType=="electrical"&&this.damageCount<10){
+		if(!this.checkCrash()){		
+			if(this.damageAngle=="down"){
+				this.drawY-=this.speed;
+			}else if(this.damageAngle=="up"){
+				this.drawY+=this.speed;
+			}else if(this.damageAngle=="right"){
+				this.drawX-=this.speed;
+			}else if(this.damageAngle=="left"){
+				this.drawX+=this.speed;
+			}else if(this.damageAngle=="left-down"){
+				this.drawX+=this.speed;
+				this.drawY-=this.speed;
+			}else if(this.damageAngle=="left-up"){
+				this.drawX+=this.speed;
+				this.drawY+=this.speed;
+			}else if(this.damageAngle=="right-down"){
+				this.drawX-=this.speed;
+				this.drawY-=this.speed;
+			}else if(this.damageAngle=="right-up"){
+				this.drawX-=this.speed;
+				this.drawY+=this.speed;
+			}
 		}
 
 	}
@@ -5930,6 +6873,12 @@ Player.prototype.animationState = function (dead, direction, animRatePlayer, ani
 ///
 ///    
 
+
+
+
+//THIS IS THE GAME CAMERA>> should be abstracted into its own function
+// HERE:  All objects drawX/Y are bein reset, based on where the camera(player) is
+//  could be done in every one of these entities own draw.function.. but that would see it happn afterwards...
 
 
 
@@ -6042,8 +6991,6 @@ Player.prototype.checkMoving = function (direction, moving) {
 ///////////////////////  ///////////////////////
 ////////////////////////////////////////////////
 
-//console.log(latestKeys[0]);
-
 
 		if(this.direction=="up"){
 
@@ -6057,6 +7004,10 @@ Player.prototype.checkMoving = function (direction, moving) {
 					obstacles[i].bottomY += this.speed;
 				}
 
+				for(var i =0; i<enemies.length; i++){
+					enemies[i].topY += this.speed;
+					enemies[i].bottomY += this.speed;
+				}
 
 				for(var j =0; j<areas.length; j++){
 					areas[j].topY += this.speed;
@@ -6101,6 +7052,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 					obstacles[i].bottomY -= this.speed;
 				}
 
+				for(var i =0; i<enemies.length; i++){
+					enemies[i].topY -= this.speed;
+					enemies[i].bottomY -= this.speed;
+				}
+
 				for(var j =0; j<areas.length; j++){
 					areas[j].topY -= this.speed;
 					areas[j].bottomY -= this.speed;
@@ -6137,6 +7093,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 					obstacles[i].rightX -= this.speed;
 				}
 
+				for(var i =0; i<enemies.length; i++){
+					enemies[i].leftX -= this.speed;
+					enemies[i].rightX -= this.speed;
+				}
+
+
 				for(var j =0; j<areas.length; j++){
 					areas[j].leftX -= this.speed;
 					areas[j].rightX -= this.speed;
@@ -6168,6 +7130,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 				for(var i =0; i<obstacles.length; i++){
 					obstacles[i].leftX += this.speed;
 					obstacles[i].rightX += this.speed;
+				}
+
+				for(var i =0; i<enemies.length; i++){
+					enemies[i].leftX += this.speed;
+					enemies[i].rightX += this.speed;
 				}
 
 				for(var j =0; j<areas.length; j++){
@@ -6208,6 +7175,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 						obstacles[i].bottomY -= this.speed;
 					}
 
+
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].topY -= this.speed;
+						enemies[i].bttomY -= this.speed;
+					}
+
 					for(var j =0; j<areas.length; j++){
 						areas[j].topY -= this.speed;
 						areas[j].bottomY -= this.speed;
@@ -6239,6 +7212,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 					for(var i =0; i<obstacles.length; i++){
 						obstacles[i].leftX -= this.speed;
 						obstacles[i].rightX -= this.speed;
+					}
+
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].leftX -= this.speed;
+						enemies[i].rightX -= this.speed;
 					}
 
 					for(var j =0; j<areas.length; j++){
@@ -6275,6 +7253,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 						obstacles[i].rightX -= this.speed;
 					}
 
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].leftX -= this.speed;
+						enemies[i].rightX -= this.speed;
+					}
+
 					for(var j =0; j<areas.length; j++){
 						areas[j].leftX -= this.speed;
 						areas[j].rightX -= this.speed;
@@ -6307,6 +7290,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 					for(var i =0; i<obstacles.length; i++){
 						obstacles[i].topY -= this.speed;
 						obstacles[i].bottomY -= this.speed;
+					}
+
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].topY -= this.speed;
+						enemies[i].bottomY -= this.speed;
 					}
 
 					for(var j =0; j<areas.length; j++){
@@ -6356,6 +7344,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 						obstacles[i].bottomY -= this.speed;
 					}
 
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].topY -= this.speed;
+						enemies[i].bottomY -= this.speed;
+					}
+
 					for(var j =0; j<areas.length; j++){
 						areas[j].topY -= this.speed;
 						areas[j].bottomY -= this.speed;
@@ -6385,6 +7378,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 					for(var i =0; i<obstacles.length; i++){
 						obstacles[i].leftX += this.speed;
 						obstacles[i].rightX += this.speed;
+					}
+
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].leftX += this.speed;
+						enemies[i].rightX += this.speed;
 					}
 
 					for(var j =0; j<areas.length; j++){
@@ -6418,6 +7416,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 						obstacles[i].rightX += this.speed;
 					}
 
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].leftX += this.speed;
+						enemies[i].rightX += this.speed;
+					}
+
 					for(var j =0; j<areas.length; j++){
 						areas[j].leftX += this.speed;
 						areas[j].rightX += this.speed;
@@ -6447,6 +7450,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 						obstacles[i].bottomY -= this.speed;
 					}
 
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].topY -= this.speed;
+						enemies[i].bottomY -= this.speed;
+					}
+
 					for(var j =0; j<areas.length; j++){
 						areas[j].topY -= this.speed;
 						areas[j].bottomY -= this.speed;
@@ -6459,10 +7467,10 @@ Player.prototype.checkMoving = function (direction, moving) {
 					}
 
 					for(var l =0; l<bulletsFired.length; l++){
-					bulletsFired[l].drawY -= this.speed;
-					bulletsFired[l].centerY -= this.speed;    
+						bulletsFired[l].drawY -= this.speed;
+						bulletsFired[l].centerY -= this.speed;    
 
-				}  
+					}  
 
 				}else{
 					this.drawY = this.drawY+this.speed;
@@ -6471,13 +7479,6 @@ Player.prototype.checkMoving = function (direction, moving) {
 			}
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
 
 
 		}else if(this.direction=="left-up"){
@@ -6494,6 +7495,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 					for(var i =0; i<obstacles.length; i++){
 						obstacles[i].topY += this.speed;
 						obstacles[i].bottomY += this.speed;
+					}
+
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].topY += this.speed;
+						enemies[i].bottomY += this.speed;
 					}
 
 
@@ -6529,6 +7535,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 						obstacles[i].rightX += this.speed;
 					}
 
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].leftX += this.speed;
+						enemies[i].rightX += this.speed;
+					}
+
 					for(var j =0; j<areas.length; j++){
 						areas[j].leftX += this.speed;
 						areas[j].rightX += this.speed;
@@ -6558,6 +7569,12 @@ Player.prototype.checkMoving = function (direction, moving) {
 						obstacles[i].rightX += this.speed;
 					}
 
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].leftX += this.speed;
+						enemies[i].rightX += this.speed;
+					}
+
+
 					for(var j =0; j<areas.length; j++){
 						areas[j].leftX += this.speed;
 						areas[j].rightX += this.speed;
@@ -6585,6 +7602,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 					for(var i =0; i<obstacles.length; i++){
 						obstacles[i].topY += this.speed;
 						obstacles[i].bottomY += this.speed;
+					}
+
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].topY += this.speed;
+						enemies[i].bottomY += this.speed;
 					}
 
 
@@ -6638,6 +7660,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 						obstacles[i].bottomY += this.speed;
 					}
 
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].topY += this.speed;
+						enemies[i].bottomY += this.speed;
+					}
+
 
 					for(var j =0; j<areas.length; j++){
 						areas[j].topY += this.speed;
@@ -6669,6 +7696,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 					for(var i =0; i<obstacles.length; i++){
 						obstacles[i].leftX -= this.speed;
 						obstacles[i].rightX -= this.speed;
+					}
+
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].leftX -= this.speed;
+						enemies[i].rightX -= this.speed;
 					}
 
 					for(var j =0; j<areas.length; j++){
@@ -6705,6 +7737,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 						obstacles[i].rightX -= this.speed;
 					}
 
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].leftX -= this.speed;
+						enemies[i].rightX -= this.speed;
+					}
+
 					for(var j =0; j<areas.length; j++){
 						areas[j].leftX -= this.speed;
 						areas[j].rightX -= this.speed;
@@ -6736,6 +7773,11 @@ Player.prototype.checkMoving = function (direction, moving) {
 					for(var i =0; i<obstacles.length; i++){
 						obstacles[i].topY += this.speed;
 						obstacles[i].bottomY += this.speed;
+					}
+
+					for(var i =0; i<enemies.length; i++){
+						enemies[i].topY += this.speed;
+						enemies[i].bottomY += this.speed;
 					}
 
 
@@ -6798,7 +7840,8 @@ Player.prototype.checkCrash = function () {
 
 	var player = this;
 
-	function doorCrash(obstacleIndex, source){
+
+	function obstacleCrash(obstacleIndex, source, enemy){
 									// source >> whether from PlayerCrash or Bullet
 
 		if(obstacles[obstacleIndex].isDoor=="door"){        
@@ -6811,6 +7854,52 @@ Player.prototype.checkCrash = function () {
 		    	
 		}
 
+
+		if(enemy==true){
+
+			// for(var i=0; i<player1.length; i++){
+			// 	if(obstacleIndex==i){
+			// 		enemies[i].damage = {
+			// 			on:true, 
+			// 			src: source, 
+			// 			dmgCounter:0, 
+			// 			dmgCounterCheck:0
+			// 		}
+			// 	}
+			// }
+			if(player.damageCount==0){
+
+				function getAngle(dir){
+					var angle = dir;
+					return angle;
+				}
+
+				player.damageAngle = getAngle(player.direction);
+
+				///player.damageCount set...
+				player.damageCount++;
+				player.damageType="electrical";
+
+				player.life-=2; 
+				
+				player.facing="nowhere";
+				player.direction="nowhere";
+				player.moving=false;
+
+				blockInput=true;
+
+
+				//console.log(player.direction);
+
+				elecDamageSFX.play();
+				
+			}
+		}		
+
+
+
+
+
 		//console.log(obstacles[obstacleIndex].ID);
 
 		if(obstacles[obstacleIndex].ID==349){
@@ -6818,8 +7907,10 @@ Player.prototype.checkCrash = function () {
 			//console.log(poweroff);
 		}
 
-		if(player.damageCount==0){
-			if(obstacles[obstacleIndex].ID==390){
+		
+		if(obstacles[obstacleIndex].ID==390){
+
+			if(player.damageCount==0){
 
 				function getAngle(dir){
 					var angle = dir;
@@ -6851,13 +7942,9 @@ Player.prototype.checkCrash = function () {
 	}
 
 	/// player.damageCount continues...
-	if(player.damageCount>0 && player.damageCount <4){
+	if(player.damageCount>0 && player.damageCount <10){
 		player.damageCount++;
-
-
-	}else if(player.damageCount>=4 && player.damageCount <28){
-		player.damageCount++;
-	}else if(player.damageCount==28){
+	}else if(player.damageCount==10){
 		player.damageCount=0;
 
 		blockInput=false;
@@ -6882,14 +7969,10 @@ Player.prototype.checkCrash = function () {
 
 
 
-
-
-
-
-
 	///Loop through enemies
 	for (var i = 0; i < enemies.length; i++) {
 
+		if(currentRoom==enemies[i].inRoom){
 		// console.log(enemies[i].topY);
 		// console.log(enemies[i].bottomY);
 		// console.log(enemies[i].rightX);
@@ -6904,6 +7987,7 @@ Player.prototype.checkCrash = function () {
 					if(newCenterX+this.speed>=enemies[i].leftX-(this.speed+1)){
 
 						console.log("crahsed");
+						obstacleCrash(i, null, true);
 						crash = true; 
 						
 					}
@@ -6918,6 +8002,7 @@ Player.prototype.checkCrash = function () {
 						    crash = true;
 							
 							console.log("crahsed");
+							obstacleCrash(i, null, true);
 					}
 				}
 			}   
@@ -6928,6 +8013,7 @@ Player.prototype.checkCrash = function () {
 					if(newCenterY-this.speed<=enemies[i].bottomY+(this.speed+1)){
 							crash = true; 
 							console.log("crahsed");
+							obstacleCrash(i, null, true);
 					}         
 				}
 			}   
@@ -6938,6 +8024,7 @@ Player.prototype.checkCrash = function () {
 					if(newCenterY+this.speed>=enemies[i].topY-(this.speed+1)){
 							crash = true;  
 							console.log("crahsed");
+							obstacleCrash(i, null, true);
 					}
 				}
 			}   
@@ -6956,12 +8043,13 @@ Player.prototype.checkCrash = function () {
 					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
 					if(newCenterX+this.speed>=enemies[i].leftX-(this.speed+1)){
 						// crash = true;  
-						// doorCrash(i);
+						// obstacleCrash(i);
 						if(crashDir!="down"){
 							crashDir="right";
 						}else{
 							crash = true;
 							console.log("crahsed");
+							obstacleCrash(i, null, true);
 						}
 					}
 				}
@@ -6971,12 +8059,13 @@ Player.prototype.checkCrash = function () {
 
 					if(newCenterY+this.speed>=enemies[i].topY-(this.speed+1)){
 						// crash = true;
-						// doorCrash(i);
+						// obstacleCrash(i);
 						if(crashDir!="right"){
 							crashDir="down";
 						}else{
 							crash = true;
 							console.log("crahsed");
+							obstacleCrash(i, null, true);
 						}
 						
 					}
@@ -6984,7 +8073,7 @@ Player.prototype.checkCrash = function () {
 				//////   ADD AN EXPLICITELY diagonal check.....
 				////  AND only on this one >>> 
 						// crash = true;
-						// doorCrash(i);
+						// obstacleCrash(i);
 
 				if(newCenterY<=enemies[i].topY&&newCenterX<=enemies[i].leftX) {
 
@@ -6994,6 +8083,7 @@ Player.prototype.checkCrash = function () {
 						if(crashDir!="right"&&crashDir!="down"){
 							crash = true;
 							console.log("crahsed");
+							obstacleCrash(i, null, true);
 						}
 
 					}
@@ -7017,6 +8107,7 @@ Player.prototype.checkCrash = function () {
 						}else{
 							crash = true;
 							console.log("crahsed");
+							obstacleCrash(i, null, true);
 						}
 					}
 				}
@@ -7029,6 +8120,7 @@ Player.prototype.checkCrash = function () {
 						}else{
 							crash = true;
 							console.log("crahsed");
+							obstacleCrash(i, null, true);
 						}
 					}
 				}
@@ -7043,6 +8135,7 @@ Player.prototype.checkCrash = function () {
 						if(crashDir!="left"&&crashDir!="down"){
 							crash = true;
 							console.log("crahsed");
+							obstacleCrash(i, null, true);
 							//crashDir="right-down";
 						}
 
@@ -7052,6 +8145,114 @@ Player.prototype.checkCrash = function () {
 
 			}
 
+
+						if(this.direction=="left-up"){ 
+
+				if(newCenterY<=enemies[i].bottomY&&newCenterY>enemies[i].topY&&newCenterX>=enemies[i].rightX&&newCenterX<enemies[i].rightX+tileDiameter) {
+					
+					if(newCenterX-this.speed<=enemies[i].rightX+(this.speed+1)){
+						if(crashDir!="up"){
+							crashDir="left";
+						}else{
+							crash = true;
+							console.log("crahsed");
+							obstacleCrash(i, null, true);
+						}
+					}
+				}
+
+				if(newCenterX>=enemies[i].leftX&&newCenterX<enemies[i].rightX&&newCenterY>=enemies[i].bottomY&&newCenterY<enemies[i].bottomY+tileDiameter) {
+
+					if(newCenterY-this.speed<=enemies[i].bottomY+(this.speed+1)){
+						if(crashDir!="left"){
+							crashDir="up";
+						}else{
+							crash = true;
+							console.log("crahsed");
+							obstacleCrash(i, null, true);
+						}
+					}         
+				}
+
+
+				if(newCenterY>=enemies[i].bottomY&&newCenterX>=enemies[i].rightX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log(crashDir);
+					if(newCenterX-this.speed<=enemies[i].rightX+(this.speed+1)&&newCenterY-this.speed<=enemies[i].bottomY+(this.speed+1)){
+						if(crashDir!="left"&&crashDir!="up"){
+							crash = true;
+							console.log("crahsed");
+							obstacleCrash(i, null, true);
+							//crashDir="right-down";
+						}
+
+						// crashDir="right";
+					}
+				}
+
+
+			}
+
+
+
+/////
+///////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+			if(this.direction=="right-up"){ 
+
+				if(newCenterX>=enemies[i].leftX&&newCenterX<enemies[i].rightX&&newCenterY>=enemies[i].bottomY&&newCenterY<enemies[i].bottomY+tileDiameter) {
+
+					if(newCenterY-this.speed<=enemies[i].bottomY+(this.speed+1)){
+						if(crashDir!="right"){
+							crashDir="up";
+						}else{
+							crash = true;
+							console.log("crahsed");
+							obstacleCrash(i, null, true);
+						}
+					}         
+				}
+
+					///in other words: as long as you are standing in the block before what would be the next one when going right
+					if(newCenterY>=enemies[i].topY&&newCenterY<enemies[i].bottomY&&newCenterX<=enemies[i].leftX&&newCenterX>enemies[i].leftX-tileDiameter) {
+
+						//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+						if(newCenterX+this.speed>=enemies[i].leftX-(this.speed+1)){
+							if(crashDir!="up"){
+								crashDir="right";
+							}else{
+								crash = true;
+								console.log("crahsed");
+								obstacleCrash(i, null, true);
+							}
+						
+						}
+					}
+				
+
+				if(newCenterY>=enemies[i].bottomY&&newCenterX<=enemies[i].leftX) {
+
+					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+					//console.log(crashDir);
+					if(newCenterX+this.speed>=enemies[i].leftX-(this.speed+1)&&newCenterY-this.speed<=enemies[i].bottomY+(this.speed+1)){
+						if(crashDir!="right"&&crashDir!="up"){
+							crash = true;
+							console.log("crahsed");
+							obstacleCrash(i, null, true);
+							//crashDir="right-down";
+						}
+
+						// crashDir="right";
+					}
+				}
+
+			}/// END this.direction->right-up
+
+		}
 	}/// for loop enemies
 
 
@@ -7094,7 +8295,7 @@ Player.prototype.checkCrash = function () {
 
 						crash = true; 
 						//if it's a door, you may open it   
-						doorCrash(i);
+						obstacleCrash(i);
 					}
 				}
 			}  
@@ -7105,7 +8306,7 @@ Player.prototype.checkCrash = function () {
 					if(newCenterX-this.speed<=obstacles[i].rightX+(this.speed+1)){
 
 						    crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 					}
 				}
 			}   
@@ -7115,7 +8316,7 @@ Player.prototype.checkCrash = function () {
 
 					if(newCenterY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
 							crash = true; 
-							doorCrash(i);
+							obstacleCrash(i);
 					}         
 				}
 			}   
@@ -7125,7 +8326,7 @@ Player.prototype.checkCrash = function () {
 
 					if(newCenterY+this.speed>=obstacles[i].topY-(this.speed+1)){
 							crash = true;  
-							doorCrash(i);
+							obstacleCrash(i);
 					}
 				}
 			}   
@@ -7144,12 +8345,12 @@ Player.prototype.checkCrash = function () {
 					//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
 					if(newCenterX+this.speed>=obstacles[i].leftX-(this.speed+1)){
 						// crash = true;  
-						// doorCrash(i);
+						// obstacleCrash(i);
 						if(crashDir!="down"){
 							crashDir="right";
 						}else{
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 						}
 					}
 				}
@@ -7159,12 +8360,12 @@ Player.prototype.checkCrash = function () {
 
 					if(newCenterY+this.speed>=obstacles[i].topY-(this.speed+1)){
 						// crash = true;
-						// doorCrash(i);
+						// obstacleCrash(i);
 						if(crashDir!="right"){
 							crashDir="down";
 						}else{
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 						}
 						
 					}
@@ -7172,7 +8373,7 @@ Player.prototype.checkCrash = function () {
 				//////   ADD AN EXPLICITELY diagonal check.....
 				////  AND only on this one >>> 
 						// crash = true;
-						// doorCrash(i);
+						// obstacleCrash(i);
 
 				if(newCenterY<=obstacles[i].topY&&newCenterX<=obstacles[i].leftX) {
 
@@ -7181,7 +8382,7 @@ Player.prototype.checkCrash = function () {
 					if(newCenterX+this.speed>=obstacles[i].leftX-(this.speed+1)&&newCenterY+this.speed>=obstacles[i].topY-(this.speed+1)){
 						if(crashDir!="right"&&crashDir!="down"){
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 						}
 
 					}
@@ -7204,7 +8405,7 @@ Player.prototype.checkCrash = function () {
 							crashDir="left";
 						}else{
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 						}
 					}
 				}
@@ -7216,7 +8417,7 @@ Player.prototype.checkCrash = function () {
 							crashDir="down";
 						}else{
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 						}
 					}
 				}
@@ -7230,7 +8431,7 @@ Player.prototype.checkCrash = function () {
 					if(newCenterX-this.speed<=obstacles[i].rightX+(this.speed+1)&&newCenterY+this.speed>=obstacles[i].topY-(this.speed+1)){
 						if(crashDir!="left"&&crashDir!="down"){
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 							//crashDir="right-down";
 						}
 
@@ -7255,7 +8456,7 @@ Player.prototype.checkCrash = function () {
 							crashDir="left";
 						}else{
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 						}
 					}
 				}
@@ -7267,7 +8468,7 @@ Player.prototype.checkCrash = function () {
 							crashDir="up";
 						}else{
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 						}
 					}         
 				}
@@ -7280,7 +8481,7 @@ Player.prototype.checkCrash = function () {
 					if(newCenterX-this.speed<=obstacles[i].rightX+(this.speed+1)&&newCenterY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
 						if(crashDir!="left"&&crashDir!="up"){
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 							//crashDir="right-down";
 						}
 
@@ -7308,7 +8509,7 @@ Player.prototype.checkCrash = function () {
 							crashDir="up";
 						}else{
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 						}
 					}         
 				}
@@ -7322,7 +8523,7 @@ Player.prototype.checkCrash = function () {
 								crashDir="right";
 							}else{
 								crash = true;
-								doorCrash(i);
+								obstacleCrash(i);
 							}
 						
 						}
@@ -7336,7 +8537,7 @@ Player.prototype.checkCrash = function () {
 					if(newCenterX+this.speed>=obstacles[i].leftX-(this.speed+1)&&newCenterY-this.speed<=obstacles[i].bottomY+(this.speed+1)){
 						if(crashDir!="right"&&crashDir!="up"){
 							crash = true;
-							doorCrash(i);
+							obstacleCrash(i);
 							//crashDir="right-down";
 						}
 
@@ -7398,8 +8599,8 @@ Player.prototype.checkArea = function (){
 
 				blockInput=true;
 	
-				player1.facing="nowhere";
-				player1.direction="nowhere";
+				this.facing="nowhere";
+				this.direction="nowhere";
 
 				changeRoom(areas[i].roomTo, areas[i].doorTO, shiftX, shiftY, "normal");/////  room-2 >> determined by door"To" (9[2]11), then ID (92[11])
 				///room-2 =>>> roomTO
@@ -7819,12 +9020,16 @@ var menuGunAlreadyPainted=false;
 
 Item.prototype.draw = function () {
 
-	daMenu.draw();
+	daMenu.draw(); 
 
 	var newCenterX = Math.round(this.drawX  + (this.width / 2)), /// this.drawX will have to be changed to (newItemDrawX when I start moving it.. maybe
 	newCenterY = Math.round(this.drawY + (this.height / 2));
 																													  
 	if(!this.isCaught&&flash==false){
+
+		if(player1.drawX+400<this.drawX||player1.drawX-400>this.drawX||player1.drawY+300<this.drawY||player1.drawY-300>this.drawY){
+							//console.log(tileIndexX + " ," + tileIndexY);
+		}else{
 
 	//alert(this.inRoom);
 		
@@ -7870,6 +9075,9 @@ Item.prototype.draw = function () {
 				}// FOR Areas
 
 			}//// if/ELSE  YOU NOT inArea
+
+
+		}
 
 		}// IF   not-Caught
 
@@ -8332,7 +9540,14 @@ activeBullet.prototype.draw = function () {
 
 	this.animBullet++;
 
-	
+
+	// ctxEntities.beginPath();
+	// ctxEntities.lineWidth = "2";
+	// ctxEntities.strokeStyle = "red";
+
+	// ctxEntities.rect(this.drawX, this.drawY, this.width, this.height);
+	// ctxEntities.stroke();
+
 
 	for (var i=0; i< bulletsFired.length; i++) {
 
@@ -8486,9 +9701,24 @@ activeBullet.prototype.checkcrash = function () {
 //  diff weapons have diff limits!!!!!!   >> flame thrower: crashB against air
 	var id;
 
-	function doorCrash(obstacleIndex, source){
+	function obstacleCrash(obstacleIndex, source, enemy){
 									// source >> whether from PlayerCrash or Bullet
 
+
+		if(enemy==true){
+
+			for(var i=0; i<enemies.length; i++){
+				if(obstacleIndex==i){
+					enemies[i].damage = {
+						on:true, 
+						src: source, 
+						dmgCounter:0, 
+						dmgCounterCheck:0
+					}
+				}
+			}
+			
+		}																					
 		
 
 		if(obstacles[obstacleIndex].isDoor=="door"){        
@@ -8507,6 +9737,442 @@ activeBullet.prototype.checkcrash = function () {
 			}
 		}
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+for (var i = 0; i < enemies.length; i++) {
+
+		
+			if(enemies[i].isDead==false){
+
+				if(this.direction=="right"){
+
+					//// repeat this if/else on enemies centerX|Y -+
+
+					///in other words: as long as bullet in the block before the one you would be at if going right
+					if(this.centerY>=enemies[i].topY&&this.centerY<enemies[i].bottomY&&this.centerX<=enemies[i].leftX&&this.centerX>enemies[i].leftX-tileDiameter) { ///// 10 => bullet diameter
+
+						//but don't stop me just yet, only if not doing so would put me on the other side 
+						if(this.centerX+this.speed>=enemies[i].leftX-(this.speed+1)){
+
+							crashB = true; 
+							id=this.id;
+							
+							//console.log("im HIT");
+							
+							if(this.weapon==22){
+								this.active=false;
+								obstacleCrash(i, "bigbullet", true); 
+							}else if(this.weapon==1){
+								this.active=false;
+
+								obstacleCrash(i, "bullet", true); 
+							}
+							 
+							 
+
+						}
+					}
+				}  /// dir
+
+
+				if(this.direction=="left"){
+
+					if(this.centerY<=enemies[i].bottomY&&this.centerY>enemies[i].topY&&this.centerX>=enemies[i].rightX&&this.centerX<enemies[i].rightX+tileDiameter){
+						
+						if(this.centerX-this.speed<=enemies[i].rightX+(this.speed+1)){
+
+							crashB = true;
+							id=this.id;
+
+							//console.log(this.weapon);
+							console.log("im HIT");
+							if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							}
+						}
+					}
+				} 
+
+
+				if(this.direction=="up"){
+
+					if(this.centerX>=enemies[i].leftX&&this.centerX<enemies[i].rightX&&this.centerY>=enemies[i].bottomY&&this.centerY<enemies[i].bottomY+tileDiameter) {
+
+						if(this.centerY-this.speed<=enemies[i].bottomY+(this.speed+1)){
+								crashB = true; 
+								id=this.id;
+								console.log("im HIT");
+								if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							}
+						}         
+					}
+				}   
+				if(this.direction=="down"){
+
+					if(this.centerX>enemies[i].leftX&&this.centerX<=enemies[i].rightX&&this.centerY<=enemies[i].topY&&this.centerY>enemies[i].topY-tileDiameter) {
+
+						if(this.centerY+this.speed>=enemies[i].topY-(this.speed+1)){
+								crashB = true;  
+								id=this.id;
+								console.log("im HIT");
+							if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							}
+								
+						}
+					}
+				}   
+
+
+			////////////////////////////////////////
+			//////////////////////////////	         d   I   A   G   O   N   A   L    S
+			//////////////////////////////////
+
+
+				if(this.direction=="right-down"){ 
+
+
+					if(this.centerY>=enemies[i].topY&&this.centerY<enemies[i].bottomY&&this.centerX<=enemies[i].leftX&&this.centerX>enemies[i].leftX-tileDiameter) {
+
+						//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+						if(this.centerX+this.speed>=enemies[i].leftX-(this.speed+1)){
+							// crashB = true;  
+							// obstacleCrashB(i);
+							
+								crashB = true;
+								id=this.id;
+								console.log("im HIT");
+							if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							} 
+							
+						}
+					}
+
+
+					if(this.centerX>enemies[i].leftX&&this.centerX<=enemies[i].rightX&&this.centerY<=enemies[i].topY&&this.centerY>enemies[i].topY-tileDiameter) {
+
+						if(this.centerY+this.speed>=enemies[i].topY-(this.speed+1)){
+							// crashB = true;
+							// obstacleCrashB(i);
+					
+								crashB = true;
+								id=this.id;
+								console.log("im HIT");
+								if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							}
+							
+							
+						}
+					}
+					//////   ADD AN EXPLICITELY diagonal check.....
+					////  AND only on this one >>> 
+							// crashB = true;
+							// obstacleCrashB(i);
+
+					if(this.centerY<=enemies[i].topY&&this.centerX<=enemies[i].leftX) {
+
+						//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+						//console.log("WHAT"+player1.direction);
+						if(this.centerX+this.speed>=enemies[i].leftX-(this.speed+1)&&this.centerY+this.speed>=enemies[i].topY-(this.speed+1)){
+							
+								crashB = true;
+								id=this.id;
+								console.log("im HIT");
+								if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							}
+							
+
+						}
+					}
+
+				} /////  if(this.direction=="right-down"){  
+
+			/////
+			///////
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				if(this.direction=="left-down"){ 
+
+					 if(this.centerY<=enemies[i].bottomY&&this.centerY>enemies[i].topY&&this.centerX>=enemies[i].rightX&&this.centerX<enemies[i].rightX+tileDiameter) {
+						
+						if(this.centerX-this.speed<=enemies[i].rightX+(this.speed+1)){
+						
+								crashB = true;
+								id=this.id;
+								console.log("im HIT");
+							if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							}
+							
+						}
+					}
+
+					if(this.centerX>enemies[i].leftX&&this.centerX<=enemies[i].rightX&&this.centerY<=enemies[i].topY&&this.centerY>enemies[i].topY-tileDiameter) {
+
+						if(this.centerY+this.speed>=enemies[i].topY-(this.speed+1)){
+						
+								crashB = true;
+								id=this.id;
+								console.log("im HIT");
+								if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							} 
+							
+						}
+					}
+
+
+
+					if(this.centerY<=enemies[i].topY&&this.centerX>=enemies[i].rightX) {
+
+						//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+						//console.log(crashBDir);
+						if(this.centerX-this.speed<=enemies[i].rightX+(this.speed+1)&&this.centerY+this.speed>=enemies[i].topY-(this.speed+1)){
+							
+								crashB = true;
+								id=this.id;
+console.log("im HIT");
+								if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							} 
+								//crashBDir="right-down";
+				
+
+							// crashBDir="right";
+						}
+					}
+
+				}
+
+
+			/////
+			///////
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+				if(this.direction=="left-up"){ 
+
+					if(this.centerY<=enemies[i].bottomY&&this.centerY>enemies[i].topY&&this.centerX>=enemies[i].rightX&&this.centerX<enemies[i].rightX+8) {
+						
+						if(this.centerX-this.speed<=enemies[i].rightX+(this.speed+1)){
+							
+								crashB = true;
+								id=this.id;
+console.log("im HIT");
+								if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							}
+							
+						}
+					}
+
+					if(this.centerX>=enemies[i].leftX&&this.centerX<enemies[i].rightX&&this.centerY>=enemies[i].bottomY&&this.centerY<enemies[i].bottomY+8) {
+
+						if(this.centerY-this.speed<=enemies[i].bottomY+(this.speed+1)){
+							
+								crashB = true;
+								id=this.id;
+console.log("im HIT");
+								if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							} 
+							
+						}         
+					}
+
+
+					if(this.centerY>=enemies[i].bottomY&&this.centerX>=enemies[i].rightX) {
+
+						//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+						//console.log(crashBDir);
+						if(this.centerX-this.speed<=enemies[i].rightX+(this.speed+1)&&this.centerY-this.speed<=enemies[i].bottomY+(this.speed+1)){
+						
+								crashB = true;
+								id=this.id;
+console.log("im HIT");
+								if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							}
+								//crashBDir="right-down";
+							
+
+							// crashBDir="right";
+						}
+					}
+
+
+				}
+
+
+				if(this.direction=="right-up"){ 
+
+					if(this.centerX>=enemies[i].leftX&&this.centerX<enemies[i].rightX&&this.centerY>=enemies[i].bottomY&&this.centerY<enemies[i].bottomY+tileDiameter) {
+
+						if(this.centerY-this.speed<=enemies[i].bottomY+(this.speed+1)){
+					
+								crashB = true;
+								id=this.id;
+console.log("im HIT");
+								if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							}
+							
+						}         
+					}
+
+						///in other words: as long as you are standing in the block before what would be the next one when going right
+					if(this.centerY>=enemies[i].topY&&this.centerY<enemies[i].bottomY&&this.centerX<=enemies[i].leftX&&this.centerX>enemies[i].leftX-tileDiameter) {
+
+							//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+							if(this.centerX+this.speed>=enemies[i].leftX-(this.speed+1)){
+							console.log("im HIT");
+									crashB = true;
+									id=this.id;
+							if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							}
+								
+							
+							}
+						}
+					
+
+					if(this.centerY>=enemies[i].bottomY&&this.centerX<=enemies[i].leftX) {
+
+						//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
+						//console.log(crashBDir);
+						if(this.centerX+this.speed>=enemies[i].leftX-(this.speed+1)&&this.centerY-this.speed<=enemies[i].bottomY+(this.speed+1)){
+					
+								crashB = true;
+								id=this.id;
+console.log("im HIT");
+								if(this.weapon==22){
+								obstacleCrash(i, "bigbullet", true); 
+								this.active=false;
+							}else if(this.weapon==1){
+								obstacleCrash(i, "bullet", true); 
+								this.active=false;
+							} 
+
+						}
+					}
+
+				}/// last direction
+
+			}
+	}/// for Enemy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	for (var i = 0; i < obstacles.length; i++) {
@@ -8530,10 +10196,10 @@ activeBullet.prototype.checkcrash = function () {
 							
 							
 							if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 							 
@@ -8554,10 +10220,10 @@ activeBullet.prototype.checkcrash = function () {
 							//console.log(this.weapon);
 
 							if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 						}
@@ -8574,10 +10240,10 @@ activeBullet.prototype.checkcrash = function () {
 								id=this.id;
 
 								if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 						}         
@@ -8591,10 +10257,10 @@ activeBullet.prototype.checkcrash = function () {
 								crashB = true;  
 								id=this.id;
 							if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 								
@@ -8616,16 +10282,16 @@ activeBullet.prototype.checkcrash = function () {
 						//but don't stop me just yet, i've just entered the square, now wait for me to be at the other side
 						if(this.centerX+this.speed>=obstacles[i].leftX-(this.speed+1)){
 							// crashB = true;  
-							// doorcrashB(i);
+							// obstacleCrashB(i);
 							
 								crashB = true;
 								id=this.id;
 
 							if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							} 
 							
@@ -8637,16 +10303,16 @@ activeBullet.prototype.checkcrash = function () {
 
 						if(this.centerY+this.speed>=obstacles[i].topY-(this.speed+1)){
 							// crashB = true;
-							// doorcrashB(i);
+							// obstacleCrashB(i);
 					
 								crashB = true;
 								id=this.id;
 
 								if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 							
@@ -8656,7 +10322,7 @@ activeBullet.prototype.checkcrash = function () {
 					//////   ADD AN EXPLICITELY diagonal check.....
 					////  AND only on this one >>> 
 							// crashB = true;
-							// doorcrashB(i);
+							// obstacleCrashB(i);
 
 					if(this.centerY<=obstacles[i].topY&&this.centerX<=obstacles[i].leftX) {
 
@@ -8668,10 +10334,10 @@ activeBullet.prototype.checkcrash = function () {
 								id=this.id;
 
 								if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 							
@@ -8695,10 +10361,10 @@ activeBullet.prototype.checkcrash = function () {
 								id=this.id;
 
 							if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 							
@@ -8713,10 +10379,10 @@ activeBullet.prototype.checkcrash = function () {
 								id=this.id;
 
 								if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							} 
 							
@@ -8735,10 +10401,10 @@ activeBullet.prototype.checkcrash = function () {
 								id=this.id;
 
 								if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							} 
 								//crashBDir="right-down";
@@ -8766,10 +10432,10 @@ activeBullet.prototype.checkcrash = function () {
 								id=this.id;
 
 								if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 							
@@ -8784,10 +10450,10 @@ activeBullet.prototype.checkcrash = function () {
 								id=this.id;
 
 								if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							} 
 							
@@ -8805,10 +10471,10 @@ activeBullet.prototype.checkcrash = function () {
 								id=this.id;
 
 								if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 								//crashBDir="right-down";
@@ -8832,10 +10498,10 @@ activeBullet.prototype.checkcrash = function () {
 								id=this.id;
 
 								if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 							
@@ -8851,10 +10517,10 @@ activeBullet.prototype.checkcrash = function () {
 									crashB = true;
 									id=this.id;
 							if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							}
 								
@@ -8873,10 +10539,10 @@ activeBullet.prototype.checkcrash = function () {
 								id=this.id;
 
 								if(this.weapon==22){
-								doorCrash(i, "bigbullet"); 
+								obstacleCrash(i, "bigbullet"); 
 								this.active=false;
 							}else if(this.weapon==1){
-								doorCrash(i, "bullet"); 
+								obstacleCrash(i, "bullet"); 
 								this.active=false;
 							} 
 
